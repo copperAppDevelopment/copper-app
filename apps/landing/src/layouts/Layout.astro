@@ -1,0 +1,65 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Copper App - Administración de Copropiedades", 
+  description = "La plataforma integral para la gestión de copropiedades y conjuntos residenciales en Colombia."
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    
+    <!-- Script to set dark theme instantly on load based on localStorage or OS preferences to prevent FOUC -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('copper-theme')) {
+          return localStorage.getItem('copper-theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+    
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
+  </head>
+  <body class="min-h-screen font-sans antialiased text-zinc-800 dark:text-zinc-200 transition-colors duration-300 bg-white dark:bg-black">
+    <slot />
+    
+    <!-- Script to keep the Nanostore synced with DOM updates if changed externally -->
+    <script>
+      import { isDarkStore } from '../stores/appStore';
+      
+      // Initialize store value based on current DOM state
+      const isDarkInitially = document.documentElement.classList.contains('dark');
+      isDarkStore.set(isDarkInitially);
+      
+      // Listen to changes in the store and update DOM accordingly
+      isDarkStore.subscribe((isDark) => {
+        if (isDark) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('copper-theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('copper-theme', 'light');
+        }
+      });
+    </script>
+  </body>
+</html>

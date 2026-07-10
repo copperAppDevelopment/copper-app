@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Copper Residents",
+    "slug": "copper-residents",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.copper.residents"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "copper-residents"
+  }
+}

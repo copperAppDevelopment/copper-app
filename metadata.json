@@ -1,0 +1,6 @@
+{
+  "name": "Copper App",
+  "description": "La plataforma integral para la gestión eficiente de propiedades y copropiedades residenciales en Colombia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

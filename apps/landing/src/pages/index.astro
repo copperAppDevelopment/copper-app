@@ -1,0 +1,70 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../features/navigation/Navbar.tsx';
+import Hero from '../features/hero/Hero.tsx';
+import AboutUs from '../features/about/AboutUs.tsx';
+import Features from '../features/features-list/Features.tsx';
+import Benefits from '../features/benefits/Benefits.tsx';
+import Testimonials from '../features/testimonials/Testimonials.tsx';
+import Pricing from '../features/pricing/Pricing.tsx';
+import FAQ from '../features/faq/FAQ.tsx';
+import ContactForm from '../features/contact/ContactForm.tsx';
+import Footer from '../features/navigation/Footer.tsx';
+import VideoModal from '../features/testimonials/VideoModal.tsx';
+import LoginModal from '../features/auth/LoginModal.tsx';
+import { supabase } from '../lib/supabase';
+
+// Obtener los planes directamente desde Supabase en el servidor
+const { data: databasePlans, error } = await supabase
+  .from('planes')
+  .select('*')
+  .eq('activo', true)
+  .order('precio_mensual', { ascending: true });
+
+if (error) {
+  console.error("Error fetching plans from Supabase:", error);
+}
+
+const activePlans = databasePlans || [];
+---
+
+<Layout>
+  <!-- Top Navigation bar section -->
+  <Navbar client:load />
+
+  {/* Main Page structure layout */}
+  <main>
+    {/* Hero Section */}
+    <Hero />
+
+    {/* Section: ¿Quiénes Somos? & Saved simulator */}
+    <AboutUs client:visible />
+
+    {/* Section: Funciones */}
+    <Features />
+
+    {/* Section: Beneficios */}
+    <Benefits client:visible />
+
+    {/* Section: Testimonios with customized play actions */}
+    <Testimonials client:visible />
+
+    {/* Section: Precios comparison */}
+    <Pricing plans={activePlans} client:visible />
+
+    {/* Section: FAQ Expandable accordion */}
+    <FAQ client:visible />
+
+    {/* Section: Contact and Request forms */}
+    <ContactForm client:visible />
+  </main>
+
+  {/* Footer copyright sitemap bar */}
+  <Footer />
+
+  {/* Testimonials immersive playback modal */}
+  <VideoModal client:load />
+
+  {/* Custom styled Login Portal Modal */}
+  <LoginModal client:load />
+</Layout>

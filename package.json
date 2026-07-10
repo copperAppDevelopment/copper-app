@@ -1,0 +1,16 @@
+{
+  "name": "copper-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@11.3.0",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "db:gen-types": "supabase gen types typescript --linked > packages/database/src/types.ts"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.4"
+  }
+}
