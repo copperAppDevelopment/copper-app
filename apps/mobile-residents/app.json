@@ -5,15 +5,38 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.copper.residents"
     },
     "android": {
       "package": "com.copper.residents"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Copper necesita acceso a la cámara para escanear documentos de visitas."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Copper necesita acceso a tus fotos para actualizar tu foto de perfil.",
+          "cameraPermission": "Copper necesita acceso a la cámara para tomar tu foto de perfil."
+        }
+      ]
     ],
-    "scheme": "copper-residents"
+    "scheme": "copper-residents",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "95a1386a-e48b-4407-a22a-ad4ac16aa215"
+      }
+    }
   }
 }
