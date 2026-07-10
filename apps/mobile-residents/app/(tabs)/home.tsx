@@ -1,122 +1,110 @@
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { useAuthStore } from '../../src/stores/authStore.js';
+import React from 'react';
+import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { Stack } from 'expo-router';
+import { useAuthStore } from '../../src/stores/authStore';
 
-// Función para simular petición de red (en el futuro consumirá Next.js API /api/v1/health)
-const fetchApiHealth = async () => {
-  // Simular latencia de red
-  await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-  return {
-    status: 'Conectado',
-    serverTime: new Date().toLocaleTimeString(),
-    alerts: 2,
-  };
-};
+// Hooks y Componentes de la Feature Dashboard
+import { useDashboardData } from '../../src/features/dashboard/hooks/useDashboardData';
+import { WelcomeCard } from '../../src/features/dashboard/components/WelcomeCard';
+import { BalanceSummaryCard } from '../../src/features/dashboard/components/BalanceSummaryCard';
+import { ConceptDetailsCard } from '../../src/features/dashboard/components/ConceptDetailsCard';
+import { CircularNoticesCard } from '../../src/features/dashboard/components/CircularNoticesCard';
+import { RecentRequestsCard } from '../../src/features/dashboard/components/RecentRequestsCard';
+
+const logoSource = require('../../assets/logo-copper.webp');
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
+  const residente = useAuthStore((state) => state.residente);
 
-  const { data: apiStatus, isLoading, error } = useQuery({
-    queryKey: ['apiHealth'],
-    queryFn: fetchApiHealth,
-    refetchInterval: 10000, // Refrescar cada 10 segundos
-  });
+  // Cargamos los datos limpios y el estado de loading de nuestro Hook modular
+  const { dashboard, balances, notifications, requests, isLoading } = useDashboardData();
+
+  const getApartamentoInfo = () => {
+    if (dashboard?.numero_apartamento) {
+      if (dashboard.direccion_apartamento) {
+        return `Apt. ${dashboard.numero_apartamento} (${dashboard.direccion_apartamento})`;
+      }
+      return `Apt. ${dashboard.numero_apartamento}`;
+    }
+    return undefined;
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.welcomeText}>¡Hola, {user?.name || 'Residente'}!</Text>
-        <Text style={styles.apartmentText}>{user?.apartment || 'Copropiedad'}</Text>
-      </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContainer}>
+      {/* Logo corporativo en el header centrado */}
+      <Stack.Screen
+        options={{
+          headerTitle: () => (
+            <Image
+              source={logoSource}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
+          ),
+          headerTitleAlign: 'center',
+        }}
+      />
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Estado de Conexión del Backend</Text>
-        {isLoading ? (
-          <ActivityIndicator size="small" color="#fbbf24" style={styles.loader} />
-        ) : error ? (
-          <Text style={styles.errorText}>Error al conectar con la API</Text>
-        ) : (
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusLabel}>Servidor Next.js:</Text>
-            <Text style={styles.statusValue}>{apiStatus?.status}</Text>
-            <Text style={styles.timeText}>Última consulta: {apiStatus?.serverTime}</Text>
-          </View>
-        )}
-      </View>
+      {/* Saludo y Copropiedad */}
+      <WelcomeCard
+        userName={user?.nombres || undefined}
+        conjuntoNombre={dashboard?.conjunto_nombre || undefined}
+        apartamentoInfo={getApartamentoInfo()}
+      />
 
-      <View style={styles.card}>
-        <Text style={styles.sectionTitle}>Novedades de la Copropiedad</Text>
-        <Text style={styles.infoText}>
-          • Asamblea general programada para el próximo sábado a las 9:00 AM.
-        </Text>
-        <Text style={styles.infoText}>
-          • Mantenimiento preventivo de ascensores finalizado con éxito.
-        </Text>
-      </View>
-    </View>
+      {isLoading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#8A1C14" />
+          <Text style={styles.loaderText}>Cargando información del conjunto...</Text>
+        </View>
+      ) : (
+        <>
+          {/* Balance general de cuenta */}
+          <BalanceSummaryCard
+            saldoTotal={dashboard?.saldo_total}
+            saldoFavor={dashboard?.saldo_a_favor}
+            saldoContra={dashboard?.saldo_en_contra}
+            proximoVencimiento={dashboard?.proximo_vencimiento}
+            ultimoPago={dashboard?.ultimo_pago}
+            linkPago={dashboard?.link_pago}
+          />
+
+          {/* Desglose de cobros detallado por conceptos */}
+          <ConceptDetailsCard balances={balances} />
+
+          {/* Circulares administrativas */}
+          <CircularNoticesCard notifications={notifications} maxItems={2} />
+
+          {/* Estado de PQRs y solicitudes radicadas */}
+          <RecentRequestsCard requests={requests} />
+        </>
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#020617',
+    backgroundColor: '#f8fafc',
+  },
+  scrollContainer: {
     padding: 20,
+    paddingBottom: 40,
   },
-  card: {
-    backgroundColor: '#0f172a',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#1e293b',
+  headerLogo: {
+    width: 90,
+    height: 36,
   },
-  welcomeText: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#f8fafc',
+  loaderContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 100,
   },
-  apartmentText: {
-    fontSize: 14,
-    color: '#fbbf24',
-    marginTop: 4,
-    fontWeight: '600',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#e2e8f0',
-    marginBottom: 12,
-  },
-  loader: {
-    marginVertical: 10,
-  },
-  statusContainer: {
-    marginTop: 4,
-  },
-  statusLabel: {
-    color: '#94a3b8',
-    fontSize: 14,
-  },
-  statusValue: {
-    color: '#4ade80',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
-  timeText: {
+  loaderText: {
     color: '#64748b',
-    fontSize: 12,
-    marginTop: 8,
-  },
-  errorText: {
-    color: '#ef4444',
     fontSize: 14,
-  },
-  infoText: {
-    color: '#cbd5e1',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
+    marginTop: 12,
   },
 });
