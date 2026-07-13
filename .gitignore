@@ -1,8 +1,43 @@
+# Dependencies
 node_modules/
-build/
-dist/
-coverage/
-.DS_Store
-*.log
-.env*
+
+# Env
+.env
+.env.*
 !.env.example
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Next.js
+.next/
+out/
+
+# Astro
+.astro/
+
+# Turbo
+.turbo/
+
+# Vercel
+.vercel/
+
+# Expo
+.expo/
+
+# macOS
+.DS_Store
+
+# VSCode
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
