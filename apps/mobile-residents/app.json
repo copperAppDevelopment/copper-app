@@ -11,7 +11,8 @@
       "bundleIdentifier": "com.copper.residents"
     },
     "android": {
-      "package": "com.copper.residents"
+      "package": "com.copper.residents",
+      "kotlinVersion": "2.0.20"
     },
     "plugins": [
       [
