@@ -37,6 +37,10 @@ out/
 apps/mobile-residents/android/
 apps/mobile-residents/ios/
 
+# Firebase configuration files (Credentials)
+apps/mobile-residents/google-services.json
+apps/mobile-residents/GoogleService-Info.plist
+
 # macOS
 .DS_Store
 

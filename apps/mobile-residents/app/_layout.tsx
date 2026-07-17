@@ -1,6 +1,9 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useAuthStore } from "../src/stores/authStore";
+import { useOneSignal } from "../src/features/profile/hooks/useOneSignal";
 
 // Crear cliente de React Query
 const queryClient = new QueryClient({
@@ -13,6 +16,23 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  const { initOneSignal, loginUser, logoutUser } = useOneSignal();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
+
+  // 1. Inicializar OneSignal una sola vez al montar el Layout
+  useEffect(() => {
+    initOneSignal();
+  }, []);
+
+  // 2. Sincronizar estado de sesión del usuario en OneSignal
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      loginUser(user.id, 'residente');
+    } else {
+      logoutUser();
+    }
+  }, [isAuthenticated, user?.id]);
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" />
