@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, Text, ScrollView, Alert } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../src/stores/authStore';
 import { CircularNoticesCard } from '../../src/features/dashboard/components/CircularNoticesCard';
+
+import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
 
 const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3001';
 
@@ -16,9 +18,24 @@ const fetchNotifications = async (token?: string) => {
   return json.data;
 };
 
+function NotificacionesSkeleton() {
+  return (
+    <View style={{ gap: 16 }}>
+      {/* Título de esqueleto */}
+      <SkeletonLoader.Rect width="50%" height={24} style={{ marginBottom: 8 }} />
+
+      {/* Lista de tarjetas de comunicados */}
+      <SkeletonLoader.Rect height={140} style={{ borderRadius: 12 }} />
+      <SkeletonLoader.Rect height={140} style={{ borderRadius: 12 }} />
+      <SkeletonLoader.Rect height={140} style={{ borderRadius: 12 }} />
+    </View>
+  );
+}
+
 export default function NotificacionesScreen() {
   const token = useAuthStore((state) => state.session?.access_token);
   const queryClient = useQueryClient();
+  const [isScreenLoading, setIsScreenLoading] = useState(true);
 
   // React Query para notificaciones
   const { data: notifications, isLoading, error } = useQuery({
@@ -26,6 +43,16 @@ export default function NotificacionesScreen() {
     queryFn: () => fetchNotifications(token),
     enabled: !!token,
   });
+
+  useEffect(() => {
+    // Si la query ya no está cargando y los datos de notificación están listos en caché o cargados
+    if (!isLoading && notifications !== undefined) {
+      const timer = setTimeout(() => {
+        setIsScreenLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, notifications]);
 
   // Función para manejar la aprobación / rechazo de visitas
   const handleVisitAction = async (visitaId: string, estado: 'aprobado' | 'rechazado') => {
@@ -65,20 +92,19 @@ export default function NotificacionesScreen() {
     }
   };
 
+  const showSkeleton = isScreenLoading && !error;
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContainer}>
-      {isLoading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#8A1C14" />
-          <Text style={styles.loaderText}>Cargando comunicados...</Text>
-        </View>
+      {showSkeleton ? (
+        <NotificacionesSkeleton />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>No se pudieron cargar los comunicados.</Text>
         </View>
       ) : (
         <CircularNoticesCard
-          notifications={notifications}
+          notifications={notifications || []}
           showActions={true}
           onActionPress={handleVisitAction}
           title="Historial de Comunicados"

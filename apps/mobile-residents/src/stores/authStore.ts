@@ -24,6 +24,8 @@ interface AuthState {
   session: any | null; // Objeto de sesión de Supabase Auth
   user: UserProfile | null;
   residente: ResidenteProfile | null;
+  pendingRedirectRoute: string | null;
+  setPendingRedirectRoute: (route: string | null) => void;
   login: (session: any, user: UserProfile, residente: ResidenteProfile) => void;
   logout: () => void;
   updateApartamento: (apartamentoId: string | null) => void;
@@ -36,6 +38,8 @@ export const useAuthStore = create<AuthState>()(
       session: null,
       user: null,
       residente: null,
+      pendingRedirectRoute: null,
+      setPendingRedirectRoute: (route) => set({ pendingRedirectRoute: route }),
       login: (session, user, residente) =>
         set({
           isAuthenticated: true,
@@ -49,6 +53,7 @@ export const useAuthStore = create<AuthState>()(
           session: null,
           user: null,
           residente: null,
+          pendingRedirectRoute: null,
         }),
       updateApartamento: (apartamentoId) =>
         set((state) => ({

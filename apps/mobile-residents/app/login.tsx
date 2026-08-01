@@ -17,7 +17,7 @@ import { CustomCard } from '../src/components/common/CustomCard';
 import { CustomInput } from '../src/components/common/CustomInput';
 import { CustomButton } from '../src/components/common/CustomButton';
 
-const logoSource = require('../assets/logo-copper.webp');
+const logoSource = require('../assets/logo-copper.png');
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -134,7 +134,7 @@ export default function LoginScreen() {
       style={styles.container}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-        
+
         {/* Brand Header */}
         <View style={styles.headerContainer}>
           <Image
@@ -148,7 +148,7 @@ export default function LoginScreen() {
         {/* Input Form Card */}
         <CustomCard>
           <Text style={styles.cardTitle}>Ingresa a tu cuenta</Text>
-          
+
           <CustomInput
             label="Correo electrónico"
             placeholder="ejemplo@correo.com"
@@ -168,7 +168,7 @@ export default function LoginScreen() {
           />
 
           {/* Forgot Password (Mock) */}
-          <TouchableOpacity style={styles.forgotBtn} onPress={() => {}}>
+          <TouchableOpacity style={styles.forgotBtn} onPress={() => { }}>
             <Text style={styles.forgotText}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 

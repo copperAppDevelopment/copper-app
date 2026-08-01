@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, ActivityIndicator, ScrollView, Image } from 're
 import { Stack } from 'expo-router';
 import { useAuthStore } from '../../src/stores/authStore';
 
+import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
+
 // Hooks y Componentes de la Feature Dashboard
 import { useDashboardData } from '../../src/features/dashboard/hooks/useDashboardData';
 import { WelcomeCard } from '../../src/features/dashboard/components/WelcomeCard';
@@ -11,7 +13,32 @@ import { ConceptDetailsCard } from '../../src/features/dashboard/components/Conc
 import { CircularNoticesCard } from '../../src/features/dashboard/components/CircularNoticesCard';
 import { RecentRequestsCard } from '../../src/features/dashboard/components/RecentRequestsCard';
 
-const logoSource = require('../../assets/logo-copper.webp');
+const logoSource = require('../../assets/logo-copper.png');
+
+function HomeSkeleton() {
+  return (
+    <View style={{ gap: 16 }}>
+      {/* Saludo y Copropiedad */}
+      <View style={styles.skeletonCard}>
+        <SkeletonLoader.Rect width="40%" height={20} />
+        <SkeletonLoader.Rect width="80%" height={28} style={{ marginTop: 8 }} />
+        <SkeletonLoader.Rect width="60%" height={16} style={{ marginTop: 8 }} />
+      </View>
+
+      {/* Balance general de cuenta */}
+      <SkeletonLoader.Rect height={160} style={{ borderRadius: 16 }} />
+
+      {/* Desglose de cobros detallado */}
+      <SkeletonLoader.Rect height={140} style={{ borderRadius: 16 }} />
+
+      {/* Circulares administrativas */}
+      <SkeletonLoader.Rect height={130} style={{ borderRadius: 16 }} />
+
+      {/* Estado de PQRs */}
+      <SkeletonLoader.Rect height={120} style={{ borderRadius: 16 }} />
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   const user = useAuthStore((state) => state.user);
@@ -46,20 +73,17 @@ export default function HomeScreen() {
         }}
       />
 
-      {/* Saludo y Copropiedad */}
-      <WelcomeCard
-        userName={user?.nombres || undefined}
-        conjuntoNombre={dashboard?.conjunto_nombre || undefined}
-        apartamentoInfo={getApartamentoInfo()}
-      />
-
       {isLoading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#8A1C14" />
-          <Text style={styles.loaderText}>Cargando información del conjunto...</Text>
-        </View>
+        <HomeSkeleton />
       ) : (
         <>
+          {/* Saludo y Copropiedad */}
+          <WelcomeCard
+            userName={user?.nombres || undefined}
+            conjuntoNombre={dashboard?.conjunto_nombre || undefined}
+            apartamentoInfo={getApartamentoInfo()}
+          />
+
           {/* Balance general de cuenta */}
           <BalanceSummaryCard
             saldoTotal={dashboard?.saldo_total}
@@ -97,14 +121,11 @@ const styles = StyleSheet.create({
     width: 90,
     height: 36,
   },
-  loaderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 100,
-  },
-  loaderText: {
-    color: '#64748b',
-    fontSize: 14,
-    marginTop: 12,
+  skeletonCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
 });

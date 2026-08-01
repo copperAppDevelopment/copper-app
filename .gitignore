@@ -33,6 +33,10 @@ out/
 # Expo
 .expo/
 
+# Android binaries
+*.apk
+*.aab
+
 # React Native generated native dirs (EAS Managed Workflow regenerates these)
 apps/mobile-residents/android/
 apps/mobile-residents/ios/

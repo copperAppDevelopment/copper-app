@@ -35,7 +35,7 @@ export function BalancesSummaryCard({
       <Text style={styles.balanceAmount}>
         $ {saldoTotal.toLocaleString('es-CO')} COP
       </Text>
-      
+
       {proximoVencimiento && (
         <Text style={styles.dueDate}>Vence el: {proximoVencimiento}</Text>
       )}
@@ -61,7 +61,7 @@ export function BalancesSummaryCard({
 
       {saldoTotal > 0 && (
         <TouchableOpacity style={styles.payBtn} activeOpacity={0.8} onPress={handlePay}>
-          <Text style={styles.payBtnText}>Pagar en Línea (PSE)</Text>
+          <Text style={styles.payBtnText}>Pagar en Línea</Text>
         </TouchableOpacity>
       )}
     </CustomCard>

@@ -7,7 +7,7 @@ interface Solicitud {
   id: string;
   titulo_solicitud: string;
   solicitud_estado: string;
-  created_at: string;
+  created_at: string | null | undefined;
 }
 
 interface RecentRequestsCardProps {
@@ -16,6 +16,26 @@ interface RecentRequestsCardProps {
 
 export function RecentRequestsCard({ requests = [] }: RecentRequestsCardProps) {
   const displayRequests = requests.slice(0, 2);
+
+  const formatDate = (dateStr: string | null | undefined) => {
+    if (!dateStr) return 'Sin fecha';
+    
+    // Normalizar formato de fecha para Hermes (motor de JS de React Native)
+    let normalized = dateStr;
+    if (!dateStr.endsWith('Z') && !dateStr.includes('+') && !dateStr.includes('-')) {
+      normalized = dateStr.replace(' ', 'T') + 'Z';
+    } else if (dateStr.includes(' ')) {
+      normalized = dateStr.replace(' ', 'T');
+    }
+
+    try {
+      const date = new Date(normalized);
+      if (isNaN(date.getTime())) return 'Sin fecha';
+      return date.toLocaleDateString('es-CO');
+    } catch (e) {
+      return 'Sin fecha';
+    }
+  };
 
   return (
     <CustomCard style={styles.card}>
@@ -37,7 +57,7 @@ export function RecentRequestsCard({ requests = [] }: RecentRequestsCardProps) {
                 </View>
               </View>
               <Text style={styles.requestDate}>
-                Radicado: {new Date(item.created_at).toLocaleDateString('es-CO')}
+                Radicado: {formatDate(item.created_at)}
               </Text>
               {idx < displayRequests.length - 1 && <View style={styles.divider} />}
             </View>

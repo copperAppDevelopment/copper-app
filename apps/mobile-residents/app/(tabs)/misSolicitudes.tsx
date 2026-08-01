@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { StyleSheet, View, ActivityIndicator, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 // Hooks y Componentes de Solicitudes (PQRs)
 import { useRequestsData } from '../../src/features/requests/hooks/useRequestsData';
@@ -8,17 +9,52 @@ import { RequestsList, RequestItem } from '../../src/features/requests/component
 import { CreateRequestModal } from '../../src/features/requests/components/CreateRequestModal';
 import { getRequestStatusConfig } from '../../src/features/dashboard/utils/statusHelpers';
 
+import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
+
+function SolicitudesSkeleton() {
+  return (
+    <View style={{ gap: 16 }}>
+      {/* Carrusel de filtros simulados */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+        <SkeletonLoader.Rect width={100} height={70} style={{ borderRadius: 12 }} />
+        <SkeletonLoader.Rect width={100} height={70} style={{ borderRadius: 12 }} />
+        <SkeletonLoader.Rect width={100} height={70} style={{ borderRadius: 12 }} />
+        <SkeletonLoader.Rect width={100} height={70} style={{ borderRadius: 12 }} />
+      </ScrollView>
+
+      {/* Listado de PQRs simulado */}
+      <SkeletonLoader.Rect height={100} style={{ borderRadius: 12 }} />
+      <SkeletonLoader.Rect height={100} style={{ borderRadius: 12 }} />
+      <SkeletonLoader.Rect height={100} style={{ borderRadius: 12 }} />
+    </View>
+  );
+}
+
 type EstadoTipo = 'todos' | 'pendientes' | 'asignadas' | 'en_proceso' | 'completadas' | 'canceladas';
 
 export default function MisSolicitudesScreen() {
-  const { requests = [], isLoading, error, createRequest, isCreating } = useRequestsData();
+  const router = useRouter();
+  const { requests, isLoading, error, createRequest, isCreating } = useRequestsData();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEstado, setSelectedEstado] = useState<EstadoTipo>('todos');
+  const [isScreenLoading, setIsScreenLoading] = useState(true);
+
+  const requestsList = requests || [];
+
+  useEffect(() => {
+    // Si la query ya no está cargando y los datos de solicitudes están listos en caché o cargados
+    if (!isLoading && requests !== undefined) {
+      const timer = setTimeout(() => {
+        setIsScreenLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoading, requests]);
 
   // Calcular contadores por estado a partir de los datos cargados
   const contadores = useMemo(() => {
     const counts = {
-      todos: requests.length,
+      todos: requestsList.length,
       pendientes: 0,
       asignadas: 0,
       en_proceso: 0,
@@ -26,20 +62,22 @@ export default function MisSolicitudesScreen() {
       canceladas: 0,
     };
 
-    requests.forEach((req: RequestItem) => {
+    requestsList.forEach((req: RequestItem) => {
       if (req.estado && req.estado in counts) {
         counts[req.estado as keyof typeof counts] += 1;
       }
     });
 
     return counts;
-  }, [requests]);
+  }, [requestsList]);
 
   // Filtrar solicitudes localmente según el estado seleccionado
   const requestsFiltrados = useMemo(() => {
-    if (selectedEstado === 'todos') return requests;
-    return requests.filter((req: RequestItem) => req.estado === selectedEstado);
-  }, [requests, selectedEstado]);
+    if (selectedEstado === 'todos') return requestsList;
+    return requestsList.filter((req: RequestItem) => req.estado === selectedEstado);
+  }, [requestsList, selectedEstado]);
+
+  const showSkeleton = isScreenLoading && !error;
 
   const estadosConfig: { key: EstadoTipo; label: string; icon: string }[] = [
     { key: 'todos', label: 'Todas', icon: 'list' },
@@ -56,22 +94,31 @@ export default function MisSolicitudesScreen() {
         {/* Cabecera / Botón de Acción destacado */}
         <View style={styles.header}>
           <Text style={styles.headerText}>Gestión de PQRs</Text>
-          <TouchableOpacity
-            style={styles.floatingActionBtn}
-            onPress={() => setModalVisible(true)}
-            activeOpacity={0.8}
-          >
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
-            <Ionicons name="add" size={20} color="#ffffff" style={styles.btnIcon} />
-            <Text style={styles.floatingActionText}>Radicar PQR</Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtonsContainer}>
+            <TouchableOpacity
+              style={styles.chatHistoryBtn}
+              onPress={() => router.push('/(tabs)/soporte')}
+              activeOpacity={0.8}
+            >
+              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
+              <Ionicons name="chatbubbles-outline" size={16} color="#8A1C14" style={styles.btnIcon} />
+              <Text style={styles.chatHistoryText}>Chats</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.floatingActionBtn}
+              onPress={() => setModalVisible(true)}
+              activeOpacity={0.8}
+            >
+              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
+              <Ionicons name="add" size={16} color="#ffffff" style={styles.btnIcon} />
+              <Text style={styles.floatingActionText}>Radicar PQR</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {isLoading ? (
-          <View style={styles.loaderContainer}>
-            <ActivityIndicator size="large" color="#8A1C14" />
-            <Text style={styles.loaderText}>Cargando solicitudes...</Text>
-          </View>
+        {showSkeleton ? (
+          <SolicitudesSkeleton />
         ) : error ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>No se pudieron cargar tus solicitudes.</Text>
@@ -120,7 +167,7 @@ export default function MisSolicitudesScreen() {
             </ScrollView>
 
             {/* Listado de solicitudes filtrado */}
-            <RequestsList requests={requestsFiltrados} />
+            <RequestsList requests={requestsFiltrados || []} />
           </>
         )}
       </ScrollView>
@@ -245,6 +292,25 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#dc2626',
     fontSize: 14,
+    fontWeight: 'bold',
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  chatHistoryBtn: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#8A1C14',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  chatHistoryText: {
+    color: '#8A1C14',
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

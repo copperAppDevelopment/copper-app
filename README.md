@@ -103,6 +103,10 @@ La aplicación para residentes está diseñada para ser emulada con Android Stud
    ```
    *(También puedes ingresar a `apps/mobile-residents` y correr `npx expo start --android`)*
 3. La aplicación se compilará y se cargará en el emulador de Android.
+4. Comando para subir la aplicación a expo para descargarla:
+   ```bash
+   eas build --platform android --profile preview
+   ```
 
 ### 🧠 Arquitectura de la Aplicación Móvil
 Para el control de estados y datos del cliente, la app móvil no utiliza Nanostores, sino una combinación robusta de:

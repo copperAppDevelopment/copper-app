@@ -1,0 +1,26 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../features/navigation/Navbar.tsx';
+import DeleteAccountForm from '../features/contact/DeleteAccountForm.tsx';
+import Footer from '../features/navigation/Footer.tsx';
+import LoginModal from '../features/auth/LoginModal.tsx';
+---
+
+<Layout 
+  title="Solicitud de Eliminación de Cuenta - Copper App" 
+  description="Formulario público para solicitar la eliminación de tu cuenta de residente y tus datos personales asociados en Copper App."
+>
+  {/* Top Navigation bar */}
+  <Navbar client:load />
+
+  {/* Main content wrapper */}
+  <main className="bg-white dark:bg-black transition-colors duration-300">
+    <DeleteAccountForm client:load />
+  </main>
+
+  {/* Footer */}
+  <Footer />
+
+  {/* Include Login Modal to keep state consistency across landing page navigation */}
+  <LoginModal client:load />
+</Layout>

@@ -1,18 +1,33 @@
 {
   "expo": {
-    "name": "Copper Residents",
+    "name": "Copper App",
     "slug": "copper-residents",
     "version": "1.0.0",
     "orientation": "portrait",
+    "icon": "./assets/logo-copper.png",
     "userInterfaceStyle": "dark",
-    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/logo-copper.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f8fafc"
+    },
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.copper.residents"
+      "bundleIdentifier": "com.copper.residents",
+      "icon": "./assets/logo-copper.png"
     },
     "android": {
       "package": "com.copper.residents",
-      "kotlinVersion": "2.0.20"
+      "kotlinVersion": "1.9.25",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/logo-copper.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
       [
@@ -42,8 +57,26 @@
         "origin": false
       },
       "eas": {
-        "projectId": "95a1386a-e48b-4407-a22a-ad4ac16aa215"
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "OneSignalNotificationServiceExtension",
+                  "bundleIdentifier": "com.copper.residents.OneSignalNotificationServiceExtension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.com.copper.residents.onesignal"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "projectId": "b5a7c87d-880a-457c-908d-d9365207faca"
       }
-    }
+    },
+    "owner": "copperappcos-team"
   }
 }

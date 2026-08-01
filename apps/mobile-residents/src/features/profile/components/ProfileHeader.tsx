@@ -74,7 +74,7 @@ export function ProfileHeader({
             <Text style={styles.initialsText}>{getInitials()}</Text>
           </View>
         )}
-        
+
         {/* Overlay con ícono de cámara */}
         <View style={styles.cameraIconBadge}>
           {/* @ts-expect-error - React 18/19 vector icons compatibility */}
@@ -91,7 +91,6 @@ export function ProfileHeader({
       <Text style={styles.nameText}>
         {nombres} {apellidos}
       </Text>
-      <Text style={styles.roleText}>Residente Autenticado</Text>
     </View>
   );
 }
