@@ -1,0 +1,65 @@
+workflows:
+  ios-app-store:
+    name: Copper App iOS (App Store / TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    environment:
+      node: 20.x
+      groups:
+        # Grupo de variables de entorno definidas en el panel web de Codemagic
+        - app_store_credentials
+      vars:
+        # Identificador del paquete de la aplicación
+        APP_ID: "com.copper.residents"
+        # Nombre de la aplicación (usado para localizar el workspace nativo generado por Expo)
+        XCODE_WORKSPACE: "apps/mobile-residents/ios/CopperApp.xcworkspace"
+        XCODE_SCHEME: "CopperApp"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - target: main
+    scripts:
+      - name: Install pnpm
+        script: |
+          npm install -g pnpm
+      - name: Install dependencies
+        script: |
+          pnpm install --frozen-lockfile
+      - name: Expo Prebuild (iOS)
+        script: |
+          cd apps/mobile-residents
+          npx expo prebuild --platform ios --clean
+      - name: Install Pods
+        script: |
+          cd apps/mobile-residents/ios
+          pod install
+      - name: Set up keychain
+        script: |
+          keychain initialize
+      - name: Fetch Apple Certificates and Profiles
+        script: |
+          # Descarga los certificados de distribución y perfiles correspondientes desde App Store Connect
+          # Utiliza las variables del grupo 'app_store_credentials': APP_STORE_CONNECT_PRIVATE_KEY, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_ISSUER_ID
+          app-store-connect fetch-signing-files "$APP_ID" --type IOS_APP_STORE --create
+      - name: Apply Provisioning Profiles
+        script: |
+          keychain add-certificates
+          xcode-project use-profiles
+      - name: Build iOS IPA
+        script: |
+          # Incrementa el build number si es necesario (Codemagic incrementa automáticamente $BUILD_NUMBER)
+          cd apps/mobile-residents/ios
+          agvtool new-version -all $BUILD_NUMBER
+          
+          # Compilar el archivo IPA usando la herramienta de Codemagic
+          cd ../../..
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - apps/mobile-residents/ios/build/Robot/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
