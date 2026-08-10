@@ -18,7 +18,7 @@ workflows:
       events:
         - push
       branch_patterns:
-        - target: main
+        - pattern: 'main'
     scripts:
       - name: Install pnpm
         script: |
@@ -61,5 +61,7 @@ workflows:
       - apps/mobile-residents/ios/build/Robot/ipa/*.ipa
     publishing:
       app_store_connect:
-        auth: integration
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
         submit_to_testflight: true
