@@ -53,6 +53,13 @@ workflows:
             --type IOS_APP_STORE \
             --certificate-key @env:CERTIFICATE_PRIVATE_KEY \
             --create
+
+          # La extensión de notificaciones de OneSignal es un target aparte con su
+          # propio bundle ID: necesita su propio perfil o el archive falla al firmarla.
+          app-store-connect fetch-signing-files "$APP_ID.OneSignalNotificationServiceExtension" \
+            --type IOS_APP_STORE \
+            --certificate-key @env:CERTIFICATE_PRIVATE_KEY \
+            --create
       - name: Apply Provisioning Profiles
         script: |
           keychain add-certificates
@@ -65,9 +72,13 @@ workflows:
           
           # Compilar el archivo IPA usando la herramienta de Codemagic
           cd ../../..
+          # --disable-xcpretty: xcpretty no está instalado en Ruby 3.2.2 (el downgrade
+          # necesario para CocoaPods), y su ausencia rompe el pipe y oculta los
+          # errores reales de xcodebuild.
           xcode-project build-ipa \
             --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+            --scheme "$XCODE_SCHEME" \
+            --disable-xcpretty
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
