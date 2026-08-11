@@ -4,10 +4,13 @@ workflows:
     instance_type: mac_mini_m2
     max_build_duration: 60
     integrations:
-      app_store_connect: "Code Magic API Key"
+      app_store_connect: "Code Magic API Key Admin"
     environment:
       node: latest
       ruby: 3.2.2
+      groups:
+        # Debe contener CERTIFICATE_PRIVATE_KEY (clave privada del certificado de distribución)
+        - appstore_credentials
       vars:
         # Identificador del paquete de la aplicación
         APP_ID: "com.copper.residents"
@@ -44,8 +47,11 @@ workflows:
       - name: Fetch Apple Certificates and Profiles
         script: |
           # Descarga los certificados de distribución y perfiles correspondientes desde App Store Connect usando la integración de Codemagic
+          # La clave privada es obligatoria: el Developer Portal solo guarda la parte
+          # pública del certificado, sin ella no se puede armar el .p12 firmable.
           app-store-connect fetch-signing-files "$APP_ID" \
             --type IOS_APP_STORE \
+            --certificate-key @env:CERTIFICATE_PRIVATE_KEY \
             --create
       - name: Apply Provisioning Profiles
         script: |
@@ -63,7 +69,7 @@ workflows:
             --workspace "$XCODE_WORKSPACE" \
             --scheme "$XCODE_SCHEME"
     artifacts:
-      - apps/mobile-residents/ios/build/Robot/ipa/*.ipa
+      - build/ios/ipa/*.ipa
     publishing:
       app_store_connect:
         auth: integration
