@@ -37,6 +37,38 @@ workflows:
         script: |
           cd apps/mobile-residents
           npx expo prebuild --platform ios --clean
+      - name: Patch Podfile (fmt / clang 17+)
+        script: |
+          # fmt 11.0.2 (pineado por React Native 0.76.9) no compila con clang 17+
+          # (Xcode 16.3 en adelante): la validación consteval de format strings hace
+          # aritmética de punteros que ya no cuenta como expresión constante.
+          # FMT_USE_CONSTEVAL=0 la desactiva y la deja en runtime; base.h lo protege
+          # con #ifndef precisamente para esto.
+          # Va aquí y no en el repo porque expo prebuild --clean regenera el Podfile.
+          python3 - <<'PY'
+          import sys, pathlib
+
+          podfile = pathlib.Path("apps/mobile-residents/ios/Podfile")
+          source = podfile.read_text()
+          anchor = "post_install do |installer|"
+
+          if anchor not in source:
+              sys.exit(f"No se encontró '{anchor}' en el Podfile; revisar plantilla de Expo.")
+
+          patch = """
+              installer.pods_project.targets.each do |pod_target|
+                pod_target.build_configurations.each do |build_config|
+                  defs = build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
+                  defs = [defs] if defs.is_a?(String)
+                  defs << 'FMT_USE_CONSTEVAL=0' unless defs.include?('FMT_USE_CONSTEVAL=0')
+                  build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs
+                end
+              end
+          """
+
+          podfile.write_text(source.replace(anchor, anchor + patch, 1))
+          print("Podfile parcheado: FMT_USE_CONSTEVAL=0")
+          PY
       - name: Install Pods
         script: |
           cd apps/mobile-residents/ios
