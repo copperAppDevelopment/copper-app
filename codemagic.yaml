@@ -43,9 +43,13 @@ workflows:
           keychain initialize
       - name: Fetch Apple Certificates and Profiles
         script: |
-          # Descarga los certificados de distribución y perfiles correspondientes desde App Store Connect
-          # Utiliza las variables del grupo 'app_store_credentials': APP_STORE_CONNECT_PRIVATE_KEY, APP_STORE_CONNECT_KEY_IDENTIFIER, APP_STORE_CONNECT_ISSUER_ID
-          app-store-connect fetch-signing-files "$APP_ID" --type IOS_APP_STORE --create
+          # Descarga los certificados de distribución y perfiles correspondientes desde App Store Connect usando los parámetros de firma explícitos
+          app-store-connect fetch-signing-files "$APP_ID" \
+            --type IOS_APP_STORE \
+            --create \
+            --issuer-id "$APP_STORE_CONNECT_ISSUER_ID" \
+            --key-id "$APP_STORE_CONNECT_KEY_IDENTIFIER" \
+            --private-key "$APP_STORE_CONNECT_PRIVATE_KEY"
       - name: Apply Provisioning Profiles
         script: |
           keychain add-certificates
