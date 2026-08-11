@@ -7,6 +7,7 @@ workflows:
       app_store_connect: "Code Magic API Key"
     environment:
       node: latest
+      ruby: 3.2.2
       vars:
         # Identificador del paquete de la aplicación
         APP_ID: "com.copper.residents"
