@@ -37,42 +37,38 @@ workflows:
         script: |
           cd apps/mobile-residents
           npx expo prebuild --platform ios --clean
-      - name: Patch Podfile (fmt / clang 17+)
-        script: |
-          # fmt 11.0.2 (pineado por React Native 0.76.9) no compila con clang 17+
-          # (Xcode 16.3 en adelante): la validación consteval de format strings hace
-          # aritmética de punteros que ya no cuenta como expresión constante.
-          # FMT_USE_CONSTEVAL=0 la desactiva y la deja en runtime; base.h lo protege
-          # con #ifndef precisamente para esto.
-          # Va aquí y no en el repo porque expo prebuild --clean regenera el Podfile.
-          python3 - <<'PY'
-          import sys, pathlib
-
-          podfile = pathlib.Path("apps/mobile-residents/ios/Podfile")
-          source = podfile.read_text()
-          anchor = "post_install do |installer|"
-
-          if anchor not in source:
-              sys.exit(f"No se encontró '{anchor}' en el Podfile; revisar plantilla de Expo.")
-
-          patch = """
-              installer.pods_project.targets.each do |pod_target|
-                pod_target.build_configurations.each do |build_config|
-                  defs = build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] || ['$(inherited)']
-                  defs = [defs] if defs.is_a?(String)
-                  defs << 'FMT_USE_CONSTEVAL=0' unless defs.include?('FMT_USE_CONSTEVAL=0')
-                  build_config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = defs
-                end
-              end
-          """
-
-          podfile.write_text(source.replace(anchor, anchor + patch, 1))
-          print("Podfile parcheado: FMT_USE_CONSTEVAL=0")
-          PY
       - name: Install Pods
         script: |
           cd apps/mobile-residents/ios
           pod install
+      - name: Patch fmt (clang 17+)
+        script: |
+          # fmt 11.0.2 (pineado por React Native 0.76.9) no compila con clang 17+
+          # (Xcode 16.3 en adelante): la validación consteval de format strings hace
+          # aritmética de punteros que ya no cuenta como expresión constante.
+          #
+          # No sirve pasar -DFMT_USE_CONSTEVAL=0: la cadena en base.h es un #if, no
+          # un #ifndef, así que la cabecera pisa cualquier define externo. Hay que
+          # forzar la primera rama para que gane. La validación pasa a runtime.
+          #
+          # Va aquí y no en el repo porque Pods/ lo regenera pod install.
+          python3 - <<'PY'
+          import pathlib, re, sys
+
+          header = pathlib.Path("apps/mobile-residents/ios/Pods/fmt/include/fmt/base.h")
+          source = header.read_text(encoding="utf-8")
+
+          pattern = re.compile(
+              r"#if !defined\(__cpp_lib_is_constant_evaluated\)(\s*\n\s*#\s*define FMT_USE_CONSTEVAL 0)"
+          )
+          patched, n = pattern.subn(r"#if 1  /* CI: consteval roto con clang 17+ */\1", source, count=1)
+
+          if n != 1:
+              sys.exit("No se encontró la cadena FMT_USE_CONSTEVAL en base.h; revisar versión de fmt.")
+
+          header.write_text(patched, encoding="utf-8")
+          print("fmt/base.h parcheado: FMT_USE_CONSTEVAL forzado a 0")
+          PY
       - name: Set up keychain
         script: |
           keychain initialize
