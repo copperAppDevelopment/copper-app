@@ -11,6 +11,8 @@ workflows:
       groups:
         # Debe contener CERTIFICATE_PRIVATE_KEY (clave privada del certificado de distribución)
         - appstore_credentials
+        # Variables EXPO_PUBLIC_* que Expo inyecta en el bundle de JS
+        - copper_mobile_env
       vars:
         # Identificador del paquete de la aplicación
         APP_ID: "com.copper.residents"
@@ -33,6 +35,24 @@ workflows:
       - name: Install dependencies
         script: |
           pnpm install --frozen-lockfile
+      - name: Check required env vars
+        script: |
+          # El código usa `process.env.X || '<valor de desarrollo>'`, así que una
+          # variable ausente no rompe el build: produce un bundle que apunta a la
+          # IP local del desarrollador. Mejor fallar aquí y en voz alta.
+          missing=""
+          for var in EXPO_PUBLIC_SUPABASE_URL EXPO_PUBLIC_SUPABASE_ANON_KEY \
+                     EXPO_PUBLIC_API_URL EXPO_PUBLIC_ONESIGNAL_APP_ID; do
+            eval "value=\$$var"
+            if [ -z "$value" ]; then
+              missing="$missing $var"
+            fi
+          done
+          if [ -n "$missing" ]; then
+            echo "Faltan variables del grupo copper_mobile_env:$missing"
+            exit 1
+          fi
+          echo "Todas las variables EXPO_PUBLIC_* están presentes."
       - name: Expo Prebuild (iOS)
         script: |
           cd apps/mobile-residents
