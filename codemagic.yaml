@@ -53,7 +53,7 @@ workflows:
           #
           # Va aquí y no en el repo porque Pods/ lo regenera pod install.
           python3 - <<'PY'
-          import pathlib, re, sys
+          import pathlib, re, stat, sys
 
           header = pathlib.Path("apps/mobile-residents/ios/Pods/fmt/include/fmt/base.h")
           source = header.read_text(encoding="utf-8")
@@ -66,6 +66,8 @@ workflows:
           if n != 1:
               sys.exit("No se encontró la cadena FMT_USE_CONSTEVAL en base.h; revisar versión de fmt.")
 
+          # CocoaPods deja los fuentes descargados en solo lectura (0444).
+          header.chmod(header.stat().st_mode | stat.S_IWUSR)
           header.write_text(patched, encoding="utf-8")
           print("fmt/base.h parcheado: FMT_USE_CONSTEVAL forzado a 0")
           PY
