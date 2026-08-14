@@ -27,6 +27,12 @@ La aplicación se migrará a **Astro** para maximizar el rendimiento y optimizar
 ## 3. Arquitectura del Software (Feature-based)
 El proyecto utiliza una arquitectura **Feature-based** (orientada a características). En lugar de agrupar todo por tipo técnico (todos los componentes en una sola carpeta `components`), cada característica del negocio reside en su propio directorio dentro de `src/features/`.
 
+> ⚠️ **Esta sección describe únicamente la app `landing`.** Las convenciones que aplican a **las
+> tres aplicaciones** —límite de tamaño por archivo, estructura de `features/`, contrato de las
+> rutas de API y dónde vive cada helper— están en la sección **«Convenciones de Código»** del
+> [README.md](README.md). Esa es la fuente de verdad; lo de abajo es el detalle de los módulos
+> concretos de la landing.
+
 ### Estructura de Directorios
 - `src/layouts/`: Plantillas comunes del sitio (e.g. `Layout.astro`), cabeceras HTML, inyección de metatags de SEO y lógica global de cambio de tema.
 - `src/pages/`: Páginas mapeadas a rutas. La página de inicio es `src/pages/index.astro`.

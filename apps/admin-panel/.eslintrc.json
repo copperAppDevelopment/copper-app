@@ -1,3 +1,20 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "max-lines": [
+      "warn",
+      { "max": 300, "skipBlankLines": true, "skipComments": true }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "app/login/page.tsx",
+        "app/contador/dashboard/page.tsx",
+        "app/recepcion/dashboard/page.tsx",
+        "app/superadmin/dashboard/page.tsx"
+      ],
+      "rules": { "max-lines": "off" }
+    }
+  ]
 }

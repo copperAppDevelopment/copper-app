@@ -100,6 +100,7 @@ export async function POST(request: Request) {
         cedula: documento,
         tipo_documento,
         email,
+        rol: 'Residente',
         estado: true, // Activo por defecto al registrarse
       });
 

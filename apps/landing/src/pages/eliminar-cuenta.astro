@@ -3,7 +3,6 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../features/navigation/Navbar.tsx';
 import DeleteAccountForm from '../features/contact/DeleteAccountForm.tsx';
 import Footer from '../features/navigation/Footer.tsx';
-import LoginModal from '../features/auth/LoginModal.tsx';
 ---
 
 <Layout 
@@ -20,7 +19,4 @@ import LoginModal from '../features/auth/LoginModal.tsx';
 
   {/* Footer */}
   <Footer />
-
-  {/* Include Login Modal to keep state consistency across landing page navigation */}
-  <LoginModal client:load />
 </Layout>

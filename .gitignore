@@ -45,6 +45,8 @@ apps/mobile-residents/ios/
 apps/mobile-residents/google-services.json
 apps/mobile-residents/GoogleService-Info.plist
 
+docs\app_store_certificate.p12
+
 # macOS
 .DS_Store
 
@@ -53,3 +55,8 @@ apps/mobile-residents/GoogleService-Info.plist
 
 # TypeScript
 *.tsbuildinfo
+
+# Claude Code: ajustes personales y enlaces a skills con rutas absolutas.
+# El contenido real de las skills vive en .agents/ y sí se versiona.
+.claude/settings.local.json
+.claude/skills/

@@ -1,61 +1,125 @@
-import React from 'react';
+'use client';
 
-export default function AdminPage() {
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
+import { getConjuntoSeleccionado, setConjuntoSeleccionado, clearConjuntoSeleccionado } from "../lib/conjunto";
+
+export default function AdminPageRouter() {
+  const router = useRouter();
+  const [loadingMsg, setLoadingMsg] = useState("Cargando portal...");
+
+  useEffect(() => {
+    async function checkAuthAndRedirect() {
+      try {
+        // 1️⃣ Check if user is logged in
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError || !session) {
+          router.push("/login");
+          return;
+        }
+
+        setLoadingMsg("Verificando perfil y rol...");
+        const userId = session.user.id;
+
+        // 2️⃣ Fetch user profile
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (profileError || !profile) {
+          console.error("Error al obtener perfil:", profileError);
+          await supabase.auth.signOut();
+          router.push("/login");
+          return;
+        }
+
+        // 3️⃣ Verify user status
+        if (profile.estado === false) {
+          await supabase.auth.signOut();
+          router.push("/login");
+          return;
+        }
+
+        const role = profile.rol;
+
+        // 4️⃣ Direct role-based redirection
+        if (role === "Residente") {
+          router.push("/residente/no-access");
+          return;
+        }
+
+        if (role === "SuperAdmin") {
+          router.push("/superadmin/dashboard");
+          return;
+        }
+
+        // For Admin, Contador, Recepcion: check multi-complex association
+        setLoadingMsg("Verificando copropiedades...");
+        const { data: userConjuntos, error: conjuntosError } = await supabase
+          .from("vista_mis_conjuntos_seleccion")
+          .select("*");
+
+        if (conjuntosError) {
+          console.error("Error cargando conjuntos:", conjuntosError);
+        }
+
+        // Filter duplicates by conjunto_id to count unique complexes
+        const uniqueConjuntos = (userConjuntos || []).filter((item, idx, self) =>
+          item.conjunto_id && self.findIndex(t => t.conjunto_id === item.conjunto_id) === idx
+        );
+        const count = uniqueConjuntos.length;
+
+        if (count === 0) {
+          // No complex associated, send directly to dashboard
+          if (role === "Admin") router.push("/admin/dashboard");
+          else if (role === "Recepcion") router.push("/recepcion/dashboard");
+          else if (role === "Contador") router.push("/contador/dashboard");
+          else router.push("/login");
+        } else if (count === 1 && uniqueConjuntos[0]) {
+          // Exactly 1 complex, select it and redirect to dashboard
+          const selectedConjunto = uniqueConjuntos[0];
+          setConjuntoSeleccionado(selectedConjunto);
+
+          if (role === "Admin") router.push("/admin/dashboard");
+          else if (role === "Recepcion") router.push("/recepcion/dashboard");
+          else if (role === "Contador") router.push("/contador/dashboard");
+          else router.push("/login");
+        } else {
+          // Multiple complexes, check if one was already chosen and stored
+          const savedConjuntoId = getConjuntoSeleccionado()?.id;
+
+          if (savedConjuntoId && userConjuntos?.some(c => c.conjunto_id === savedConjuntoId)) {
+            // Already chosen a valid one, go straight to dashboard
+            if (role === "Admin") router.push("/admin/dashboard");
+            else if (role === "Recepcion") router.push("/recepcion/dashboard");
+            else if (role === "Contador") router.push("/contador/dashboard");
+            else router.push("/login");
+          } else {
+            // Needs to select one
+            clearConjuntoSeleccionado();
+            router.push("/select-conjunto");
+          }
+        }
+      } catch (err) {
+        console.error("Unexpected error in routing:", err);
+        router.push("/login");
+      }
+    }
+
+    checkAuthAndRedirect();
+  }, [router]);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 md:p-24 bg-radial from-slate-900 via-slate-950 to-black text-center">
-      <div className="z-10 max-w-4xl w-full items-center justify-between font-mono text-sm flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-slate-800 bg-gradient-to-b from-slate-900/50 pb-6 pt-8 backdrop-blur-2xl lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-slate-900/30 lg:p-4">
-          Panel de Administración & API &nbsp;
-          <code className="font-bold text-amber-500">v1.0.0</code>
-        </p>
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-white">
+      <div className="text-center space-y-4">
+        <Loader2 className="w-12 h-12 text-brand animate-spin mx-auto" />
+        <p className="text-zinc-400 text-sm font-medium">{loadingMsg}</p>
       </div>
-
-      <div className="relative flex flex-col items-center justify-center my-16">
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight bg-gradient-to-r from-amber-200 via-orange-400 to-amber-500 bg-clip-text text-transparent drop-shadow-sm">
-          Copper Admin
-        </h1>
-        <p className="mt-4 text-slate-400 text-lg md:text-xl max-w-md">
-          Sistema de backend centralizado y panel administrativo de propiedad horizontal en Colombia.
-        </p>
-      </div>
-
-      <div className="grid text-left lg:max-w-5xl lg:w-full lg:grid-cols-3 gap-6">
-        <div className="group rounded-2xl border border-slate-800 bg-slate-900/20 px-5 py-4 transition-colors hover:border-slate-700 hover:bg-slate-900/40">
-          <h2 className="mb-3 text-2xl font-semibold text-amber-400">
-            API Endpoints{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm text-slate-400">
-            Rutas REST listas para ser consumidas por la app de React Native y Astro.
-          </p>
-        </div>
-
-        <div className="group rounded-2xl border border-slate-800 bg-slate-900/20 px-5 py-4 transition-colors hover:border-slate-700 hover:bg-slate-900/40">
-          <h2 className="mb-3 text-2xl font-semibold text-amber-400">
-            Supabase Client{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm text-slate-400">
-            Conectado de forma compartida con el paquete local `@copper/database`.
-          </p>
-        </div>
-
-        <div className="group rounded-2xl border border-slate-800 bg-slate-900/20 px-5 py-4 transition-colors hover:border-slate-700 hover:bg-slate-900/40">
-          <h2 className="mb-3 text-2xl font-semibold text-amber-400">
-            Feature Architecture{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm text-slate-400">
-            Código desacoplado por características de negocio listas para escalar.
-          </p>
-        </div>
-      </div>
-    </main>
+    </div>
   );
 }

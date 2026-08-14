@@ -1,7 +1,7 @@
 import { Sun, Moon, Menu, X, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
-import { isDarkStore, isLoginOpenStore } from "../../stores/appStore";
+import { isDarkStore } from "../../stores/appStore";
 import Logo from "./Logo";
 
 export default function Navbar() {
@@ -21,7 +21,8 @@ export default function Navbar() {
   };
 
   const handleOpenLogin = () => {
-    isLoginOpenStore.set(true);
+    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3001";
+    window.location.href = `${adminPanelUrl}/login`;
   };
 
   const handleOpenDemo = () => {

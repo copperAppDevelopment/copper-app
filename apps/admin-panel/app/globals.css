@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+  --color-brand: #8A1C14;
+  --color-brand-hover: #a1231a;
+  --color-brand-active: #721710;
+}
+
+@variant dark (&:where(.dark, .dark *));

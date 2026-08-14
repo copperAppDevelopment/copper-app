@@ -636,6 +636,48 @@ export type Database = {
           },
         ]
       }
+      cargas_recaudos: {
+        Row: {
+          archivo_nombre: string | null
+          archivo_path: string
+          conjunto_id: string
+          creado_en: string
+          creado_por: string | null
+          detalles: Json
+          errores: number
+          id: string
+          insertados: number
+          periodo: string
+          procesadas: number
+        }
+        Insert: {
+          archivo_nombre?: string | null
+          archivo_path: string
+          conjunto_id: string
+          creado_en?: string
+          creado_por?: string | null
+          detalles?: Json
+          errores?: number
+          id?: string
+          insertados?: number
+          periodo: string
+          procesadas?: number
+        }
+        Update: {
+          archivo_nombre?: string | null
+          archivo_path?: string
+          conjunto_id?: string
+          creado_en?: string
+          creado_por?: string | null
+          detalles?: Json
+          errores?: number
+          id?: string
+          insertados?: number
+          periodo?: string
+          procesadas?: number
+        }
+        Relationships: []
+      }
       cargos_mensuales: {
         Row: {
           apartamento_id: string
@@ -6958,6 +7000,7 @@ export type Database = {
       }
       vista_mis_residentes: {
         Row: {
+          activo: boolean | null
           apartamento_descripcion: string | null
           apartamento_id: string | null
           apartamento_numero: string | null
@@ -6966,6 +7009,7 @@ export type Database = {
           contacto: string | null
           email: string | null
           estado_usuario: boolean | null
+          estrato: number | null
           nombre_completo: string | null
           residente_id: string | null
           tipo_documento: string | null
