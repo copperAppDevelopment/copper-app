@@ -352,8 +352,17 @@ Detalles que no son obvios:
 ### Verificar el build sin romper el dev server
 
 Un `next build` normal escribe en el mismo `.next/` que usa `next dev`, y deja al servidor de
-desarrollo sirviendo 404 en `main-app.js`. Para comprobar que el panel compila con el dev levantado:
+desarrollo sirviendo 404 en `main-app.js`. Para comprobar que el panel compila con el dev levantado,
+**desde la raíz del monorepo**:
 
 ```bash
-NEXT_DIST_DIR=.next-verify npx next build
+NEXT_DIST_DIR=.next-verify npx turbo run build
 ```
+
+⚠️ **`turbo run build`, no `next build` a secas.** Ejecutado dentro de `apps/admin-panel`, `next
+build` resuelve `@copper/database` por el `dist/` ya compilado y no vuelve a leer `src/types.ts`:
+un tipo desactualizado pasa la verificación local y **rompe en Vercel**, que sí recompila el
+paquete. Ya ocurrió con `conceptos_cobro.activo`.
+
+⚠️ **`NEXT_DIST_DIR` reescribe `next-env.d.ts`** para apuntar a `.next-verify`. Ese cambio no debe
+committearse; revísalo con `git status` al terminar y descártalo.

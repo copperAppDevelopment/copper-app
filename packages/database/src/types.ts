@@ -1772,6 +1772,7 @@ export type Database = {
       }
       conceptos_cobro: {
         Row: {
+          activo: boolean
           aplica_descuento: boolean
           codigo: string
           conjunto_id: string
@@ -1785,6 +1786,7 @@ export type Database = {
           valor: number
         }
         Insert: {
+          activo?: boolean
           aplica_descuento?: boolean
           codigo: string
           conjunto_id: string
@@ -1798,6 +1800,7 @@ export type Database = {
           valor?: number
         }
         Update: {
+          activo?: boolean
           aplica_descuento?: boolean
           codigo?: string
           conjunto_id?: string
