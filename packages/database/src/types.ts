@@ -5431,6 +5431,127 @@ export type Database = {
           },
         ]
       }
+      vista_cobros_manuales: {
+        Row: {
+          cargos: number | null
+          con_pagos: number | null
+          concepto_codigo: string | null
+          concepto_id: string | null
+          concepto_nombre: string | null
+          conjunto_id: string | null
+          generado_en: string | null
+          periodo: string | null
+          total: number | null
+          vence_el: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cargos_concepto_fk"
+            columns: ["concepto_id"]
+            isOneToOne: false
+            referencedRelation: "conceptos_cobro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_concepto_fk"
+            columns: ["concepto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_saldos_por_concepto_residente"
+            referencedColumns: ["concepto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "conjuntos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_configuracion_actual"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashbard_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_editar_conjunto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_administracion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_con_suscripcion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_seleccion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+        ]
+      }
       vista_configuracion_actual: {
         Row: {
           configuracion_id: string | null
@@ -8410,7 +8531,10 @@ export type Database = {
           p_periodo: string
           p_valor: number
         }
-        Returns: number
+        Returns: {
+          apartamentos: number
+          creados: number
+        }[]
       }
       crear_cobro_solicitud: {
         Args: {
@@ -8676,6 +8800,17 @@ export type Database = {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
+      revertir_cobro_manual: {
+        Args: {
+          p_concepto_codigo: string
+          p_conjunto_id: string
+          p_periodo: string
+        }
+        Returns: {
+          bloqueados: number
+          eliminados: number
+        }[]
+      }
       text_to_bytea: { Args: { data: string }; Returns: string }
       urlencode:
         | { Args: { data: Json }; Returns: string }
@@ -8707,7 +8842,7 @@ export type Database = {
       solicitud_tipo_enum:
         | "Mantenimiento"
         | "Seguridad"
-        | "Administraci├│n"
+        | "Administración"
         | "Parqueaderos"
         | "Otros"
       tipo_comunicado_enum: "Comunicado" | "Reporte"
@@ -8874,7 +9009,7 @@ export const Constants = {
       solicitud_tipo_enum: [
         "Mantenimiento",
         "Seguridad",
-        "Administraci├│n",
+        "Administración",
         "Parqueaderos",
         "Otros",
       ],

@@ -224,10 +224,10 @@ En la base de datos:
 
 - **`reportes_legacy`** — resto de la fusión de `reportes` en `comunicados`. Conserva 9 filas de
   prueba sin `conjunto_id` que no se pudieron migrar. Nada la lee ni la escribe; se puede borrar.
-- **`crear_cobro_manual`** — en la rama de un solo apartamento devuelve `1` fijo, sin mirar si el
-  `on conflict … do nothing` insertó algo. Reporta éxito cuando el cargo ya existía. Los cobros de
-  solicitudes no la usan (van por `crear_cobro_solicitud`, que sí distingue creado de existente),
-  pero el resto de llamantes sigue expuesto.
+- **Permisos de tabla de `anon` y `authenticated`** — con RLS desactivada, ambos roles conservan
+  `INSERT`/`UPDATE`/`DELETE` sobre todas las tablas, `cargos_mensuales` incluida. Cerrar las RPC
+  una a una no lo arregla: mientras esto siga así, la única frontera real es que nadie use la anon
+  key a mano. Es la deuda de seguridad más grande que queda.
 - **Aislamiento del bucket `chat_files`** — ya no es público, pero sus políticas dan acceso a
   cualquier usuario `authenticated`, así que quien adivine la ruta de un adjunto puede firmarlo.
   Para cerrarlo del todo hay que subir a `chat_id/archivo` y escribir una política por pertenencia
@@ -294,6 +294,38 @@ formato es `periodoActual()` en `lib/conceptos.ts`, y en la base `crear_cobro_so
 
 Deuda conocida: `valor_final` se guarda igual a `valor_base` sin restar `valor_descuento`, así que
 el descuento por pronto pago se calcula pero no se aplica al total del cargo.
+
+### Cobros extras
+
+El modal del sidebar genera cargos sueltos —una multa, una cuota extraordinaria— con la RPC
+`crear_cobro_manual`, a un apartamento o a todo el conjunto, y permite deshacerlos con
+`revertir_cobro_manual`. Ambas están restringidas a `service_role`: con RLS desactivada y la anon
+key viajando en el bundle, dejarlas abiertas permitía a cualquiera generar cargos en el conjunto que
+quisiera.
+
+⚠️ **Cobrar a mano un concepto recurrente apaga el cron para ese mes.**
+`generar_cargos_mensuales` decide qué facturar con un `not exists` sobre
+*(apartamento, concepto, periodo)* **sin mirar `origen`**. Verificado: con un cargo manual de
+`ADMIN` para un periodo, el cron generó 71 de las 72 administraciones de Lusitania y saltó
+justamente ese apartamento, que se quedó con el valor escrito a mano. Con `MORA` pasa lo mismo con
+los intereses. El modal lo avisa en la confirmación; no lo bloquea, porque a veces es lo que se
+quiere.
+
+Otras cosas que no son obvias:
+
+- **`crear_cobro_manual` devuelve `(creados, apartamentos)`**, y la ruta deriva de ahí los
+  omitidos. Antes tenía dos ramas y la de un solo apartamento hacía `v_count := 1` fijo sin mirar
+  el `on conflict do nothing`: informaba de éxito con el cargo ya existente. Ahora hay un solo
+  `insert` y un solo `get diagnostics`, así que no queda ningún camino que pueda mentir.
+- **El vencimiento por defecto es el último día del periodo**, igual que el del cron, y no da
+  igual: `aplicar_recaudo` reparte cada pago entre los cargos pendientes
+  `order by fecha_vencimiento`, así que una fecha arbitraria colaría el cobro nuevo por delante de
+  deudas más antiguas.
+- **La reversión nunca borra un cargo con pagos aplicados.** `cargos_recaudos.cargo_id` es
+  `ON DELETE CASCADE`: borrarlo se llevaría el registro de aplicación y el dinero del recaudo
+  desaparecería del estado de cuenta. Esos se cuentan aparte y se informan.
+- **Los residentes no se enteran**: `cargos_mensuales` no tiene ningún trigger de notificación. Si
+  el cobro hay que anunciarlo, va un comunicado aparte; el modal lo recuerda al terminar.
 
 ### Suscripciones
 
