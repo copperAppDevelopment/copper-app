@@ -235,6 +235,13 @@ En la base de datos:
 - **Puente `documento ?? cedula`** — `users.cedula` se renombró a `documento`, pero
   `api/v1/residents/profile` acepta los dos nombres para que la app publicada pueda seguir
   guardando. Se retira cuando salga una build nueva del móvil.
+- **`conjuntos.estado`** — columna de texto muerta desde que `activo` es la fuente de verdad. Sigue
+  ahí con valores incoherentes (`'Activo'` y un `'true'` que dejó el webhook viejo). Se borra
+  cuando se confirme que ninguna vista la expone.
+- **Edge functions `create-wompi-payment` y `wompi-webhook`** — reemplazadas por
+  `/api/v1/pagos/*` pero **siguen desplegadas y activas**. Retíralas desde el dashboard en cuanto
+  valides el flujo nuevo; mientras la URL del webhook apunte a la vieja, los eventos van al código
+  roto.
 
 ### Auth: códigos de 6 dígitos
 
@@ -293,6 +300,54 @@ fila**. Ese es el motivo de que estos vocabularios sean enums y no texto libre.
 ⚠️ **`bloqueada` es hoy solo informativo**: se muestra en «Mis conjuntos» pero no corta ningún
 acceso. El sitio donde poner el corte, cuando se decida la política, es
 `api/v1/auth/register/route.ts`, que ya consulta la suscripción del conjunto.
+
+### Pagos de suscripción (Wompi)
+
+El cobro vive en el panel, no en Supabase: `POST /api/v1/pagos/crear` abre la transacción y
+`POST /api/v1/pagos/webhook` la resuelve. La lógica común (firmas, periodos) está en
+[`lib/wompi.ts`](apps/admin-panel/lib/wompi.ts) y el vocabulario en
+[`lib/conjuntos.ts`](apps/admin-panel/lib/conjuntos.ts).
+
+Se migró desde las edge functions `create-wompi-payment` y `wompi-webhook` para poder **alternar
+sandbox y producción con variables de entorno**: en Supabase las llaves eran secretos de la función
+y cambiarlas obligaba a redesplegar, así que no había forma de probar un cobro sin tocar producción.
+
+| Variable | Para qué |
+|---|---|
+| `WOMPI_PUBLIC_KEY` | Llave pública (`pub_test_…` o `pub_prod_…`) |
+| `WOMPI_INTEGRITY_SECRET` | Firma de integridad del checkout |
+| `WOMPI_EVENTS_SECRET` | Firma de los eventos del webhook |
+| `WOMPI_CHECKOUT_URL` | `https://checkout.wompi.co/p/`; se cambia para apuntar a sandbox |
+| `APP_BASE_URL` | A dónde vuelve el navegador tras pagar |
+
+Para probar en sandbox basta con poner las llaves de prueba en `apps/admin-panel/.env.local`, que
+pisa a `.env` y no se versiona. **Ojo: una variable escrita ahí en blanco anula la de `.env`**;
+si no la vas a usar, borra la línea en vez de dejarla vacía.
+
+⚠️ **La URL del webhook hay que cambiarla en el panel de Wompi** a
+`{APP_BASE_URL}/api/v1/pagos/webhook`. Mientras siga apuntando a la edge function, los eventos
+llegan al código viejo, que además está roto: escribía `estado: 'Activa'` y el enum
+`estado_suscripcion` solo admite minúsculas.
+
+Detalles que no son obvios:
+
+- **El webhook es la única ruta pública que escribe.** No hay sesión que validar: la autenticidad la
+  da exclusivamente la firma del evento, y sin `WOMPI_EVENTS_SECRET` configurado rechaza todo.
+- **Idempotencia por `pagos.estado`**, que es el enum `estado_pago` (`pendiente`, `aprobado`,
+  `rechazado`, `expirado`). Un pago ya resuelto no vuelve a crear ni extender nada. Antes era texto
+  libre, con el mismo riesgo de mayúsculas que tenía `suscripciones.estado`.
+- **`conjuntos.activo` es la única fuente de verdad.** La columna `conjuntos.estado` es texto y está
+  muerta: el webhook viejo le escribía un booleano y dejó la cadena `'true'` en Salamanca. Nadie
+  vuelve a escribirla; se puede borrar cuando se confirme que ninguna vista la expone.
+- **Un conjunto nuevo nace inactivo** y lo activa el webhook al aprobarse el pago. Por eso
+  `vista_mis_conjuntos_administracion` ya **no** filtra por `activo = true`: si lo hiciera, el
+  conjunto pendiente de pago sería invisible justo cuando hay que enseñarlo.
+- **`trg_crear_conceptos_default` ya inserta ADMIN y MORA** al dar de alta el conjunto. La ruta de
+  creación solo añade `admins_conjuntos` (con `es_propietario`) y `conjuntos_configuracion`, que sí
+  faltarían.
+- **El QR del conjunto es el UUID en texto plano**, sin prefijo ni JSON: el escáner de
+  `apps/mobile-residents/app/register.tsx` mete lo leído tal cual en el campo del conjunto, así que
+  cualquier envoltorio rompe el registro de residentes.
 
 ### Verificar el build sin romper el dev server
 

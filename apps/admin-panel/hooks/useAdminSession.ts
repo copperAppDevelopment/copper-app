@@ -7,6 +7,8 @@ import { getConjuntoSeleccionado } from "../lib/conjunto";
 
 export interface AdminSession {
   loading: boolean;
+  /** El uid de Supabase Auth, que es también `users.id` y `admins_conjuntos.user_id`. */
+  userId: string;
   userEmail: string;
   conjuntoId: string;
   conjuntoNombre: string;
@@ -22,6 +24,7 @@ export interface AdminSession {
 export function useAdminSession(): AdminSession {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [conjuntoId, setConjuntoId] = useState("");
   const [conjuntoNombre, setConjuntoNombre] = useState("");
@@ -62,6 +65,7 @@ export function useAdminSession(): AdminSession {
 
       if (cancelado) return;
 
+      setUserId(session.user.id);
       setUserEmail(session.user.email || "");
       setConjuntoId(conjunto.id);
       setConjuntoNombre(conjunto.nombre);
@@ -73,5 +77,5 @@ export function useAdminSession(): AdminSession {
     return () => { cancelado = true; };
   }, [router]);
 
-  return { loading, userEmail, conjuntoId, conjuntoNombre, hasMultipleConjuntos };
+  return { loading, userId, userEmail, conjuntoId, conjuntoNombre, hasMultipleConjuntos };
 }

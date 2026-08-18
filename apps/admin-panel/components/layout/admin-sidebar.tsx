@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
-  Bell, RefreshCw, DollarSign, MessageSquare
+  Bell, RefreshCw, DollarSign, MessageSquare, Landmark
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
@@ -22,6 +22,7 @@ export type AdminSection =
   | "comunicados"
   | "chats"
   | "reportes"
+  | "conjuntos"
   | "configuracion"
   | "perfil";
 
@@ -53,6 +54,7 @@ const navItems: NavItem[] = [
   { section: "chats", label: "Chats", href: "/admin/chats", llevaNoLeidos: true, icon: <MessageSquare className="w-5 h-5" /> },
   // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
   { section: "reportes", label: "Solicitudes / PQRs", href: "/admin/solicitudes", icon: <FileText className="w-5 h-5" /> },
+  { section: "conjuntos", label: "Mis conjuntos", href: "/admin/conjuntos", icon: <Landmark className="w-5 h-5" /> },
   { section: "configuracion", label: "Configuración", href: null, icon: <Settings className="w-5 h-5" /> },
 ];
 
@@ -149,7 +151,9 @@ export function AdminSidebar({
           <button
             onClick={() => router.push("/admin/perfil")}
             aria-current={active === "perfil" ? "page" : undefined}
-            className={`w-full flex items-center gap-2 p-2 -m-2 rounded-xl transition-colors cursor-pointer ${
+            /* `-mx-2` y no `-m-2`: en vertical se comía el hueco que `space-y-3` deja
+               para el botón de cerrar sesión. */
+            className={`w-full flex items-center gap-2 p-2 -mx-2 rounded-xl transition-colors cursor-pointer ${
               active === "perfil"
                 ? "bg-brand/10"
                 : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
