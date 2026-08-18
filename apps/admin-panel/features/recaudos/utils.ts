@@ -13,10 +13,9 @@ export function estadoDe(r: Recaudo): FiltroEstado {
 }
 
 /**
- * Periodo por defecto en el formato de `recaudos`: 'YYYY/M', sin cero a la izquierda.
- * Distinto del 'YYYY-MM' de `cargos_mensuales`: nunca compararlos directamente.
+ * Antes esto producía 'YYYY/M' mientras `cargos_mensuales` usaba 'YYYY-MM'. El cálculo de
+ * mora compara periodos como texto, y '-' ordena antes que '/', así que los cargos con
+ * barra nunca contaban como periodo anterior y su saldo no generaba intereses. Un solo
+ * formato en todo el sistema.
  */
-export function periodoActual(): string {
-  const hoy = new Date();
-  return `${hoy.getFullYear()}/${hoy.getMonth() + 1}`;
-}
+export { periodoActual } from "@/lib/conceptos";

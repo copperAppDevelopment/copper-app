@@ -99,7 +99,7 @@ export function CargaMasivaModal({
           <Input
             id="cargar-periodo"
             label="Periodo"
-            placeholder="2026/6"
+            placeholder="2026-06"
             value={periodo}
             onChange={(e) => setPeriodo(e.target.value)}
             helperText="Se guarda en cada recaudo del archivo."

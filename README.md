@@ -260,6 +260,25 @@ mano desde el cliente.
 | `solicitud_tipo_enum` | el selector de `CreateRequestModal.tsx` | `lib/solicitudes.ts` (`TIPOS`) |
 | `chat_estado_enum` | `useChats` inserta `'Activo'`; `useChatRoom` compara `'Finalizado'` | `lib/chats.ts` (`ESTADOS_CHAT`) |
 
+### Facturación mensual
+
+`generar_cargos_mensuales` (cron `generar-cargos`, día 1 de cada mes) genera un cargo a **todos los
+apartamentos** por cada concepto con `es_recurrente = true`, `tipo_calculo = 'fijo'` y
+`activo = true`. **No filtra por código**: cualquier concepto que cumpla esas tres condiciones entra
+en la facturación, así que crear uno mal configurado factura a todo el conjunto.
+
+`ADMIN` y `MORA` son estructurales y el trigger `trg_proteger_conceptos` impide renombrarlos,
+desactivarlos o borrarlos: `MORA` lo busca la función **por código literal**, así que renombrarlo
+apagaría el cálculo de intereses en silencio.
+
+**El periodo es siempre `YYYY-MM`.** La mora compara periodos como texto (`cm.periodo < p_periodo`),
+y `-` (0x2D) ordena antes que `/` (0x2F): mientras convivieron `2026-08` y `2026/4`, los cargos con
+barra nunca contaban como periodo anterior y **su saldo no generaba intereses**. La única fuente del
+formato es `periodoActual()` en `lib/conceptos.ts`, y en la base `crear_cobro_solicitud`.
+
+Deuda conocida: `valor_final` se guarda igual a `valor_base` sin restar `valor_descuento`, así que
+el descuento por pronto pago se calcula pero no se aplica al total del cargo.
+
 ### Suscripciones
 
 `suscripciones.estado` es el enum `estado_suscripcion` (`activa`, `proxima`, `vencida`,
