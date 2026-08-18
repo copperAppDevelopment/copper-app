@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
-  Bell, RefreshCw, DollarSign, MessageSquare, Landmark
+  Bell, RefreshCw, DollarSign, MessageSquare, Landmark, Building
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
@@ -17,6 +17,7 @@ import { GenerarComunicadoModal } from "../../features/comunicados/components/Ge
 export type AdminSection =
   | "dashboard"
   | "apartamentos"
+  | "torres"
   | "residentes"
   | "recaudos"
   | "comunicados"
@@ -48,6 +49,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { section: "dashboard", label: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
   { section: "apartamentos", label: "Apartamentos", href: "/admin/apartamentos", icon: <Building2 className="w-5 h-5" /> },
+  { section: "torres", label: "Torres", href: "/admin/torres", icon: <Building className="w-5 h-5" /> },
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
   { section: "comunicados", label: "Comunicados", href: null, abreModal: true, icon: <Bell className="w-5 h-5" /> },

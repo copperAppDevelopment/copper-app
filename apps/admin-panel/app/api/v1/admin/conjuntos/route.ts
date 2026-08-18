@@ -3,6 +3,7 @@ import { getAuthUser } from '@/lib/auth';
 import { esAdminDeConjunto } from '@/lib/adminAuth';
 import { ok, fail } from '@/lib/apiHandler';
 import { TIPOS_VIVIENDA } from '@/lib/conjuntos';
+import { crearTorresDeConjunto, leerBorradores, motivoInvalido } from '@/lib/torresServidor';
 
 const BUCKET = 'Conjunto';
 const MIMES_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
@@ -54,24 +55,69 @@ export async function POST(req: Request) {
       return fail('El tipo de vivienda no es válido', 400);
     }
 
+    const borradores = leerBorradores(texto(form, 'torres'));
+    // Si vienen torres el conjunto se organiza por torres, diga lo que diga la casilla.
+    const tieneTorres = texto(form, 'tiene_torres') === 'true' || borradores.length > 0;
+
+    if (borradores.length > 0) {
+      // Se valida antes de insertar nada, para que el caso normal no llegue a un fallo
+      // a medias con el conjunto ya creado.
+      const invalido = motivoInvalido(borradores);
+      if (invalido) return fail(invalido, 400);
+
+      if (esEdicion) {
+        return fail('Las torres de un conjunto existente se gestionan desde Torres', 400);
+      }
+    }
+
     const campos: Record<string, unknown> = {
       nombre,
       direccion,
       tipo_vivienda: tipoVivienda,
-      ciudad: texto(form, 'ciudad') || null,
       estrato: entero(form, 'estrato'),
       anio_construccion: entero(form, 'anio_construccion'),
-      tiene_torres: texto(form, 'tiene_torres') === 'true',
+      tiene_torres: tieneTorres,
       updated_at: new Date().toISOString(),
     };
 
-    // `codigo_municipio` es NOT NULL. Al editar solo se toca si viene, para no borrar el
-    // código DANE de un conjunto que ya lo tenía.
+    // `codigo_municipio` es NOT NULL y tiene FK a `ubicaciones`. Se valida contra el
+    // catálogo para dar un 400 legible en vez de un 500 por violación de clave foránea, y
+    // de paso `ciudad` sale de la fila del catálogo: hay 66 nombres de municipio repetidos
+    // entre departamentos, así que el nombre que mande el cliente no es fiable.
+    // Al editar solo se toca si viene, para no borrar el código de un conjunto que ya lo
+    // tenía.
     const codigoMunicipio = texto(form, 'codigo_municipio');
     if (codigoMunicipio) {
-      campos.codigo_municipio = codigoMunicipio;
+      const { data: ubicacion } = await supabaseAdmin
+        .from('ubicaciones')
+        .select('codigo_municipio, nombre_municipio')
+        .eq('codigo_municipio', codigoMunicipio)
+        .maybeSingle();
+
+      if (!ubicacion) {
+        return fail('La ciudad seleccionada no existe en el catálogo', 400);
+      }
+
+      campos.codigo_municipio = ubicacion.codigo_municipio;
+      campos.ciudad = ubicacion.nombre_municipio;
     } else if (!esEdicion) {
-      return fail('El código DANE del municipio es obligatorio', 400);
+      return fail('Hay que elegir el departamento y la ciudad', 400);
+    }
+
+    // Desmarcar la casilla en un conjunto que ya tiene torres dejaría un estado
+    // incoherente: la vista seguiría enseñándolas y nada las gestionaría.
+    if (esEdicion && !tieneTorres) {
+      const { count } = await supabaseAdmin
+        .from('torres')
+        .select('id', { count: 'exact', head: true })
+        .eq('conjunto_id', conjuntoId);
+
+      if ((count ?? 0) > 0) {
+        return fail(
+          `El conjunto tiene ${count} torres. Elimínalas desde Torres antes de desmarcar la casilla.`,
+          409
+        );
+      }
     }
 
     const foto = form.get('foto');
@@ -143,7 +189,15 @@ export async function POST(req: Request) {
       conjunto_id: creado.id,
     } as any);
 
-    return ok({ conjunto_id: creado.id }, 201);
+    // Las torres viajan en el mismo POST y se crean aquí: hacerlo desde el cliente tras
+    // recibir el id dejaría una ventana con el conjunto sin torres y el modal ya cerrado,
+    // sin dónde reintentar. Un fallo aquí no anula el alta —el conjunto ya existe y la
+    // foto está subida—: se informa de cuáles quedaron fuera.
+    const torres = borradores.length
+      ? await crearTorresDeConjunto(creado.id, borradores)
+      : { creadas: 0, fallidas: [] };
+
+    return ok({ conjunto_id: creado.id, torres }, 201);
   } catch (error: any) {
     console.error('Error en POST /api/v1/admin/conjuntos:', error);
     return fail(error?.message || 'Error interno del servidor', 500);

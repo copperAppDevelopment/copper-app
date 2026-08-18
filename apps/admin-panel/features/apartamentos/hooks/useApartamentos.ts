@@ -61,7 +61,9 @@ export function useApartamentos(conjuntoId: string, sesionCargando: boolean) {
 
   const tabla = useTablaLocal(filtrados, {
     pageSize: PAGE_SIZE,
-    sortInicial: "numero_apartamento_num",
+    // Por la clave compuesta y no por `numero_apartamento_num`: ese campo vale 101 tanto
+    // para `A-101` como para `B-101` y mezclaría las torres.
+    sortInicial: "clave_orden",
     ordenInicial: "asc",
   });
 

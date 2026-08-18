@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useTablaLocal } from "@/hooks/useTablaLocal";
-import { listarOpcionesApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
+import { listarOpcionesApartamento, etiquetaApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
 import * as api from "../api";
 import { totalAplicado, estadoDe } from "../utils";
 import type {
@@ -121,7 +121,7 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
 
   const opcionesApartamento = [
     { value: "", label: "Selecciona un apartamento" },
-    ...apartamentos.map(a => ({ value: a.id, label: a.numero_apartamento })),
+    ...apartamentos.map(a => ({ value: a.id, label: etiquetaApartamento(a) })),
   ];
 
   return {

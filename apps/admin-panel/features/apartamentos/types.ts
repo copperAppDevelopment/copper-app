@@ -11,6 +11,12 @@ export interface Apartamento {
   ocupado: boolean;
   torre_id: string | null;
   torres: { nombre: string } | null;
+  torre_pisos: { piso: number } | null;
+  /**
+   * Torre + piso + número, para que dos torres no salgan entremezcladas: `A-101` y
+   * `B-101` comparten `numero_apartamento_num`. La calcula `claveOrden` en `lib/`.
+   */
+  clave_orden: string;
 }
 
 export interface DetalleApt {

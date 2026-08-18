@@ -49,6 +49,11 @@ export interface ConjuntoDetalle {
 export interface DatosConjunto {
   nombre: string;
   direccion: string;
+  /**
+   * Solo informativa: no se envía. El servidor la deriva del municipio elegido, porque
+   * hay 66 nombres repetidos entre departamentos y el par código→nombre solo es fiable
+   * en el catálogo.
+   */
   ciudad: string;
   codigo_municipio: string;
   tipo_vivienda: string;

@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { postConAuth } from "@/lib/apiClient";
+import { claveOrden } from "@/lib/apartamentos";
 import type {
   Apartamento, Torre, DetalleApt, ResidenteApt, Indicadores, Movimiento,
 } from "./types";
@@ -11,12 +12,21 @@ import type {
 export async function listarApartamentos(conjuntoId: string): Promise<Apartamento[]> {
   const { data, error } = await supabase
     .from("apartamentos")
-    .select("id, numero_apartamento, numero_apartamento_num, direccion, ocupado, torre_id, torres(nombre)")
+    .select("id, numero_apartamento, numero_apartamento_num, direccion, ocupado, torre_id, torres(nombre), torre_pisos(piso)")
     .eq("conjunto_id", conjuntoId)
     .order("numero_apartamento_num", { ascending: true });
 
   if (error) throw error;
-  return (data as unknown as Apartamento[]) || [];
+
+  return ((data as any[]) || []).map(fila => ({
+    ...fila,
+    clave_orden: claveOrden(
+      fila.torres?.nombre ?? null,
+      fila.torre_pisos?.piso ?? null,
+      fila.numero_apartamento_num,
+      fila.numero_apartamento
+    ),
+  })) as Apartamento[];
 }
 
 /** El selector de torre solo tiene sentido si el conjunto está organizado por torres. */

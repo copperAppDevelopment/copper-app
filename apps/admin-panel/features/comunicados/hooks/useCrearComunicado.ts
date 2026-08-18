@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from "react";
-import { listarOpcionesApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
+import { listarOpcionesApartamento, etiquetaApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
 import * as api from "../api";
 import { MAX_BYTES_ADJUNTO, MIMES_PERMITIDOS } from "../types";
 import type { NuevoComunicado, TipoComunicado } from "../types";
@@ -122,7 +122,7 @@ export function useCrearComunicado(conjuntoId: string, abierto: boolean) {
 
   const opcionesApartamento = [
     { value: "", label: "Todo el conjunto" },
-    ...apartamentos.map(a => ({ value: a.id, label: a.numero_apartamento })),
+    ...apartamentos.map(a => ({ value: a.id, label: etiquetaApartamento(a) })),
   ];
 
   return {

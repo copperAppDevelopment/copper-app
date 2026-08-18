@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       admins_conjuntos: {
@@ -4184,6 +4209,7 @@ export type Database = {
           id: string
           nombre: string
           num_pisos: number | null
+          prefijo: string | null
           total_apartamentos: number | null
           updated_at: string | null
         }
@@ -4194,6 +4220,7 @@ export type Database = {
           id?: string
           nombre: string
           num_pisos?: number | null
+          prefijo?: string | null
           total_apartamentos?: number | null
           updated_at?: string | null
         }
@@ -4204,6 +4231,7 @@ export type Database = {
           id?: string
           nombre?: string
           num_pisos?: number | null
+          prefijo?: string | null
           total_apartamentos?: number | null
           updated_at?: string | null
         }
@@ -6446,7 +6474,7 @@ export type Database = {
           admin_user_id: string | null
           conjunto_id: string | null
           created_at: string | null
-          estado_pago: string | null
+          estado_pago: Database["public"]["Enums"]["estado_pago"] | null
           estado_suscripcion:
             | Database["public"]["Enums"]["estado_suscripcion"]
             | null
@@ -7577,7 +7605,7 @@ export type Database = {
       vista_pagos_detalle: {
         Row: {
           conjunto_id: string | null
-          estado_pago: string | null
+          estado_pago: Database["public"]["Enums"]["estado_pago"] | null
           estado_suscripcion:
             | Database["public"]["Enums"]["estado_suscripcion"]
             | null
@@ -8359,6 +8387,18 @@ export type Database = {
         }
         Returns: undefined
       }
+      agregar_pisos_a_torre: {
+        Args: {
+          p_aptos_por_piso: number
+          p_pisos_nuevos: number
+          p_torre_id: string
+        }
+        Returns: number
+      }
+      ajustar_apartamentos_de_piso: {
+        Args: { p_aptos_objetivo: number; p_torre_piso_id: string }
+        Returns: Json
+      }
       aplicar_recaudo: { Args: { p_recaudo_id: string }; Returns: undefined }
       bytea_to_text: { Args: { data: string }; Returns: string }
       crear_cobro_manual: {
@@ -8393,6 +8433,17 @@ export type Database = {
         }
         Returns: undefined
       }
+      crear_torre_con_pisos: {
+        Args: {
+          p_aptos_por_piso: number
+          p_conjunto_id: string
+          p_direccion_base?: string
+          p_nombre: string
+          p_num_pisos: number
+          p_prefijo: string
+        }
+        Returns: string
+      }
       crear_visita: {
         Args: {
           p_apartamento_id: string
@@ -8404,6 +8455,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      eliminar_torre_si_vacia: { Args: { p_torre_id: string }; Returns: number }
       estado_suscripcion_por_fecha: {
         Args: { p_fecha_fin: string }
         Returns: Database["public"]["Enums"]["estado_suscripcion"]
@@ -8655,7 +8707,7 @@ export type Database = {
       solicitud_tipo_enum:
         | "Mantenimiento"
         | "Seguridad"
-        | "Administración"
+        | "Administraci├│n"
         | "Parqueaderos"
         | "Otros"
       tipo_comunicado_enum: "Comunicado" | "Reporte"
@@ -8802,10 +8854,13 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       chat_estado_enum: ["Activo", "Finalizado"],
-      estado_pago: ["pendiente", "aprobado", "rechazado", "reembolsado"],
+      estado_pago: ["pendiente", "aprobado", "rechazado", "expirado"],
       estado_suscripcion: ["activa", "proxima", "vencida", "bloqueada"],
       estado_visita_enum: ["pendiente", "aprobado", "rechazado"],
       solicitud_estado_enum: [
@@ -8819,7 +8874,7 @@ export const Constants = {
       solicitud_tipo_enum: [
         "Mantenimiento",
         "Seguridad",
-        "Administración",
+        "Administraci├│n",
         "Parqueaderos",
         "Otros",
       ],

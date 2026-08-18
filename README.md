@@ -238,6 +238,15 @@ En la base de datos:
 - **`conjuntos.estado`** — columna de texto muerta desde que `activo` es la fuente de verdad. Sigue
   ahí con valores incoherentes (`'Activo'` y un `'true'` que dejó el webhook viejo). Se borra
   cuando se confirme que ninguna vista la expone.
+- **`unique (conjunto_id, numero_apartamento)`** — sigue sin existir porque ya hay un grupo
+  duplicado en producción y el índice fallaría. Mientras tanto la unicidad la defienden los
+  índices de nombre y prefijo de `torres` y la comprobación de colisión de
+  `crear_torre_con_pisos`.
+- **RPC `agregar_o_actualizar_piso` y `generar_pisos_y_apartamentos`** — restos de
+  FlutterFlow, sin llamantes. Se les retiró el `execute` de `anon` y `authenticated`: la
+  primera hacía `delete from apartamentos` de un piso entero, y con RLS desactivada
+  cualquiera con la anon key podía vaciar su contabilidad. Se pueden borrar cuando se
+  confirme que nada externo las invoca.
 - **Edge functions `create-wompi-payment` y `wompi-webhook`** — reemplazadas por
   `/api/v1/pagos/*` pero **siguen desplegadas y activas**. Retíralas desde el dashboard en cuanto
   valides el flujo nuevo; mientras la URL del webhook apunte a la vieja, los eventos van al código
@@ -348,6 +357,62 @@ Detalles que no son obvios:
 - **El QR del conjunto es el UUID en texto plano**, sin prefijo ni JSON: el escáner de
   `apps/mobile-residents/app/register.tsx` mete lo leído tal cual en el campo del conjunto, así que
   cualquier envoltorio rompe el registro de residentes.
+
+### Torres y numeración de apartamentos
+
+Un conjunto puede organizarse por torres (`conjuntos.tiene_torres`). Entonces sus
+apartamentos se generan desde `/admin/torres`, o desde el propio alta del conjunto, y **no**
+con la generación masiva de Apartamentos, que es para conjuntos sin torres.
+
+**La numeración es `PREFIJO-<piso·100 + índice>`**: `A-101`, `A-102`, `A-201`. El prefijo
+se guarda en `torres.prefijo` y no se deriva del nombre: «Torre A» daría `A`, pero «Bloque
+Norte» no daría nada, y el prefijo se vuelve a necesitar al añadir pisos meses después.
+La fórmula está en [`lib/torres.ts`](apps/admin-panel/lib/torres.ts) y repetida en la RPC
+`crear_torre_con_pisos`; **cambiar una obliga a cambiar la otra**, y el formulario enseña
+una vista previa justamente para que la discrepancia no se descubra con 200 apartamentos
+ya creados.
+
+Cuatro RPC sostienen el módulo, todas con `execute` restringido a `service_role`:
+`crear_torre_con_pisos`, `agregar_pisos_a_torre`, `ajustar_apartamentos_de_piso` y
+`eliminar_torre_si_vacia`. Las tres primeras son `SECURITY DEFINER` y hacen torre, pisos y
+apartamentos en una sola transacción: en dos pasos, un fallo dejaría una torre sin pisos y
+el reintento chocaría contra `UNIQUE (torre_id, piso)`.
+
+Cosas que no son obvias:
+
+- **`numero_apartamento_num` no distingue torres.** El trigger
+  `set_numero_apartamento_num` guarda el número quitando lo no numérico, así que `A-101` y
+  `B-101` valen ambos `101`. Ordenar por esa columna mezcla las torres. El orden real lo da
+  `claveOrden()` de [`lib/apartamentos.ts`](apps/admin-panel/lib/apartamentos.ts) —torre,
+  piso, número— calculada en el cliente, porque PostgREST no ordena las filas padre por una
+  columna embebida. Los selectores de recaudos, comunicados y residentes usan
+  `etiquetaApartamento()`, que añade la torre: cobrarle a «101» con dos torres es una
+  lotería.
+- **Reducir los apartamentos de un piso solo retira los vacíos.** Las FK hacia
+  `apartamentos` son CASCADE desde `cargos_mensuales`, `recaudos`, `comunicados`, `envios`
+  y `visitas`: borrar un apartamento se lleva su facturación. `ajustar_apartamentos_de_piso`
+  aborta si alguno de los sobrantes tiene residentes, cargos, recaudos o historial.
+- **Eliminar una torre exige que esté vacía**, y la comprobación vive dentro de la RPC:
+  `apartamentos.torre_id` es `ON DELETE SET NULL`, así que un `delete` a pelo **no falla**,
+  solo deja los apartamentos huérfanos.
+- **`torres.total_apartamentos` y `torres.aptos_por_piso` no son de fiar.** No los mantiene
+  ningún trigger. La UI lee `vista_gestion_torres`, que cuenta en vivo. Y para saber por
+  qué piso seguir se usa `max(piso)` de `torre_pisos`, nunca `torres.num_pisos`.
+
+### Ubicaciones: departamento y ciudad
+
+`conjuntos.codigo_municipio` tiene **FK a `ubicaciones`**, el catálogo DANE con los 1.122
+municipios del país. El formulario de conjunto los elige con dos desplegables encadenados;
+antes era un campo de texto y un código mal tecleado daba un 500 por violación de FK.
+
+- **Todo es texto, nunca número.** Medellín es `05001` y su departamento `05`: un
+  `Number()` los convierte en `5001` y `5` y rompe la clave foránea.
+- **`ciudad` la deriva el servidor** del código elegido, no el cliente: hay 66 nombres de
+  municipio repetidos entre departamentos.
+- **Los departamentos salen de `vista_departamentos`.** PostgREST no sabe hacer
+  `select distinct`, y traer las 1.122 filas para agrupar en el cliente choca con su
+  **límite de 1.000, que trunca sin devolver error**: faltarían municipios y no habría ni
+  un aviso. Los municipios se piden filtrados por departamento (el mayor tiene 125).
 
 ### Verificar el build sin romper el dev server
 
