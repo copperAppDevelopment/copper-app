@@ -3,8 +3,9 @@
 import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { useTablaLocal } from "@/hooks/useTablaLocal";
+import { listarOpcionesApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
 import * as api from "../api";
-import type { Residente, ApartamentoOpcion, FiltroEstado, UsuarioExistente } from "../types";
+import type { Residente, FiltroEstado, UsuarioExistente } from "../types";
 
 const PAGE_SIZE = 15;
 
@@ -21,7 +22,7 @@ export function useResidentes(conjuntoId: string, sesionCargando: boolean) {
     try {
       const [lista, aptos] = await Promise.all([
         api.listarResidentes(id),
-        api.listarApartamentos(id),
+        listarOpcionesApartamento(id),
       ]);
       setResidentes(lista);
       setApartamentos(aptos);
@@ -60,7 +61,7 @@ export function useResidentes(conjuntoId: string, sesionCargando: boolean) {
       return (
         (r.nombre_completo || "").toLowerCase().includes(termino) ||
         (r.email || "").toLowerCase().includes(termino) ||
-        (r.cedula || "").toLowerCase().includes(termino)
+        (r.documento || "").toLowerCase().includes(termino)
       );
     });
   }, [residentes, filtro, filtroEstado]);

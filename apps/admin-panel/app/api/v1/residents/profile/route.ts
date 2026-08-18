@@ -70,11 +70,15 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { nombres, apellidos, phone_number, tipo_documento, cedula } = body;
+    const { nombres, apellidos, phone_number, tipo_documento } = body;
+
+    // `cedula` se renombró a `documento`, pero la app publicada sigue mandando el nombre
+    // viejo. Se aceptan los dos hasta que salga una build nueva.
+    const documento = body.documento ?? body.cedula;
 
     // Validación básica
-    if (!nombres || !apellidos || !tipo_documento || !cedula) {
-      return NextResponse.json({ error: 'Faltan campos requeridos (nombres, apellidos, tipo_documento o cedula)' }, { status: 400 });
+    if (!nombres || !apellidos || !tipo_documento || !documento) {
+      return NextResponse.json({ error: 'Faltan campos requeridos (nombres, apellidos, tipo_documento o documento)' }, { status: 400 });
     }
 
     // Actualizar tabla public.users
@@ -85,7 +89,7 @@ export async function PATCH(req: Request) {
         apellidos,
         phone_number: phone_number || null,
         tipo_documento,
-        cedula,
+        documento,
       })
       .eq('id', user.id)
       .select()

@@ -171,7 +171,7 @@ export default function MiPerfilScreen() {
                   apellidos: user?.apellidos,
                   phone_number: user?.phone_number,
                   tipo_documento: user?.tipo_documento || 'CC',
-                  cedula: user?.cedula || '',
+                  documento: user?.documento || '',
                 }}
                 onSave={updateProfile}
                 isSaving={isUpdatingProfile}

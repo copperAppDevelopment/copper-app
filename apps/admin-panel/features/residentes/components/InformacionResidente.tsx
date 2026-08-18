@@ -29,7 +29,7 @@ export function InformacionResidente({ residente }: { residente: ResidenteComple
       >
         <Dato
           label="Documento"
-          valor={`${residente?.tipo_documento ?? ""} ${residente?.cedula ?? ""}`.trim()}
+          valor={`${residente?.tipo_documento ?? ""} ${residente?.documento ?? ""}`.trim()}
         />
         <Dato label="Correo" valor={residente?.email} />
         <Dato label="Teléfono" valor={residente?.phone_number} />

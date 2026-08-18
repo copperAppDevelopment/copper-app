@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from '../../../../../lib/auth';
 import { supabaseAdmin } from '../../../../../lib/supabaseAdmin';
+import { esTipo, TIPOS } from '../../../../../lib/solicitudes';
 
 // 1. GET: Obtiene las solicitudes del residente
 export async function GET(req: Request) {
@@ -69,6 +70,15 @@ export async function POST(req: Request) {
 
     if (!titulo_solicitud || !descripcion || !solicitud_tipo) {
       return NextResponse.json({ error: 'Faltan campos requeridos (titulo_solicitud, descripcion o solicitud_tipo)' }, { status: 400 });
+    }
+
+    // `solicitud_tipo` es un enum en la base: sin esta validación un valor desconocido
+    // se iría en un 500 por error 22P02 en vez de un mensaje útil.
+    if (!esTipo(String(solicitud_tipo))) {
+      return NextResponse.json(
+        { error: `El tipo de solicitud no es válido. Opciones: ${TIPOS.join(', ')}` },
+        { status: 400 }
+      );
     }
 
     // Insertar en la tabla solicitudes

@@ -5,12 +5,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
-  Bell, RefreshCw, DollarSign
+  Bell, RefreshCw, DollarSign, MessageSquare
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
+import { useNoLeidos } from "../../hooks/useNoLeidos";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
+import { GenerarComunicadoModal } from "../../features/comunicados/components/GenerarComunicadoModal";
 
 export type AdminSection =
   | "dashboard"
@@ -18,12 +20,16 @@ export type AdminSection =
   | "residentes"
   | "recaudos"
   | "comunicados"
+  | "chats"
   | "reportes"
-  | "configuracion";
+  | "configuracion"
+  | "perfil";
 
 export interface AdminSidebarProps {
   active: AdminSection;
   userEmail: string;
+  conjuntoId: string;
+  conjuntoNombre?: string;
   hasMultipleConjuntos?: boolean;
 }
 
@@ -32,16 +38,21 @@ interface NavItem {
   label: string;
   href: string | null;
   icon: React.ReactNode;
+  /** No navega: abre un modal desde el propio sidebar. */
+  abreModal?: boolean;
+  /** Muestra el globo de mensajes sin leer. */
+  llevaNoLeidos?: boolean;
 }
 
 const navItems: NavItem[] = [
   { section: "dashboard", label: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
   { section: "apartamentos", label: "Apartamentos", href: "/admin/apartamentos", icon: <Building2 className="w-5 h-5" /> },
-  // Las secciones sin href todavía no tienen ruta: se dejan inertes como estaban.
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
-  { section: "comunicados", label: "Comunicados", href: null, icon: <Bell className="w-5 h-5" /> },
-  { section: "reportes", label: "Reportes / PQRs", href: null, icon: <FileText className="w-5 h-5" /> },
+  { section: "comunicados", label: "Comunicados", href: null, abreModal: true, icon: <Bell className="w-5 h-5" /> },
+  { section: "chats", label: "Chats", href: "/admin/chats", llevaNoLeidos: true, icon: <MessageSquare className="w-5 h-5" /> },
+  // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
+  { section: "reportes", label: "Solicitudes / PQRs", href: "/admin/solicitudes", icon: <FileText className="w-5 h-5" /> },
   { section: "configuracion", label: "Configuración", href: null, icon: <Settings className="w-5 h-5" /> },
 ];
 
@@ -50,10 +61,18 @@ const activeClasses =
 const inactiveClasses =
   "flex items-center gap-3 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:text-white dark:hover:bg-zinc-800 px-4 py-3 rounded-xl text-sm font-semibold transition-all";
 
-export function AdminSidebar({ active, userEmail, hasMultipleConjuntos = false }: AdminSidebarProps) {
+export function AdminSidebar({
+  active,
+  userEmail,
+  conjuntoId,
+  conjuntoNombre,
+  hasMultipleConjuntos = false,
+}: AdminSidebarProps) {
   const router = useRouter();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [isComunicadoOpen, setIsComunicadoOpen] = useState(false);
+  const noLeidos = useNoLeidos(conjuntoId);
 
   const handleLogoutConfirm = async () => {
     setLogoutLoading(true);
@@ -90,20 +109,23 @@ export function AdminSidebar({ active, userEmail, hasMultipleConjuntos = false }
                   aria-current={isActive ? "page" : undefined}
                   className={isActive ? activeClasses : inactiveClasses}
                   onClick={(e) => {
-                    if (!item.href) {
-                      e.preventDefault();
-                      return;
-                    }
-                    if (isActive) {
-                      e.preventDefault();
-                      return;
-                    }
                     e.preventDefault();
+                    if (item.abreModal) {
+                      setIsComunicadoOpen(true);
+                      return;
+                    }
+                    // Las secciones sin href todavía no tienen ruta: quedan inertes.
+                    if (!item.href || isActive) return;
                     router.push(item.href);
                   }}
                 >
                   {item.icon}
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  {item.llevaNoLeidos && noLeidos > 0 && (
+                    <span className="min-w-5 h-5 px-1.5 rounded-full bg-brand text-white text-[10px] font-bold flex items-center justify-center">
+                      {noLeidos > 9 ? "9+" : noLeidos}
+                    </span>
+                  )}
                 </a>
               );
             })}
@@ -124,7 +146,15 @@ export function AdminSidebar({ active, userEmail, hasMultipleConjuntos = false }
             </Button>
           )}
 
-          <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.push("/admin/perfil")}
+            aria-current={active === "perfil" ? "page" : undefined}
+            className={`w-full flex items-center gap-2 p-2 -m-2 rounded-xl transition-colors cursor-pointer ${
+              active === "perfil"
+                ? "bg-brand/10"
+                : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            }`}
+          >
             <div className="w-8 h-8 rounded-full bg-brand/20 flex items-center justify-center border border-brand/35 text-brand font-bold text-xs shrink-0">
               AD
             </div>
@@ -132,7 +162,7 @@ export function AdminSidebar({ active, userEmail, hasMultipleConjuntos = false }
               <p className="text-xs text-zinc-800 dark:text-white font-semibold truncate">{userEmail}</p>
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">ADMINISTRADOR</p>
             </div>
-          </div>
+          </button>
           <Button
             variant="secondary"
             onClick={() => setIsLogoutOpen(true)}
@@ -143,6 +173,13 @@ export function AdminSidebar({ active, userEmail, hasMultipleConjuntos = false }
           </Button>
         </div>
       </aside>
+
+      <GenerarComunicadoModal
+        isOpen={isComunicadoOpen}
+        onClose={() => setIsComunicadoOpen(false)}
+        conjuntoId={conjuntoId}
+        conjuntoNombre={conjuntoNombre}
+      />
 
       <ConfirmDialog
         isOpen={isLogoutOpen}

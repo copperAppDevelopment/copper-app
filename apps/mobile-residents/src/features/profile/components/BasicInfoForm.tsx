@@ -10,14 +10,14 @@ interface BasicInfoFormProps {
     apellidos: string | null;
     phone_number: string | null;
     tipo_documento: string;
-    cedula: string;
+    documento: string;
   };
   onSave: (payload: {
     nombres: string;
     apellidos: string;
     phone_number?: string;
     tipo_documento: string;
-    cedula: string;
+    documento: string;
   }) => Promise<void>;
   isSaving?: boolean;
 }
@@ -27,14 +27,14 @@ export function BasicInfoForm({ initialData, onSave, isSaving = false }: BasicIn
   const [apellidos, setApellidos] = useState(initialData.apellidos || '');
   const [phone, setPhone] = useState(initialData.phone_number || '');
   const [tipoDoc, setTipoDoc] = useState(initialData.tipo_documento || 'CC');
-  const [cedula, setCedula] = useState(initialData.cedula || '');
+  const [documento, setDocumento] = useState(initialData.documento || '');
 
   useEffect(() => {
     setNombres(initialData.nombres || '');
     setApellidos(initialData.apellidos || '');
     setPhone(initialData.phone_number || '');
     setTipoDoc(initialData.tipo_documento || 'CC');
-    setCedula(initialData.cedula || '');
+    setDocumento(initialData.documento || '');
   }, [initialData]);
 
   const docTypes = [
@@ -50,7 +50,7 @@ export function BasicInfoForm({ initialData, onSave, isSaving = false }: BasicIn
       Alert.alert('Error', 'Nombres y Apellidos son requeridos.');
       return;
     }
-    if (!cedula.trim()) {
+    if (!documento.trim()) {
       Alert.alert('Error', 'El número de identificación (cédula) es requerido.');
       return;
     }
@@ -61,7 +61,7 @@ export function BasicInfoForm({ initialData, onSave, isSaving = false }: BasicIn
         apellidos: apellidos.trim(),
         phone_number: phone.trim() || undefined,
         tipo_documento: tipoDoc,
-        cedula: cedula.trim(),
+        documento: documento.trim(),
       });
       Alert.alert('Perfil actualizado', 'Tus datos básicos de perfil se actualizaron con éxito.');
     } catch (err: any) {
@@ -95,8 +95,8 @@ export function BasicInfoForm({ initialData, onSave, isSaving = false }: BasicIn
       <CustomInput
         label="Número de Identificación"
         placeholder="Ingresa tu documento"
-        value={cedula}
-        onChangeText={setCedula}
+        value={documento}
+        onChangeText={setDocumento}
         keyboardType="numeric"
       />
 

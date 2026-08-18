@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       admins_conjuntos: {
@@ -676,7 +651,169 @@ export type Database = {
           periodo?: string
           procesadas?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "conjuntos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_configuracion_actual"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashbard_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_editar_conjunto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_administracion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_con_suscripcion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_seleccion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       cargos_mensuales: {
         Row: {
@@ -690,6 +827,7 @@ export type Database = {
           origen: string
           periodo: string
           residente_id: string | null
+          solicitud_id: string | null
           valor_base: number
           valor_descuento: number | null
           valor_final: number
@@ -705,6 +843,7 @@ export type Database = {
           origen?: string
           periodo: string
           residente_id?: string | null
+          solicitud_id?: string | null
           valor_base: number
           valor_descuento?: number | null
           valor_final: number
@@ -720,6 +859,7 @@ export type Database = {
           origen?: string
           periodo?: string
           residente_id?: string | null
+          solicitud_id?: string | null
           valor_base?: number
           valor_descuento?: number | null
           valor_final?: number
@@ -935,6 +1075,41 @@ export type Database = {
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]
           },
+          {
+            foreignKeyName: "cargos_mensuales_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "solicitudes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_solicitud"
+            referencedColumns: ["id_solicitud"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_solicitudes"
+            referencedColumns: ["id_solicitud"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_solicitudes_detalle"
+            referencedColumns: ["id_solicitud"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_solicitud_id_fkey"
+            columns: ["solicitud_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_solicitudes"
+            referencedColumns: ["id_solicitud"]
+          },
         ]
       }
       cargos_recaudos: {
@@ -1090,33 +1265,39 @@ export type Database = {
       }
       chats: {
         Row: {
+          admin_ultima_lectura: string | null
           asunto: string
           conjunto_id: string
           created_at: string | null
-          estado: string | null
+          estado: Database["public"]["Enums"]["chat_estado_enum"]
           id: string
           receptor_id: string | null
           residente_id: string
+          residente_ultima_lectura: string | null
           updated_at: string | null
         }
         Insert: {
+          admin_ultima_lectura?: string | null
           asunto: string
           conjunto_id: string
           created_at?: string | null
-          estado?: string | null
+          estado?: Database["public"]["Enums"]["chat_estado_enum"]
           id?: string
           receptor_id?: string | null
           residente_id: string
+          residente_ultima_lectura?: string | null
           updated_at?: string | null
         }
         Update: {
+          admin_ultima_lectura?: string | null
           asunto?: string
           conjunto_id?: string
           created_at?: string | null
-          estado?: string | null
+          estado?: Database["public"]["Enums"]["chat_estado_enum"]
           id?: string
           receptor_id?: string | null
           residente_id?: string
+          residente_ultima_lectura?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -1335,32 +1516,97 @@ export type Database = {
       comunicados: {
         Row: {
           adjunto: string | null
+          apartamento_id: string | null
           conjunto_id: string
-          creado_por: string
+          creado_por: string | null
           descripcion: string | null
           fecha_publicacion: string | null
           id: string
+          tipo: Database["public"]["Enums"]["tipo_comunicado_enum"]
+          tipo_novedad: Database["public"]["Enums"]["tipo_novedad_enum"]
           titulo: string
         }
         Insert: {
           adjunto?: string | null
+          apartamento_id?: string | null
           conjunto_id: string
-          creado_por: string
+          creado_por?: string | null
           descripcion?: string | null
           fecha_publicacion?: string | null
           id?: string
+          tipo?: Database["public"]["Enums"]["tipo_comunicado_enum"]
+          tipo_novedad: Database["public"]["Enums"]["tipo_novedad_enum"]
           titulo: string
         }
         Update: {
           adjunto?: string | null
+          apartamento_id?: string | null
           conjunto_id?: string
-          creado_por?: string
+          creado_por?: string | null
           descripcion?: string | null
           fecha_publicacion?: string | null
           id?: string
+          tipo?: Database["public"]["Enums"]["tipo_comunicado_enum"]
+          tipo_novedad?: Database["public"]["Enums"]["tipo_novedad_enum"]
           titulo?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "comunicados_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
           {
             foreignKeyName: "comunicados_conjunto_fk"
             columns: ["conjunto_id"]
@@ -2142,6 +2388,7 @@ export type Database = {
           conjunto_id: string
           creado_en: string | null
           email: string
+          expira_en: string
           id: string
           nombres: string | null
           numero_documento: string | null
@@ -2158,6 +2405,7 @@ export type Database = {
           conjunto_id: string
           creado_en?: string | null
           email: string
+          expira_en?: string
           id?: string
           nombres?: string | null
           numero_documento?: string | null
@@ -2174,6 +2422,7 @@ export type Database = {
           conjunto_id?: string
           creado_en?: string | null
           email?: string
+          expira_en?: string
           id?: string
           nombres?: string | null
           numero_documento?: string | null
@@ -2967,7 +3216,7 @@ export type Database = {
           },
         ]
       }
-      reportes: {
+      reportes_legacy: {
         Row: {
           adjunto: string | null
           apartamento_id: string | null
@@ -3421,7 +3670,7 @@ export type Database = {
           solicitud_prioridad:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          solicitud_tipo: string
+          solicitud_tipo: Database["public"]["Enums"]["solicitud_tipo_enum"]
           titulo_solicitud: string
           ubicacion: string | null
           updated_at: string
@@ -3444,7 +3693,7 @@ export type Database = {
           solicitud_prioridad?:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          solicitud_tipo: string
+          solicitud_tipo: Database["public"]["Enums"]["solicitud_tipo_enum"]
           titulo_solicitud: string
           ubicacion?: string | null
           updated_at?: string
@@ -3467,7 +3716,7 @@ export type Database = {
           solicitud_prioridad?:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          solicitud_tipo?: string
+          solicitud_tipo?: Database["public"]["Enums"]["solicitud_tipo_enum"]
           titulo_solicitud?: string
           ubicacion?: string | null
           updated_at?: string
@@ -3641,7 +3890,7 @@ export type Database = {
           admin_user_id: string
           conjunto_id: string
           created_at: string | null
-          estado: string
+          estado: Database["public"]["Enums"]["estado_suscripcion"]
           fecha_fin: string
           fecha_inicio: string
           id: string
@@ -3656,7 +3905,7 @@ export type Database = {
           admin_user_id: string
           conjunto_id: string
           created_at?: string | null
-          estado?: string
+          estado?: Database["public"]["Enums"]["estado_suscripcion"]
           fecha_fin: string
           fecha_inicio: string
           id?: string
@@ -3671,7 +3920,7 @@ export type Database = {
           admin_user_id?: string
           conjunto_id?: string
           created_at?: string | null
-          estado?: string
+          estado?: Database["public"]["Enums"]["estado_suscripcion"]
           fecha_fin?: string
           fecha_inicio?: string
           id?: string
@@ -4299,10 +4548,10 @@ export type Database = {
       users: {
         Row: {
           apellidos: string | null
-          cedula: string
           created_at: string | null
           cuenta_bloqueada: boolean | null
           direccion: string | null
+          documento: string
           email: string | null
           estado: boolean | null
           fecha_bloqueo: string | null
@@ -4320,10 +4569,10 @@ export type Database = {
         }
         Insert: {
           apellidos?: string | null
-          cedula: string
           created_at?: string | null
           cuenta_bloqueada?: boolean | null
           direccion?: string | null
+          documento: string
           email?: string | null
           estado?: boolean | null
           fecha_bloqueo?: string | null
@@ -4341,10 +4590,10 @@ export type Database = {
         }
         Update: {
           apellidos?: string | null
-          cedula?: string
           created_at?: string | null
           cuenta_bloqueada?: boolean | null
           direccion?: string | null
+          documento?: string
           email?: string | null
           estado?: boolean | null
           fecha_bloqueo?: string | null
@@ -4832,7 +5081,9 @@ export type Database = {
           conjunto_id: string | null
           email: string | null
           estado_conjunto: boolean | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           nombre_administrador: string | null
           nombre_conjunto: string | null
           phone_number: string | null
@@ -4852,7 +5103,9 @@ export type Database = {
           chat_id: string | null
           conjunto_id: string | null
           created_at: string | null
-          estado: string | null
+          estado: Database["public"]["Enums"]["chat_estado_enum"] | null
+          no_leidos_admin: number | null
+          no_leidos_residente: number | null
           residente_apellido: string | null
           residente_foto: string | null
           residente_id: string | null
@@ -5167,7 +5420,9 @@ export type Database = {
           admin_id: string | null
           conjunto_id: string | null
           direccion_conjunto: string | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           fecha_vencimiento: string | null
           nombre_conjunto: string | null
           nombre_plan: string | null
@@ -5320,8 +5575,8 @@ export type Database = {
         Row: {
           admin_id: string | null
           apellidos: string | null
-          cedula: string | null
           conjuntos_info: Json | null
+          documento: string | null
           email: string | null
           estado: boolean | null
           nombres: string | null
@@ -5360,7 +5615,7 @@ export type Database = {
           prioridad:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          tipo: string | null
+          tipo: Database["public"]["Enums"]["solicitud_tipo_enum"] | null
           titulo: string | null
           ubicacion: string | null
         }
@@ -5370,7 +5625,7 @@ export type Database = {
         Row: {
           admin_user_id: string | null
           conjunto_id: string | null
-          estado: string | null
+          estado: Database["public"]["Enums"]["estado_suscripcion"] | null
           fecha_fin: string | null
           fecha_inicio: string | null
           max_residentes: number | null
@@ -5722,7 +5977,9 @@ export type Database = {
           prioridad:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          tipo_solicitud: string | null
+          tipo_solicitud:
+            | Database["public"]["Enums"]["solicitud_tipo_enum"]
+            | null
           titulo: string | null
           ubicacion: string | null
         }
@@ -5839,13 +6096,16 @@ export type Database = {
           fecha_solicitud: string | null
           hora: string | null
           id_solicitud: string | null
+          nombre_admin_asignado: string | null
           nombre_residente: string | null
           numero_apartamento: string | null
           phone_number: string | null
           prioridad:
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
-          tipo_solicitud: string | null
+          tipo_solicitud:
+            | Database["public"]["Enums"]["solicitud_tipo_enum"]
+            | null
           titulo: string | null
           ubicacion: string | null
         }
@@ -6184,7 +6444,9 @@ export type Database = {
           conjunto_id: string | null
           created_at: string | null
           estado_pago: string | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           fecha_fin: string | null
           fecha_inicio: string | null
           fecha_pago: string | null
@@ -6631,7 +6893,9 @@ export type Database = {
       vista_mis_conjuntos: {
         Row: {
           conjunto_id: string | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           fecha_fin_suscripcion: string | null
           fecha_inicio_suscripcion: string | null
           nombre_conjunto: string | null
@@ -6829,7 +7093,9 @@ export type Database = {
           conjunto_id: string | null
           direccion: string | null
           estado: string | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           estrato: number | null
           fecha_creacion: string | null
           fecha_fin: string | null
@@ -7004,9 +7270,9 @@ export type Database = {
           apartamento_descripcion: string | null
           apartamento_id: string | null
           apartamento_numero: string | null
-          cedula: string | null
           conjunto_id: string | null
           contacto: string | null
+          documento: string | null
           email: string | null
           estado_usuario: boolean | null
           estrato: number | null
@@ -7125,7 +7391,9 @@ export type Database = {
             | Database["public"]["Enums"]["solicitud_prioridad_enum"]
             | null
           residente_id: string | null
-          tipo_solicitud: string | null
+          tipo_solicitud:
+            | Database["public"]["Enums"]["solicitud_tipo_enum"]
+            | null
           titulo: string | null
           ubicacion: string | null
         }
@@ -7306,7 +7574,9 @@ export type Database = {
         Row: {
           conjunto_id: string | null
           estado_pago: string | null
-          estado_suscripcion: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           fecha_creacion_pago: string | null
           fecha_pago: string | null
           metodo_pago: string | null
@@ -7324,9 +7594,9 @@ export type Database = {
       vista_perfil: {
         Row: {
           apellido: string | null
-          cedula: string | null
           created_at: string | null
           direccion: string | null
+          documento: string | null
           email: string | null
           estado: boolean | null
           foto_url: string | null
@@ -7341,10 +7611,10 @@ export type Database = {
       vista_perfil_administracion: {
         Row: {
           apellido: string | null
-          cedula: string | null
           conjunto_id: string | null
           created_at: string | null
           direccion: string | null
+          documento: string | null
           email: string | null
           estado: boolean | null
           foto_url: string | null
@@ -7464,11 +7734,11 @@ export type Database = {
           ano_ingreso: number | null
           apartamento_id: string | null
           apellidos: string | null
-          cedula: string | null
           conjunto_id: string | null
           convivientes: Json | null
           direccion_personal: string | null
           direccion_unidad: string | null
+          documento: string | null
           email: string | null
           empleados_servicio: Json | null
           estado: boolean | null
@@ -7947,7 +8217,7 @@ export type Database = {
       }
       vista_superadmin_nuevas_suscripciones: {
         Row: {
-          estado: string | null
+          estado: Database["public"]["Enums"]["estado_suscripcion"] | null
           fecha_suscripcion: string | null
           id: string | null
           nombre_conjunto: string | null
@@ -8098,6 +8368,17 @@ export type Database = {
         }
         Returns: number
       }
+      crear_cobro_solicitud: {
+        Args: {
+          p_fecha_vencimiento?: string
+          p_solicitud_id: string
+          p_valor: number
+        }
+        Returns: {
+          cargo_id: string
+          creado: boolean
+        }[]
+      }
       crear_envio: {
         Args: {
           p_apartamento_id: string
@@ -8118,6 +8399,10 @@ export type Database = {
           p_telefono: string
         }
         Returns: undefined
+      }
+      estado_suscripcion_por_fecha: {
+        Args: { p_fecha_fin: string }
+        Returns: Database["public"]["Enums"]["estado_suscripcion"]
       }
       generar_apartamentos_sin_torres: {
         Args: { payload: Json }
@@ -8352,8 +8637,9 @@ export type Database = {
           }
     }
     Enums: {
+      chat_estado_enum: "Activo" | "Finalizado"
       estado_pago: "pendiente" | "aprobado" | "rechazado" | "reembolsado"
-      estado_suscripcion: "activa" | "vencida" | "suspendida" | "cancelada"
+      estado_suscripcion: "activa" | "proxima" | "vencida" | "bloqueada"
       estado_visita_enum: "pendiente" | "aprobado" | "rechazado"
       solicitud_estado_enum:
         | "pendientes"
@@ -8362,6 +8648,14 @@ export type Database = {
         | "completadas"
         | "canceladas"
       solicitud_prioridad_enum: "baja" | "media" | "alta"
+      solicitud_tipo_enum:
+        | "Mantenimiento"
+        | "Seguridad"
+        | "Administración"
+        | "Parqueaderos"
+        | "Otros"
+      tipo_comunicado_enum: "Comunicado" | "Reporte"
+      tipo_novedad_enum: "Pagos" | "Multas" | "Balances" | "Novedad"
       tipo_periodo: "mensual" | "trimestral" | "anual"
     }
     CompositeTypes: {
@@ -8504,13 +8798,11 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
+      chat_estado_enum: ["Activo", "Finalizado"],
       estado_pago: ["pendiente", "aprobado", "rechazado", "reembolsado"],
-      estado_suscripcion: ["activa", "vencida", "suspendida", "cancelada"],
+      estado_suscripcion: ["activa", "proxima", "vencida", "bloqueada"],
       estado_visita_enum: ["pendiente", "aprobado", "rechazado"],
       solicitud_estado_enum: [
         "pendientes",
@@ -8520,6 +8812,15 @@ export const Constants = {
         "canceladas",
       ],
       solicitud_prioridad_enum: ["baja", "media", "alta"],
+      solicitud_tipo_enum: [
+        "Mantenimiento",
+        "Seguridad",
+        "Administración",
+        "Parqueaderos",
+        "Otros",
+      ],
+      tipo_comunicado_enum: ["Comunicado", "Reporte"],
+      tipo_novedad_enum: ["Pagos", "Multas", "Balances", "Novedad"],
       tipo_periodo: ["mensual", "trimestral", "anual"],
     },
   },

@@ -42,12 +42,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2️⃣ Validar si el conjunto cuenta con una suscripción activa
+    // 2️⃣ Validar que el conjunto tenga una suscripción registrada.
+    //
+    // Antes se exigía `estado = 'Activa'`, pero ese literal no coincidía con nada desde que
+    // la columna es un enum en minúsculas — y en la práctica la comprobación siempre pasaba
+    // porque los datos también decían 'Activa'. Exigir ahora `'activa'` cortaría el registro
+    // en los conjuntos con la suscripción vencida, y por ahora el estado es solo informativo.
+    // Cuando se defina la política de bloqueo, el filtro va aquí.
     const { data: suscripcion, error: subError } = await supabaseAdmin
       .from('suscripciones')
       .select('estado')
       .eq('conjunto_id', conjunto_id)
-      .eq('estado', 'Activa')
+      .limit(1)
       .maybeSingle();
 
     if (subError) {
@@ -97,7 +103,7 @@ export async function POST(request: Request) {
         id: createdAuthUserId,
         nombres,
         apellidos,
-        cedula: documento,
+        documento,
         tipo_documento,
         email,
         rol: 'Residente',

@@ -6,7 +6,7 @@ export interface UserProfile {
   id: string;
   nombres: string | null;
   apellidos: string | null;
-  cedula: string;
+  documento: string;
   tipo_documento: string;
   email: string | null;
   estado: boolean | null;

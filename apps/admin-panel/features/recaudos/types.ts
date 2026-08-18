@@ -14,11 +14,6 @@ export interface Recaudo {
   cargos_recaudos: { valor_aplicado: number }[];
 }
 
-export interface ApartamentoOpcion {
-  id: string;
-  numero_apartamento: string;
-}
-
 export interface Carga {
   id: string;
   archivo_nombre: string | null;

@@ -38,7 +38,7 @@ export function ResidentesTabla({
             {r.nombre_completo?.trim() || "Sin nombre"}
           </p>
           <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-            {r.tipo_documento} {r.cedula}
+            {r.tipo_documento} {r.documento}
           </p>
         </div>
       ),

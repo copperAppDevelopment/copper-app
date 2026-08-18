@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { postConAuth } from "@/lib/apiClient";
 import type {
-  Residente, ApartamentoOpcion, ResidenteCompleto,
+  Residente, ResidenteCompleto,
 } from "./types";
 import type {
   IndicadoresBalance, MovimientoBalance,
@@ -10,21 +10,11 @@ import type {
 export async function listarResidentes(conjuntoId: string): Promise<Residente[]> {
   const { data, error } = await supabase
     .from("vista_mis_residentes")
-    .select("residente_id, user_id, nombre_completo, email, cedula, tipo_documento, contacto, estado_usuario, apartamento_id, apartamento_numero, torre_nombre, activo")
+    .select("residente_id, user_id, nombre_completo, email, documento, tipo_documento, contacto, estado_usuario, apartamento_id, apartamento_numero, torre_nombre, activo")
     .eq("conjunto_id", conjuntoId);
 
   if (error) throw error;
   return (data as Residente[]) || [];
-}
-
-export async function listarApartamentos(conjuntoId: string): Promise<ApartamentoOpcion[]> {
-  const { data } = await supabase
-    .from("apartamentos")
-    .select("id, numero_apartamento, ocupado")
-    .eq("conjunto_id", conjuntoId)
-    .order("numero_apartamento_num", { ascending: true });
-
-  return (data as ApartamentoOpcion[]) || [];
 }
 
 export function invitar(payload: {

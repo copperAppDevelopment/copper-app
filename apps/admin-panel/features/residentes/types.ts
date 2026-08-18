@@ -5,7 +5,7 @@ export interface Residente {
   user_id: string;
   nombre_completo: string | null;
   email: string | null;
-  cedula: string | null;
+  documento: string | null;
   tipo_documento: string | null;
   contacto: string | null;
   estado_usuario: boolean | null;
@@ -13,12 +13,6 @@ export interface Residente {
   apartamento_numero: string | null;
   torre_nombre: string | null;
   activo: boolean | null;
-}
-
-export interface ApartamentoOpcion {
-  id: string;
-  numero_apartamento: string;
-  ocupado: boolean;
 }
 
 export interface UsuarioExistente {
@@ -69,7 +63,7 @@ export interface ResidenteCompleto {
   nombres: string | null;
   apellidos: string | null;
   tipo_documento: string | null;
-  cedula: string | null;
+  documento: string | null;
   email: string | null;
   phone_number: string | null;
   direccion_personal: string | null;

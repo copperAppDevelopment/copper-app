@@ -37,7 +37,7 @@ export function useProfileData() {
       apellidos: string;
       phone_number?: string;
       tipo_documento: string;
-      cedula: string;
+      documento: string;
     }) => {
       const response = await fetch(`${apiUrl}/api/v1/residents/profile`, {
         method: 'PATCH',

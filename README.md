@@ -219,3 +219,67 @@ Archivos que hoy incumplen la regla 1 y están pendientes de migrar:
 
 También: los cuatro `*Section.tsx` de `mobile-residents/src/features/profile/` son clones de CRUD
 casi idénticos, igual que sus cuatro rutas gemelas en `api/v1/residents/profile/`.
+
+En la base de datos:
+
+- **`reportes_legacy`** — resto de la fusión de `reportes` en `comunicados`. Conserva 9 filas de
+  prueba sin `conjunto_id` que no se pudieron migrar. Nada la lee ni la escribe; se puede borrar.
+- **`crear_cobro_manual`** — en la rama de un solo apartamento devuelve `1` fijo, sin mirar si el
+  `on conflict … do nothing` insertó algo. Reporta éxito cuando el cargo ya existía. Los cobros de
+  solicitudes no la usan (van por `crear_cobro_solicitud`, que sí distingue creado de existente),
+  pero el resto de llamantes sigue expuesto.
+- **Aislamiento del bucket `chat_files`** — ya no es público, pero sus políticas dan acceso a
+  cualquier usuario `authenticated`, así que quien adivine la ruta de un adjunto puede firmarlo.
+  Para cerrarlo del todo hay que subir a `chat_id/archivo` y escribir una política por pertenencia
+  al chat; los 38 objetos actuales viven en `imagenes/` y `archivo/` y habría que moverlos.
+- **Puente `documento ?? cedula`** — `users.cedula` se renombró a `documento`, pero
+  `api/v1/residents/profile` acepta los dos nombres para que la app publicada pueda seguir
+  guardando. Se retira cuando salga una build nueva del móvil.
+
+### Auth: códigos de 6 dígitos
+
+El cambio de correo y el restablecimiento de contraseña usan el **OTP nativo de Supabase**, no una
+tabla de códigos propia: `updateUser({email})` y `resetPasswordForEmail` los emiten, y `verifyOtp`
+los canjea. Tres ajustes del dashboard los sostienen, y **sin ellos los códigos no llegan o llegan
+como enlace**:
+
+| Dónde | Qué |
+|---|---|
+| Auth → SMTP Settings | `smtp.resend.com:587`, usuario `resend`, la `RESEND_API_KEY` como contraseña, remitente `noreply@copperapp.co` |
+| Auth → Email Templates | *Change Email Address* y *Reset Password* deben usar `{{ .Token }}`, no `{{ .ConfirmationURL }}` |
+| Auth → Providers → Email | *Secure email change* **desactivado**, para que se pida un solo código (al correo nuevo) en vez de dos |
+
+`trg_sync_email` sobre `auth.users` copia el correo a `public.users`: no hace falta actualizarlo a
+mano desde el cliente.
+
+⚠️ **Dos enums están acoplados a la app publicada.** En ambos casos, agregar un valor exige
+**migrar la base antes** de publicar la build que lo use, o la app fallará al escribir:
+
+| Enum | Acoplado a | Lista en el panel |
+|---|---|---|
+| `solicitud_tipo_enum` | el selector de `CreateRequestModal.tsx` | `lib/solicitudes.ts` (`TIPOS`) |
+| `chat_estado_enum` | `useChats` inserta `'Activo'`; `useChatRoom` compara `'Finalizado'` | `lib/chats.ts` (`ESTADOS_CHAT`) |
+
+### Suscripciones
+
+`suscripciones.estado` es el enum `estado_suscripcion` (`activa`, `proxima`, `vencida`,
+`bloqueada`). El cron `actualizar_suscripciones_diario` (2:00 a diario) lo recalcula llamando a
+`estado_suscripcion_por_fecha`, que concentra la regla: **30 días de aviso antes de vencer, 15 de
+gracia después**. Cambiar los umbrales es tocar esa función y nada más.
+
+Antes del enum, la columna era `text` con un CHECK que validaba `lower(estado)`, así que aceptaba
+`'Activa'`; el cron comparaba contra `'activa'` y **llevaba 135 ejecuciones sin actualizar una sola
+fila**. Ese es el motivo de que estos vocabularios sean enums y no texto libre.
+
+⚠️ **`bloqueada` es hoy solo informativo**: se muestra en «Mis conjuntos» pero no corta ningún
+acceso. El sitio donde poner el corte, cuando se decida la política, es
+`api/v1/auth/register/route.ts`, que ya consulta la suscripción del conjunto.
+
+### Verificar el build sin romper el dev server
+
+Un `next build` normal escribe en el mismo `.next/` que usa `next dev`, y deja al servidor de
+desarrollo sirviendo 404 en `main-app.js`. Para comprobar que el panel compila con el dev levantado:
+
+```bash
+NEXT_DIST_DIR=.next-verify npx next build
+```

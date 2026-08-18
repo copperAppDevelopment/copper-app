@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabaseClient";
 import { postConAuth, postFormConAuth } from "@/lib/apiClient";
-import type { Recaudo, ApartamentoOpcion, Carga, NuevoRecaudo } from "./types";
+import type { Recaudo, Carga, NuevoRecaudo } from "./types";
 
 export async function listarRecaudos(conjuntoId: string): Promise<Recaudo[]> {
   const { data, error } = await supabase
@@ -11,16 +11,6 @@ export async function listarRecaudos(conjuntoId: string): Promise<Recaudo[]> {
 
   if (error) throw error;
   return (data as unknown as Recaudo[]) || [];
-}
-
-export async function listarApartamentos(conjuntoId: string): Promise<ApartamentoOpcion[]> {
-  const { data } = await supabase
-    .from("apartamentos")
-    .select("id, numero_apartamento")
-    .eq("conjunto_id", conjuntoId)
-    .order("numero_apartamento_num", { ascending: true });
-
-  return (data as ApartamentoOpcion[]) || [];
 }
 
 export async function listarCargas(conjuntoId: string): Promise<Carga[]> {

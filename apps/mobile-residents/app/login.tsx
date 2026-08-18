@@ -104,7 +104,7 @@ export default function LoginScreen() {
           id: profile.id,
           nombres: profile.nombres,
           apellidos: profile.apellidos,
-          cedula: profile.cedula,
+          documento: profile.documento,
           tipo_documento: profile.tipo_documento,
           email: profile.email,
           estado: profile.estado,

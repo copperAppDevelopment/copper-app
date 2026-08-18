@@ -6,20 +6,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CommonTable } from "@/components/ui/table";
 import { formatoFechaCorta } from "@/lib/formato";
+import {
+  etiquetaEstado, varianteEstado, etiquetaPrioridad, variantePrioridad,
+} from "@/lib/solicitudes";
 import type { TablaLocal } from "@/hooks/useTablaLocal";
 import type { Solicitud } from "../types";
-
-const prioridades: Record<string, "danger" | "warning" | "success"> = {
-  Alta: "danger",
-  Media: "warning",
-  Baja: "success",
-};
-
-const estados: Record<string, "warning" | "info" | "success"> = {
-  Pendiente: "warning",
-  "En Proceso": "info",
-  Resuelto: "success",
-};
 
 export function SolicitudesTabla({ tabla }: { tabla: TablaLocal<Solicitud> }) {
   const columnas = [
@@ -40,8 +31,8 @@ export function SolicitudesTabla({ tabla }: { tabla: TablaLocal<Solicitud> }) {
       label: "Prioridad",
       sortable: true,
       render: (s: Solicitud) => (
-        <Badge variant={prioridades[s.prioridad ?? ""] ?? "neutral"}>
-          {s.prioridad || "Media"}
+        <Badge variant={variantePrioridad(s.prioridad)}>
+          {etiquetaPrioridad(s.prioridad)}
         </Badge>
       ),
     },
@@ -50,7 +41,7 @@ export function SolicitudesTabla({ tabla }: { tabla: TablaLocal<Solicitud> }) {
       label: "Estado",
       sortable: true,
       render: (s: Solicitud) => (
-        <Badge variant={estados[s.estado ?? ""] ?? "neutral"}>{s.estado || "Pendiente"}</Badge>
+        <Badge variant={varianteEstado(s.estado)}>{etiquetaEstado(s.estado)}</Badge>
       ),
     },
     {

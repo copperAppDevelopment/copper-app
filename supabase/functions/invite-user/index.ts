@@ -136,7 +136,11 @@ serve(async (req) => {
     ====================================================== */
 
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    const inviteLink = `https://copperapp.co/aceptarInvitacion?token=${token}`;
+
+    // La página de aceptación vive en el admin-panel. Si el panel no se sirve en
+    // copperapp.co, basta con fijar APP_URL en los secretos de la función.
+    const APP_URL = Deno.env.get("APP_URL") ?? "https://copperapp.co";
+    const inviteLink = `${APP_URL}/aceptarInvitacion?token=${token}`;
 
     const apartamentoTexto =
       rol === "Residente" && numeroApartamento

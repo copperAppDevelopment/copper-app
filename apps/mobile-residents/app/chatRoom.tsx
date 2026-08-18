@@ -20,11 +20,10 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useChatRoom, ChatMessage } from '../src/features/chat/hooks/useChatRoom';
+import { useAdjuntosFirmados } from '../src/features/chat/hooks/useAdjuntosFirmados';
 import { useAuthStore } from '../src/stores/authStore';
 import { SkeletonLoader } from '../src/components/common/SkeletonLoader';
 import { ScrollView } from 'react-native';
-
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://javsddqiuzzigbhygrtp.supabase.co';
 
 const formatTime = (dateStr: string | null) => {
   if (!dateStr) return '';
@@ -118,6 +117,9 @@ export default function ChatRoomScreen() {
     isSending,
     sendMessage,
   } = useChatRoom(chatId || '');
+
+  // El bucket `chat_files` es privado: los adjuntos solo se abren con una URL firmada.
+  const adjuntos = useAdjuntosFirmados(messages);
 
   const [text, setText] = useState('');
   const [pendingAttachment, setPendingAttachment] = useState<{
@@ -245,12 +247,17 @@ export default function ChatRoomScreen() {
 
   const handleAttachmentPress = (msg: ChatMessage) => {
     if (!msg.file_name) return;
-    const publicUrl = `${supabaseUrl}/storage/v1/object/public/chat_files/${msg.file_name}`;
+    const signedUrl = adjuntos[msg.file_name];
+
+    if (!signedUrl) {
+      Alert.alert('Un momento', 'El archivo todavía se está preparando. Inténtalo de nuevo.');
+      return;
+    }
 
     if (msg.message_type === 'image') {
-      setSelectedImage(publicUrl);
+      setSelectedImage(signedUrl);
     } else {
-      Linking.openURL(publicUrl).catch((err) => {
+      Linking.openURL(signedUrl).catch((err) => {
         console.error('Error al abrir URL:', err);
         Alert.alert('Error', 'No se pudo abrir el archivo adjunto.');
       });
@@ -267,13 +274,13 @@ export default function ChatRoomScreen() {
         <View style={[styles.messageBubble, isMe ? styles.myMessageBubble : styles.theirMessageBubble]}>
           
           {/* Si es Imagen */}
-          {isImage && item.file_name && (
+          {isImage && item.file_name && adjuntos[item.file_name] && (
             <TouchableOpacity
               onPress={() => handleAttachmentPress(item)}
               activeOpacity={0.9}
             >
               <Image
-                source={{ uri: `${supabaseUrl}/storage/v1/object/public/chat_files/${item.file_name}` }}
+                source={{ uri: adjuntos[item.file_name] }}
                 style={styles.messageImage}
                 resizeMode="cover"
               />
