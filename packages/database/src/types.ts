@@ -2898,7 +2898,7 @@ export type Database = {
         Row: {
           created_at: string | null
           datos_pago: Json | null
-          estado: string
+          estado: Database["public"]["Enums"]["estado_pago"]
           fecha_pago: string | null
           id: string
           metodo_pago: string
@@ -2909,7 +2909,7 @@ export type Database = {
         Insert: {
           created_at?: string | null
           datos_pago?: Json | null
-          estado?: string
+          estado?: Database["public"]["Enums"]["estado_pago"]
           fecha_pago?: string | null
           id?: string
           metodo_pago: string
@@ -2920,7 +2920,7 @@ export type Database = {
         Update: {
           created_at?: string | null
           datos_pago?: Json | null
-          estado?: string
+          estado?: Database["public"]["Enums"]["estado_pago"]
           fecha_pago?: string | null
           id?: string
           metodo_pago?: string
@@ -7003,6 +7003,7 @@ export type Database = {
         Row: {
           cantidad_admins: number | null
           cantidad_apartamentos: number | null
+          ciudad: string | null
           conjunto_id: string | null
           direccion: string | null
           estado: boolean | null
@@ -8638,7 +8639,7 @@ export type Database = {
     }
     Enums: {
       chat_estado_enum: "Activo" | "Finalizado"
-      estado_pago: "pendiente" | "aprobado" | "rechazado" | "reembolsado"
+      estado_pago: "pendiente" | "aprobado" | "rechazado" | "expirado"
       estado_suscripcion: "activa" | "proxima" | "vencida" | "bloqueada"
       estado_visita_enum: "pendiente" | "aprobado" | "rechazado"
       solicitud_estado_enum:

@@ -1,0 +1,151 @@
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { getAuthUser } from '@/lib/auth';
+import { esAdminDeConjunto } from '@/lib/adminAuth';
+import { ok, fail } from '@/lib/apiHandler';
+import { TIPOS_VIVIENDA } from '@/lib/conjuntos';
+
+const BUCKET = 'Conjunto';
+const MIMES_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_BYTES_FOTO = 5 * 1024 * 1024;
+
+/** Deja el nombre del archivo en algo seguro para una ruta de storage. */
+const sanearNombre = (nombre: string) =>
+  nombre.normalize('NFD').replace(/[^a-zA-Z0-9._-]/g, '_').slice(-80);
+
+function texto(form: FormData, clave: string): string {
+  return String(form.get(clave) ?? '').trim();
+}
+
+function entero(form: FormData, clave: string): number | null {
+  const valor = texto(form, clave);
+  if (!valor) return null;
+  const numero = Number(valor);
+  return Number.isInteger(numero) ? numero : null;
+}
+
+/**
+ * POST: crea un conjunto o edita uno existente. `multipart/form-data`, porque lleva foto.
+ *
+ * No usa `withAdminConjunto`: al crear todavía no hay conjunto sobre el que comprobar
+ * pertenencia. La autorización se hace aquí a mano y solo en la rama de edición.
+ */
+export async function POST(req: Request) {
+  try {
+    const user = await getAuthUser(req);
+    if (!user) return fail('No autorizado', 401);
+
+    const form = await req.formData();
+    const conjuntoId = texto(form, 'conjunto_id');
+    const esEdicion = Boolean(conjuntoId);
+
+    if (esEdicion && !(await esAdminDeConjunto(user.id, conjuntoId))) {
+      return fail('No administras este conjunto', 403);
+    }
+
+    const nombre = texto(form, 'nombre');
+    const direccion = texto(form, 'direccion');
+    const tipoVivienda = texto(form, 'tipo_vivienda');
+
+    if (!nombre || !direccion) {
+      return fail('El nombre y la dirección son obligatorios', 400);
+    }
+
+    if (!TIPOS_VIVIENDA.includes(tipoVivienda as any)) {
+      return fail('El tipo de vivienda no es válido', 400);
+    }
+
+    const campos: Record<string, unknown> = {
+      nombre,
+      direccion,
+      tipo_vivienda: tipoVivienda,
+      ciudad: texto(form, 'ciudad') || null,
+      estrato: entero(form, 'estrato'),
+      anio_construccion: entero(form, 'anio_construccion'),
+      tiene_torres: texto(form, 'tiene_torres') === 'true',
+      updated_at: new Date().toISOString(),
+    };
+
+    // `codigo_municipio` es NOT NULL. Al editar solo se toca si viene, para no borrar el
+    // código DANE de un conjunto que ya lo tenía.
+    const codigoMunicipio = texto(form, 'codigo_municipio');
+    if (codigoMunicipio) {
+      campos.codigo_municipio = codigoMunicipio;
+    } else if (!esEdicion) {
+      return fail('El código DANE del municipio es obligatorio', 400);
+    }
+
+    const foto = form.get('foto');
+    let fotoPath: string | null = null;
+
+    if (foto instanceof File && foto.size > 0) {
+      if (foto.size > MAX_BYTES_FOTO) {
+        return fail('La imagen supera el límite de 5 MB', 400);
+      }
+      if (!MIMES_FOTO.includes(foto.type)) {
+        return fail('Solo se admiten imágenes JPG, PNG o WEBP', 400);
+      }
+
+      fotoPath = `${conjuntoId || 'nuevo'}/${Date.now()}-${sanearNombre(foto.name)}`;
+
+      const { error: errorSubida } = await supabaseAdmin.storage
+        .from(BUCKET)
+        .upload(fotoPath, foto, { contentType: foto.type, upsert: false });
+
+      if (errorSubida) {
+        console.error('Error al subir la foto del conjunto:', errorSubida);
+        return fail('No se pudo subir la imagen', 500);
+      }
+
+      // El bucket es público: se guarda la URL directa, como el resto de las fotos.
+      const { data: publica } = supabaseAdmin.storage.from(BUCKET).getPublicUrl(fotoPath);
+      campos.foto_url = publica.publicUrl;
+    }
+
+    if (esEdicion) {
+      const { error } = await supabaseAdmin
+        .from('conjuntos')
+        .update(campos as any)
+        .eq('id', conjuntoId);
+
+      if (error) {
+        console.error('Error al actualizar el conjunto:', error);
+        return fail('No se pudo guardar el conjunto', 500);
+      }
+
+      return ok({ conjunto_id: conjuntoId });
+    }
+
+    // El conjunto nace inactivo: lo activa el webhook cuando el pago se aprueba.
+    const { data: creado, error } = await supabaseAdmin
+      .from('conjuntos')
+      .insert({ ...campos, activo: false } as any)
+      .select('id')
+      .single();
+
+    if (error || !creado) {
+      console.error('Error al crear el conjunto:', error);
+      if (fotoPath) await supabaseAdmin.storage.from(BUCKET).remove([fotoPath]);
+      return fail('No se pudo crear el conjunto', 500);
+    }
+
+    // Las dos filas que el conjunto necesita y que ningún trigger crea: sin
+    // `admins_conjuntos` quien lo creó no lo vería, y sin `conjuntos_configuracion` el
+    // JOIN de `generar_cargos_mensuales` lo deja fuera. Los conceptos ADMIN y MORA no se
+    // tocan aquí: los inserta `trg_crear_conceptos_default` al dar de alta el conjunto.
+    await supabaseAdmin.from('admins_conjuntos').insert({
+      conjunto_id: creado.id,
+      user_id: user.id,
+      es_propietario: true,
+      activo: true,
+    } as any);
+
+    await supabaseAdmin.from('conjuntos_configuracion').insert({
+      conjunto_id: creado.id,
+    } as any);
+
+    return ok({ conjunto_id: creado.id }, 201);
+  } catch (error: any) {
+    console.error('Error en POST /api/v1/admin/conjuntos:', error);
+    return fail(error?.message || 'Error interno del servidor', 500);
+  }
+}

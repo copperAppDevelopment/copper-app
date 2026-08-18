@@ -1,8 +1,6 @@
 'use client';
 
 import * as React from "react";
-import { Construction } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { TABS } from "../types";
 import type { TabPerfil } from "../types";
 
@@ -36,22 +34,5 @@ export function PerfilTabs({ activa, onCambiar }: PerfilTabsProps) {
         );
       })}
     </div>
-  );
-}
-
-/** Marcador de las cuatro pestañas que todavía no tienen contenido. */
-export function TabProximamente({ titulo }: { titulo: string }) {
-  return (
-    <Card className="shadow-sm">
-      <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-        <Construction className="w-8 h-8 text-zinc-300 dark:text-zinc-600" />
-        <div>
-          <p className="font-semibold text-zinc-700 dark:text-zinc-200">{titulo}</p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Esta sección todavía está en construcción.
-          </p>
-        </div>
-      </div>
-    </Card>
   );
 }

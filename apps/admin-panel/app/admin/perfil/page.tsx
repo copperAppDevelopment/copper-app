@@ -5,11 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { AdminPageShell } from "@/components/layout/admin-page-shell";
 import { SpinnerPagina } from "@/components/ui/spinner";
-import { PerfilTabs, TabProximamente } from "@/features/perfil/components/PerfilTabs";
+import { PerfilTabs } from "@/features/perfil/components/PerfilTabs";
 import { PerfilDatosForm } from "@/features/perfil/components/PerfilDatosForm";
 import { TabMisConjuntos } from "@/features/perfil/components/TabMisConjuntos";
 import { TabEquipo } from "@/features/perfil/components/TabEquipo";
-import { TABS, esTab } from "@/features/perfil/types";
+import { TabAdministracion } from "@/features/perfil/components/TabAdministracion";
+import { TabAreasComunes } from "@/features/perfil/components/TabAreasComunes";
+import { esTab } from "@/features/perfil/types";
 import type { TabPerfil } from "@/features/perfil/types";
 
 function PerfilContenido() {
@@ -37,9 +39,8 @@ function PerfilContenido() {
       {activa === "perfil" && <PerfilDatosForm />}
       {activa === "conjuntos" && <TabMisConjuntos />}
       {activa === "equipo" && <TabEquipo conjuntoId={sesion.conjuntoId} />}
-      {(activa === "administracion" || activa === "areas") && (
-        <TabProximamente titulo={TABS.find(t => t.id === activa)?.label ?? ""} />
-      )}
+      {activa === "administracion" && <TabAdministracion conjuntoId={sesion.conjuntoId} />}
+      {activa === "areas" && <TabAreasComunes conjuntoId={sesion.conjuntoId} />}
     </AdminPageShell>
   );
 }
