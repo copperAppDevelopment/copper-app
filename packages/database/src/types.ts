@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       admins_conjuntos: {
@@ -3142,6 +3117,13 @@ export type Database = {
             columns: ["suscripcion_id"]
             isOneToOne: false
             referencedRelation: "vista_superadmin_nuevas_suscripciones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_ultimas_suscripciones"
             referencedColumns: ["id"]
           },
         ]
@@ -7020,6 +7002,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_ultimas_suscripciones"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "suscripciones_admin_fk"
             columns: ["admin_user_id"]
             isOneToOne: false
@@ -8734,6 +8723,7 @@ export type Database = {
       vista_superadmin_kpis: {
         Row: {
           ingresos_mes_actual: number | null
+          ingresos_suscripciones_mes: number | null
           total_admins: number | null
           total_conjuntos: number | null
         }
@@ -8750,6 +8740,111 @@ export type Database = {
           tipo_periodo: string | null
         }
         Relationships: []
+      }
+      vista_superadmin_ultimas_suscripciones: {
+        Row: {
+          conjunto_id: string | null
+          estado: Database["public"]["Enums"]["estado_suscripcion"] | null
+          fecha_suscripcion: string | null
+          id: string | null
+          nombre_conjunto: string | null
+          nombre_plan: string | null
+          precio_pagado: number | null
+          tipo_periodo: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "conjuntos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_configuracion_actual"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashbard_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_editar_conjunto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_administracion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_con_suscripcion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_seleccion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+        ]
       }
       vista_visitas_recepcion: {
         Row: {
@@ -9287,7 +9382,7 @@ export type Database = {
       solicitud_tipo_enum:
         | "Mantenimiento"
         | "Seguridad"
-        | "Administraci├│n"
+        | "Administración"
         | "Parqueaderos"
         | "Otros"
       tipo_comunicado_enum: "Comunicado" | "Reporte"
@@ -9434,9 +9529,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {
       chat_estado_enum: ["Activo", "Finalizado"],
@@ -9455,7 +9547,7 @@ export const Constants = {
       solicitud_tipo_enum: [
         "Mantenimiento",
         "Seguridad",
-        "Administraci├│n",
+        "Administración",
         "Parqueaderos",
         "Otros",
       ],

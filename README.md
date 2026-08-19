@@ -130,9 +130,10 @@ Superarlo casi siempre significa que hay un componente o un hook esperando salir
 "max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }]
 ```
 
-Cuatro páginas heredadas (`login`, `contador`, `recepcion`, `superadmin`) están exceptuadas en
-`overrides` mientras se migran. **No añadas archivos nuevos a esa lista**: si uno nuevo supera el
-límite, divídelo.
+Dos páginas heredadas (`login`, `contador`) están exceptuadas en `overrides` mientras se migran.
+**No añadas archivos nuevos a esa lista**: si uno nuevo supera el límite, divídelo. Y cuando
+migres una de las que quedan, quita también su excepción: si sobrevive al archivo que la
+justificaba, tapa el próximo desmadre.
 
 ### 2. Arquitectura feature-based
 
@@ -499,6 +500,36 @@ Cosas que no son obvias:
   que se le dé, y un conjunto de 200 apartamentos genera miles de visitas al año.
 - **`notifications.leida` pasó a `default false`.** Nacían todas marcadas como leídas, así que
   ningún contador de pendientes podía funcionar.
+
+### SuperAdmin: consola global
+
+`/superadmin/dashboard` lee **`vista_superadmin_kpis`** y **`vista_superadmin_ultimas_suscripciones`**
+directamente desde el navegador, como el resto del panel. El contenido vive en
+[features/superadmin/](apps/admin-panel/features/superadmin/) y el armazón es el mismo `PageShell`
+con `SuperAdminSidebar`. `/superadmin/planes`, `/usuarios` y `/contactos` existen pero todavía son
+marcadores: los módulos llegan después.
+
+Cosas que no son obvias:
+
+- **El SuperAdmin no pertenece a ningún conjunto.** No está en `admins_conjuntos` y nunca pasa por
+  `/select-conjunto`, así que `useSesionPanel` no le sirve: ese hook exige conjunto seleccionado.
+  Tiene el suyo, `useSuperAdminSession`, que solo valida sesión y rol.
+- **`RolEquipo` no incluye `SuperAdmin`, y es deliberado.** Ese tipo es el rol *dentro de un
+  conjunto* y alimenta el `roles` de `withAdminConjunto`; meterlo ahí lo colaría en la autorización
+  por conjunto, que es justo donde estuvo la escalada de privilegios de Recepción.
+- **Hay dos ingresos distintos y no son lo mismo.** `ingresos_mes_actual` suma `pagos`: lo que los
+  residentes le pagan a SU conjunto, dinero que no pasa por Copper. La columna
+  `ingresos_suscripciones_mes`, añadida a la vista, es la facturación propia. La maqueta anterior
+  mostraba el primero rotulado como «Recaudo Global».
+- **`vista_superadmin_nuevas_suscripciones` filtra por el mes en curso**, así que cada día 1
+  devuelve una lista vacía. Para «las últimas 5» se creó
+  `vista_superadmin_ultimas_suscripciones`, sin ese filtro. La otra sigue intacta porque la
+  consume FlutterFlow.
+- **`suscripciones` no tiene unicidad por conjunto**: hay tres filas idénticas de un mismo conjunto,
+  de las pruebas de pago, y el dashboard las muestra repetidas.
+- ⚠️ **El control de acceso es solo de cliente.** Sin RLS, cualquiera con la anon key lee estas
+  vistas. En cuanto `/planes` o `/usuarios` escriban, hará falta un `withSuperAdmin` en
+  `lib/apiHandler.ts` y cerrar los grants.
 
 ### Verificar el build sin romper el dev server
 
