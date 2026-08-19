@@ -1923,6 +1923,7 @@ export type Database = {
           tiene_torres: boolean
           tipo_vivienda: string
           updated_at: string | null
+          vetado: boolean
         }
         Insert: {
           activo?: boolean | null
@@ -1939,6 +1940,7 @@ export type Database = {
           tiene_torres?: boolean
           tipo_vivienda: string
           updated_at?: string | null
+          vetado?: boolean
         }
         Update: {
           activo?: boolean | null
@@ -1955,6 +1957,7 @@ export type Database = {
           tiene_torres?: boolean
           tipo_vivienda?: string
           updated_at?: string | null
+          vetado?: boolean
         }
         Relationships: [
           {
@@ -8719,6 +8722,70 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
         ]
+      }
+      vista_superadmin_admin_conjuntos: {
+        Row: {
+          ciudad: string | null
+          conjunto_activo: boolean | null
+          conjunto_id: string | null
+          conjunto_vetado: boolean | null
+          es_propietario: boolean | null
+          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
+          fecha_fin: string | null
+          nombre_conjunto: string | null
+          nombre_plan: string | null
+          precio_pagado: number | null
+          suscripcion_id: string | null
+          tipo_periodo: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      vista_superadmin_usuarios: {
+        Row: {
+          created_at: string | null
+          cuenta_bloqueada: boolean | null
+          documento: string | null
+          email: string | null
+          estado: boolean | null
+          nombre_completo: string | null
+          rol: string | null
+          telefono: string | null
+          total_conjuntos: number | null
+          ultimo_login: string | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
+      vista_superadmin_conjuntos: {
+        Row: {
+          activo: boolean | null
+          ciudad: string | null
+          conjunto_id: string | null
+          created_at: string | null
+          direccion: string | null
+          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
+          estrato: number | null
+          fecha_fin: string | null
+          fecha_inicio: string | null
+          foto_url: string | null
+          metodo_pago: string | null
+          nombre_conjunto: string | null
+          nombre_plan: string | null
+          num_admins: number | null
+          num_apartamentos: number | null
+          num_residentes: number | null
+          precio_pagado: number | null
+          propietario_email: string | null
+          propietario_id: string | null
+          propietario_nombre: string | null
+          suscripcion_id: string | null
+          tiene_torres: boolean | null
+          tipo_periodo: string | null
+          tipo_vivienda: string | null
+          vetado: boolean | null
+        }
+        Relationships: []
       }
       vista_superadmin_asignacion: {
         Row: {

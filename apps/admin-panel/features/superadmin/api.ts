@@ -10,6 +10,9 @@ import type {
   FilaAsignacion,
   AdminDelConjunto,
   Contacto,
+  UsuarioAdmin,
+  ConjuntoDeAdmin,
+  ConjuntoSuper,
 } from "./types";
 
 /** Cuántas suscripciones muestra el dashboard. */
@@ -157,6 +160,59 @@ export async function guardarPlan(
 
 export const cambiarActivoPlan = (planId: string, activo: boolean) =>
   postConAuth("/api/v1/superadmin/planes", { plan_id: planId, solo_activo: true, activo });
+
+/* ── Usuarios administradores ─────────────────────────────────────────────── */
+
+/** Los administradores y, en la misma llamada, sus conjuntos con el plan de cada uno. */
+export const listarUsuarios = () =>
+  getConAuth<{ usuarios: UsuarioAdmin[]; conjuntos: ConjuntoDeAdmin[] }>(
+    "/api/v1/superadmin/usuarios"
+  );
+
+export const vetarUsuario = (userId: string, vetado: boolean) =>
+  postConAuth("/api/v1/superadmin/usuarios", { user_id: userId, vetado });
+
+/* ── Conjuntos ────────────────────────────────────────────────────────────── */
+
+/** Lectura directa: `vista_superadmin_conjuntos` no expone datos personales de terceros. */
+export async function listarConjuntosSuper(): Promise<ConjuntoSuper[]> {
+  const { data, error } = await supabase
+    .from("vista_superadmin_conjuntos")
+    .select("*")
+    .order("nombre_conjunto", { ascending: true });
+
+  if (error) throw error;
+  return (data as unknown as ConjuntoSuper[]) || [];
+}
+
+export async function obtenerConjuntoSuper(conjuntoId: string): Promise<ConjuntoSuper | null> {
+  const { data, error } = await supabase
+    .from("vista_superadmin_conjuntos")
+    .select("*")
+    .eq("conjunto_id", conjuntoId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return (data as unknown as ConjuntoSuper) || null;
+}
+
+export interface RespuestaConjunto {
+  conjunto_id: string;
+  conjunto: string;
+  activo: boolean;
+  residentes_afectados: number;
+}
+
+export async function cambiarActivoConjunto(
+  conjuntoId: string,
+  activo: boolean
+): Promise<RespuestaConjunto> {
+  const { data } = await postConAuth("/api/v1/superadmin/conjuntos", {
+    conjunto_id: conjuntoId,
+    activo,
+  });
+  return data as RespuestaConjunto;
+}
 
 /* ── Contactos ────────────────────────────────────────────────────────────── */
 

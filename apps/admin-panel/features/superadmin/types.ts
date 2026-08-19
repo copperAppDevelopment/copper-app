@@ -38,6 +38,68 @@ export interface FilaAsignacion {
   propietario_email: string | null;
 }
 
+/** Una fila de `vista_superadmin_usuarios`: un administrador de la plataforma. */
+export interface UsuarioAdmin {
+  user_id: string;
+  nombre_completo: string | null;
+  email: string | null;
+  telefono: string | null;
+  documento: string | null;
+  rol: string | null;
+  estado: boolean;
+  /** Vetado a mano por el SuperAdmin, a diferencia de una cuenta que nunca se activó. */
+  cuenta_bloqueada: boolean;
+  ultimo_login: string | null;
+  created_at: string | null;
+  total_conjuntos: number;
+}
+
+/** Una fila de `vista_superadmin_admin_conjuntos`: un conjunto de un administrador, con su plan. */
+export interface ConjuntoDeAdmin {
+  user_id: string;
+  conjunto_id: string;
+  nombre_conjunto: string;
+  conjunto_activo: boolean | null;
+  conjunto_vetado: boolean | null;
+  ciudad: string | null;
+  es_propietario: boolean | null;
+  suscripcion_id: string | null;
+  nombre_plan: string | null;
+  tipo_periodo: string | null;
+  estado_suscripcion: string | null;
+  fecha_fin: string | null;
+  precio_pagado: number | null;
+}
+
+/** Una fila de `vista_superadmin_conjuntos`. */
+export interface ConjuntoSuper {
+  conjunto_id: string;
+  nombre_conjunto: string;
+  activo: boolean | null;
+  vetado: boolean | null;
+  ciudad: string | null;
+  direccion: string | null;
+  tipo_vivienda: string | null;
+  estrato: number | null;
+  foto_url: string | null;
+  tiene_torres: boolean | null;
+  created_at: string | null;
+  num_apartamentos: number;
+  num_residentes: number;
+  num_admins: number;
+  propietario_id: string | null;
+  propietario_nombre: string | null;
+  propietario_email: string | null;
+  suscripcion_id: string | null;
+  nombre_plan: string | null;
+  tipo_periodo: string | null;
+  estado_suscripcion: string | null;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  precio_pagado: number | null;
+  metodo_pago: string | null;
+}
+
 /** Una fila de `contactos`: una solicitud llegada desde la página web. */
 export interface Contacto {
   id: string;

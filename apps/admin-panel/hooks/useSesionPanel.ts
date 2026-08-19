@@ -54,9 +54,18 @@ export function useSesionPanel(rolesPermitidos: RolEquipo[]): SesionPanel {
 
       const { data: profile } = await supabase
         .from("users")
-        .select("rol")
+        .select("rol, estado, cuenta_bloqueada")
         .eq("id", session.user.id)
         .maybeSingle();
+
+      // Una cuenta desactivada o vetada por el SuperAdmin sale a /login, y no a `/`, para que
+      // vea el motivo. Antes aquí solo se miraba el rol: quien ya estuviera dentro conservaba
+      // la navegación del panel hasta cerrar sesión.
+      if (profile?.estado === false || profile?.cuenta_bloqueada === true) {
+        await supabase.auth.signOut();
+        router.push("/login");
+        return;
+      }
 
       const suyo = String(profile?.rol ?? "");
       if (!clave.split(",").includes(suyo)) {

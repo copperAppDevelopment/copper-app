@@ -97,7 +97,28 @@ export default function LoginScreen() {
         return;
       }
 
-      // 5️⃣ Cargar sesión e IDs en el Zustand store (AppState)
+      // 5️⃣ Validar que el conjunto tenga el servicio activo
+      //
+      // El bloqueo de verdad está en el servidor, en `/api/v1/residents/**`: esta pantalla casi
+      // nunca se ejecuta, porque la sesión queda guardada en el teléfono y la app abre directa
+      // en el inicio. Aquí solo se gana un mensaje que explique qué pasa.
+      const { data: conjunto } = await supabase
+        .from('conjuntos')
+        .select('activo')
+        .eq('id', residente.conjunto_id)
+        .maybeSingle();
+
+      if (!conjunto || conjunto.activo === false) {
+        await supabase.auth.signOut();
+        Alert.alert(
+          'Acceso denegado',
+          'Tu conjunto no tiene el servicio activo en este momento. Por favor, comunícate con su administración.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // 6️⃣ Cargar sesión e IDs en el Zustand store (AppState)
       login(
         session,
         {

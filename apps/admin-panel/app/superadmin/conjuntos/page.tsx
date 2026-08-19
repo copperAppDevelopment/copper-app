@@ -2,19 +2,19 @@
 
 import { useSuperAdminSession } from "@/hooks/useSuperAdminSession";
 import { SuperAdminPageShell } from "@/components/layout/superadmin-page-shell";
-import { UsuariosPanel } from "@/features/superadmin/components/UsuariosPanel";
+import { ConjuntosPanel } from "@/features/superadmin/components/ConjuntosPanel";
 
-export default function SuperAdminUsuariosPage() {
+export default function SuperAdminConjuntosPage() {
   const sesion = useSuperAdminSession();
 
   return (
     <SuperAdminPageShell
       sesion={sesion}
-      active="usuarios"
-      titulo="Usuarios"
-      subtitulo="Administradores de la plataforma y su acceso"
+      active="conjuntos"
+      titulo="Conjuntos"
+      subtitulo="Todas las copropiedades de la plataforma"
     >
-      <UsuariosPanel sesionCargando={sesion.loading} />
+      <ConjuntosPanel sesionCargando={sesion.loading} />
     </SuperAdminPageShell>
   );
 }

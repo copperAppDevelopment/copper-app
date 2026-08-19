@@ -140,10 +140,24 @@ export async function revocarSuscripcion(suscripcionId: string): Promise<void> {
 /**
  * `activo` es la única fuente de verdad del conjunto: la columna `estado` es texto libre y
  * quedó sucia (`'true'`, `'Activo'`, `NULL`) cuando algo escribió un booleano ahí.
+ *
+ * **Un pago no levanta un veto.** Antes esto reactivaba sin mirar nada, así que el primer cobro
+ * que entrara deshacía en silencio la decisión del SuperAdmin. `conjuntos.vetado` y
+ * `users.cuenta_bloqueada` distinguen «inactivo por impago» —que un pago sí resuelve— de
+ * «desactivado a mano».
  */
 async function habilitarConjuntoYAdmin(conjuntoId: string, adminUserId: string) {
-  await supabaseAdmin.from("conjuntos").update({ activo: true }).eq("id", conjuntoId);
-  await supabaseAdmin.from("users").update({ estado: true } as any).eq("id", adminUserId);
+  await supabaseAdmin
+    .from("conjuntos")
+    .update({ activo: true })
+    .eq("id", conjuntoId)
+    .eq("vetado", false);
+
+  await supabaseAdmin
+    .from("users")
+    .update({ estado: true } as any)
+    .eq("id", adminUserId)
+    .eq("cuenta_bloqueada", false);
 }
 
 /**

@@ -598,6 +598,57 @@ Cosas que no son obvias:
   ([Pricing.tsx](apps/landing/src/features/pricing/Pricing.tsx)): renombrar el Profesional la
   apaga, y dos planes con «pro» encienden dos. Merecería una columna `destacado`.
 
+### Quitar el acceso: usuarios y conjuntos
+
+`/superadmin/usuarios` lista a los administradores con cuántos conjuntos tienen y el plan de cada
+uno, y permite vetarlos. `/superadmin/conjuntos` hace lo propio con las copropiedades y su
+interruptor de acceso, con ficha de detalle en `/superadmin/conjuntos/[id]`.
+
+**Dónde bloquea de verdad**, que es lo que no era obvio:
+
+- **La app móvil no consulta Supabase ni una sola vez**: todos sus datos salen de
+  `/api/v1/residents/**`. Por eso el guard vive ahí, en
+  [lib/residenteAuth.ts](apps/admin-panel/lib/residenteAuth.ts), y comprueba `users.estado`,
+  `users.cuenta_bloqueada`, `residentes.activo` y `conjuntos.activo`. Surte efecto **al instante y
+  en los teléfonos que ya tienen la app**, sin publicar una versión nueva.
+- **`login.tsx` casi nunca se ejecuta.** `authStore` guarda la sesión en AsyncStorage y la app abre
+  directa en el inicio; Supabase renueva el token solo. La comprobación que tiene esa pantalla sirve
+  para dar un mensaje claro, no para bloquear. ⚠️ Y **no llega a nadie hasta una compilación nueva**.
+- Al residente de un conjunto desactivado le fallan las pantallas con un 403 y su mensaje; la app
+  publicada no sabe distinguirlo de un fallo de red.
+
+**Las dos marcas de veto**, y por qué son dos:
+
+- Vetar escribe `users.estado = false` **y** `users.cuenta_bloqueada = true`; desactivar un conjunto
+  escribe `activo = false` **y** `vetado = true`. La primera es la bandera operativa que ya miraban
+  cinco comprobaciones; la segunda dice que fue una decisión y no un impago.
+- Sin la segunda, **un pago deshacía el veto en silencio**: `habilitarConjuntoYAdmin` reactivaba sin
+  mirar nada. Ahora solo reactiva lo que no esté vetado, así que un impago se sigue resolviendo
+  pagando y una decisión del SuperAdmin no.
+- Un veto **no se puede aplicar a un SuperAdmin ni a uno mismo**: con dos cuentas en la base, un
+  veto cruzado dejaría el sistema sin nadie que pueda entrar a deshacerlo.
+
+Y lo demás que cambió por el camino:
+
+- **`anon` ya no puede escribir en `users`, `conjuntos`, `admins_conjuntos` ni `residentes`.** Podía
+  hacer `update users set estado = true` con la clave pública, o sea que un vetado se quitaba el
+  veto desde la consola del navegador. El `select` se queda: el panel lee esas cuatro desde el
+  navegador en nueve sitios y el login del móvil necesita leer `conjuntos`.
+- **`useSesionPanel` no miraba `estado`**, solo el rol: un admin vetado conservaba la navegación del
+  panel hasta cerrar sesión. Ahora lo saca a `/login`.
+- **Las cuatro subtablas del perfil del residente** —convivientes, mascotas, vehículos y empleados—
+  tenían el mismo CRUD de 143 líneas copiado cuatro veces, con su propio `getResidenteId`. Ahora
+  salen de [lib/recursosResidente.ts](apps/admin-panel/lib/recursosResidente.ts).
+- ⚠️ **`vista_detalle_admin` y `get_admin_suscripciones()` están mal**: unen la suscripción por
+  `admin_user_id` sin exigir `conjunto_id` y devuelven 20 filas donde van 4. Las vistas nuevas
+  resuelven la suscripción **por conjunto**, porque `suscripciones.admin_user_id` es quien pagó, no
+  quién administra.
+- ⚠️ `auth/register/route.ts` **deja registrarse en un conjunto desactivado**: solo exige que exista
+  una fila en `suscripciones`. Su propio comentario dice «cuando se defina la política de bloqueo, el
+  filtro va aquí».
+- ⚠️ `get_mis_conjuntos()` **está rota en tiempo de ejecución**: referencia columnas que ya no
+  existen en `conjuntos`. No la usa nada del repo.
+
 ### Contactos: las solicitudes de la web
 
 `/superadmin/contactos` lista lo que llega por los dos formularios de la landing —contacto y
