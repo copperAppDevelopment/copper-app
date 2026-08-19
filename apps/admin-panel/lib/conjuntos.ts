@@ -44,6 +44,29 @@ export const COLUMNA_PRECIO: Record<TipoPeriodo, string> = {
   anual: "precio_anual",
 };
 
+/* ── Planes ───────────────────────────────────────────────────────────────── */
+
+/** Fila de `planes`, con los tres precios. */
+export interface Plan {
+  id: string;
+  nombre: string;
+  subtipo: string;
+  descripcion: string | null;
+  precio_mensual: number;
+  precio_trimestral: number;
+  precio_anual: number;
+  max_residentes: number;
+}
+
+/**
+ * Precio de lista del plan para ese periodo.
+ *
+ * Vive aquí y no en `features/conjuntos/` desde que también lo usa la asignación manual del
+ * SuperAdmin: una feature nunca importa de otra.
+ */
+export const precioDelPlan = (plan: Plan, periodo: TipoPeriodo): number =>
+  Number((plan as unknown as Record<string, number>)[COLUMNA_PRECIO[periodo]]);
+
 /* ── Estado del pago ──────────────────────────────────────────────────────── */
 
 /** Espejo del enum `estado_pago`. */

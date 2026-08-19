@@ -1,5 +1,3 @@
-import type { TipoPeriodo } from "@/lib/conjuntos";
-
 /** Fila de `vista_mis_conjuntos_administracion`: lo que se pinta en la lista. */
 export interface ConjuntoListado {
   conjunto_id: string;
@@ -75,18 +73,6 @@ export const CONJUNTO_VACIO: DatosConjunto = {
   foto_url: null,
 };
 
-/** Fila de `planes`, con los tres precios. */
-export interface Plan {
-  id: string;
-  nombre: string;
-  subtipo: string;
-  descripcion: string | null;
-  precio_mensual: number;
-  precio_trimestral: number;
-  precio_anual: number;
-  max_residentes: number;
-}
-
 /** Suscripción vigente del conjunto, para saber qué plan está en curso. */
 export interface SuscripcionActual {
   id: string;
@@ -103,10 +89,3 @@ export interface RespuestaCheckout {
   es_renovacion: boolean;
   plan: string;
 }
-
-export const precioDelPlan = (plan: Plan, periodo: TipoPeriodo): number =>
-  periodo === "mensual"
-    ? Number(plan.precio_mensual)
-    : periodo === "trimestral"
-      ? Number(plan.precio_trimestral)
-      : Number(plan.precio_anual);

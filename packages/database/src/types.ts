@@ -8720,6 +8720,28 @@ export type Database = {
           },
         ]
       }
+      vista_superadmin_asignacion: {
+        Row: {
+          admin_user_id: string | null
+          ciudad: string | null
+          conjunto_activo: boolean | null
+          conjunto_id: string | null
+          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
+          fecha_fin: string | null
+          fecha_inicio: string | null
+          metodo_pago: string | null
+          nombre_conjunto: string | null
+          nombre_plan: string | null
+          plan_id: string | null
+          precio_pagado: number | null
+          propietario_email: string | null
+          propietario_id: string | null
+          propietario_nombre: string | null
+          suscripcion_id: string | null
+          tipo_periodo: string | null
+        }
+        Relationships: []
+      }
       vista_superadmin_kpis: {
         Row: {
           ingresos_mes_actual: number | null

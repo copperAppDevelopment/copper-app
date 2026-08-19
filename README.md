@@ -531,6 +531,42 @@ Cosas que no son obvias:
   vistas. En cuanto `/planes` o `/usuarios` escriban, hará falta un `withSuperAdmin` en
   `lib/apiHandler.ts` y cerrar los grants.
 
+### Asignación manual de planes
+
+`/superadmin/suscripciones` da o cambia el plan de un conjunto **sin pasar por Wompi**: cortesías,
+demos y clientes que pagan por transferencia. La escritura vive en
+[lib/suscripcionesServidor.ts](apps/admin-panel/lib/suscripcionesServidor.ts) y la comparte con el
+webhook de la pasarela.
+
+Cosas que no son obvias:
+
+- **`suscripciones` no tiene ni un trigger.** Habilitar el conjunto (`conjuntos.activo`) y a su
+  administrador (`users.estado`) lo hace el código, no la base. Si una vía de alta se salta eso, el
+  conjunto queda con plan y sin acceso.
+- **Se actualiza la suscripción vigente; no se inserta una nueva.** El webhook insertaba a ciegas y
+  un conjunto llegó a tener tres activas a la vez. Ahora hay además un índice único parcial
+  (`suscripciones_una_activa_por_conjunto`) que lo impide.
+  ⚠️ Ese índice lo comprueba también el `update` masivo del cron: si dos filas del mismo conjunto
+  pasaran a `activa`, reventaría el cron entero. Por eso ninguna vía puede crear una segunda fila
+  con fecha futura.
+- **El estado no se fija a mano.** Un cron diario (`actualizar_estados_suscripciones`, 02:00 UTC)
+  lo recalcula desde `fecha_fin` con la regla de 30 días de aviso y 15 de gracia. Los endpoints
+  llaman a esa misma función, así que la regla vive en un solo sitio.
+- **`metodo_pago = 'manual'`** y referencia con prefijo `SA-`: antes todo decía `'wompi'` y no había
+  forma de saber el origen de una suscripción.
+- **El titular tiene que ser `Admin` de ese conjunto.** A `admins_conjuntos` entra todo el equipo,
+  recepcionista incluido, y `suscripciones.admin_user_id` solo tiene clave foránea a `users`: sin la
+  comprobación de rol, la suscripción podía quedar a nombre de portería —y el endpoint le habilita
+  la cuenta—.
+- **El precio se registra a mano y arranca en cero.** No hay dinero cobrado por la pasarela, y
+  `vista_superadmin_kpis.ingresos_suscripciones_mes` suma `precio_pagado`: rellenarlo con el precio
+  de lista inflaría la facturación del dashboard con dinero que nunca entró.
+- **Revocar no borra la fila**, corta `fecha_fin`. `pagos.suscripcion_id` es `ON DELETE CASCADE`, así
+  que borrar una suscripción se llevaría por delante los pagos que la originaron.
+- ⚠️ `vista_detalle_admin` y `get_admin_suscripciones()` **están mal**: enlazan la suscripción por
+  `admin_user_id` sin exigir `conjunto_id`, así que atribuyen el plan de un conjunto a todos los
+  demás del mismo administrador. Este módulo no las usa.
+
 ### Verificar el build sin romper el dev server
 
 Un `next build` normal escribe en el mismo `.next/` que usa `next dev`, y deja al servidor de

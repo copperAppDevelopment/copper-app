@@ -3,12 +3,17 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { LayoutDashboard, CreditCard, Users, Mail, LogOut } from "lucide-react";
+import { LayoutDashboard, CreditCard, ClipboardList, Users, Mail, LogOut } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
 
-export type SuperAdminSection = "dashboard" | "planes" | "usuarios" | "contactos";
+export type SuperAdminSection =
+  | "dashboard"
+  | "planes"
+  | "suscripciones"
+  | "usuarios"
+  | "contactos";
 
 export interface SuperAdminSidebarProps {
   active: SuperAdminSection;
@@ -25,6 +30,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { section: "dashboard", label: "Dashboard", href: "/superadmin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
   { section: "planes", label: "Planes", href: "/superadmin/planes", icon: <CreditCard className="w-5 h-5" /> },
+  { section: "suscripciones", label: "Asignación de planes", href: "/superadmin/suscripciones", icon: <ClipboardList className="w-5 h-5" /> },
   { section: "usuarios", label: "Usuarios", href: "/superadmin/usuarios", icon: <Users className="w-5 h-5" /> },
   { section: "contactos", label: "Contactos", href: "/superadmin/contactos", icon: <Mail className="w-5 h-5" /> },
 ];

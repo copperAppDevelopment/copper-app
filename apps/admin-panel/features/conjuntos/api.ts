@@ -4,11 +4,10 @@ import type {
   ConjuntoListado,
   ConjuntoDetalle,
   DatosConjunto,
-  Plan,
   SuscripcionActual,
   RespuestaCheckout,
 } from "./types";
-import type { TipoPeriodo } from "@/lib/conjuntos";
+import type { TipoPeriodo, Plan } from "@/lib/conjuntos";
 import type { BorradorTorre } from "@/lib/torres";
 
 /** Los conjuntos que administra el usuario, activos y pendientes de pago por igual. */

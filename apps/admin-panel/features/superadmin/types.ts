@@ -14,6 +14,38 @@ export interface KpisSuperAdmin {
   ingresos_suscripciones_mes: number | null;
 }
 
+/**
+ * Una fila de `vista_superadmin_asignacion`: un conjunto con su suscripción vigente —la de
+ * mayor `fecha_fin`— y su administrador propietario.
+ */
+export interface FilaAsignacion {
+  conjunto_id: string;
+  nombre_conjunto: string;
+  conjunto_activo: boolean | null;
+  ciudad: string | null;
+  suscripcion_id: string | null;
+  plan_id: string | null;
+  nombre_plan: string | null;
+  tipo_periodo: string | null;
+  estado_suscripcion: string | null;
+  fecha_inicio: string | null;
+  fecha_fin: string | null;
+  precio_pagado: number | null;
+  metodo_pago: string | null;
+  admin_user_id: string | null;
+  propietario_id: string | null;
+  propietario_nombre: string | null;
+  propietario_email: string | null;
+}
+
+/** Un administrador del conjunto, para elegir a nombre de quién queda la suscripción. */
+export interface AdminDelConjunto {
+  user_id: string;
+  nombre_completo: string | null;
+  email: string | null;
+  es_propietario: boolean | null;
+}
+
 /** Una fila de `vista_superadmin_ultimas_suscripciones`. */
 export interface SuscripcionReciente {
   id: string | null;

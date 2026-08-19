@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from './auth';
 import { rolEnConjunto } from './adminAuth';
+import { supabaseAdmin } from './supabaseAdmin';
 import type { RolEquipo } from './equipo';
 
 /** Sobre estándar de las rutas del panel: `{ data }` en éxito, `{ error }` en fallo. */
@@ -96,6 +97,59 @@ export function withAdminConjunto(
       }
 
       return await handler({ user, conjuntoId, rol, body, req, accessToken });
+    } catch (error: any) {
+      if (error instanceof ErrorHttp) {
+        return fail(error.message, error.status);
+      }
+      console.error(`Error en ${req.method} ${new URL(req.url).pathname}:`, error);
+      return fail(error?.message || 'Error interno del servidor', 500);
+    }
+  };
+}
+
+/** El rol global, tal cual está escrito en `users.rol`: la comparación distingue mayúsculas. */
+const ROL_SUPERADMIN = 'SuperAdmin';
+
+export interface ContextoSuperAdmin {
+  user: { id: string };
+  body: any;
+  req: Request;
+  accessToken: string;
+}
+
+/**
+ * Envuelve un handler con la autorización del rol global.
+ *
+ * Hermano de `withAdminConjunto` y no una opción suya: aquel resuelve un `conjunto_id` y mira
+ * la pertenencia a `admins_conjuntos`, donde el SuperAdmin no está. Y `RolEquipo` sigue sin
+ * incluirlo a propósito —si entrara ahí, se colaría en el `roles` de las veinte rutas de
+ * `admin/**` y se reabriría la escalada de privilegios que se cerró con Recepción—.
+ *
+ * Con RLS desactivada, `anon` puede escribir en `suscripciones` desde el navegador: esta
+ * comprobación de servidor es la única frontera que hay.
+ */
+export function withSuperAdmin(
+  handler: (ctx: ContextoSuperAdmin) => Promise<Response>
+) {
+  return async (req: Request): Promise<Response> => {
+    try {
+      const user = await getAuthUser(req);
+      if (!user) return fail('No autorizado', 401);
+
+      const { data: perfil } = await supabaseAdmin
+        .from('users')
+        .select('rol, estado')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (perfil?.rol !== ROL_SUPERADMIN || perfil?.estado === false) {
+        return fail('Necesitas ser SuperAdmin', 403);
+      }
+
+      const accessToken = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '') ?? '';
+      const body = await req.json().catch(() => ({}));
+
+      return await handler({ user, body, req, accessToken });
     } catch (error: any) {
       if (error instanceof ErrorHttp) {
         return fail(error.message, error.status);

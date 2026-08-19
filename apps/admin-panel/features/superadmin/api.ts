@@ -1,5 +1,13 @@
 import { supabase } from "@/lib/supabaseClient";
-import type { KpisSuperAdmin, SuscripcionReciente } from "./types";
+import { postConAuth } from "@/lib/apiClient";
+import { nombreCompleto } from "@/lib/formato";
+import type { TipoPeriodo, Plan } from "@/lib/conjuntos";
+import type {
+  KpisSuperAdmin,
+  SuscripcionReciente,
+  FilaAsignacion,
+  AdminDelConjunto,
+} from "./types";
 
 /** Cuántas suscripciones muestra el dashboard. */
 export const ULTIMAS_SUSCRIPCIONES = 5;
@@ -38,3 +46,83 @@ export async function listarUltimasSuscripciones(): Promise<SuscripcionReciente[
   }
   return (data as unknown as SuscripcionReciente[]) || [];
 }
+
+/* ── Asignación de planes ─────────────────────────────────────────────────── */
+
+/** Un conjunto por fila, con su suscripción vigente. Las lecturas van directas, como el resto. */
+export async function listarAsignaciones(): Promise<FilaAsignacion[]> {
+  const { data, error } = await supabase
+    .from("vista_superadmin_asignacion")
+    .select("*")
+    .order("nombre_conjunto", { ascending: true });
+
+  if (error) throw error;
+  return (data as unknown as FilaAsignacion[]) || [];
+}
+
+export async function listarPlanesActivos(): Promise<Plan[]> {
+  const { data, error } = await supabase
+    .from("planes")
+    .select("id, nombre, subtipo, descripcion, precio_mensual, precio_trimestral, precio_anual, max_residentes")
+    .eq("activo", true)
+    .order("precio_mensual", { ascending: true });
+
+  if (error) throw error;
+  return (data as unknown as Plan[]) || [];
+}
+
+/**
+ * Los administradores activos del conjunto: la suscripción tiene que quedar a nombre de uno.
+ *
+ * No sirve `vista_admins_dropdown`, que no expone el rol: a `admins_conjuntos` entra todo el
+ * equipo —incluido el recepcionista— y la suscripción no puede quedar a su nombre.
+ */
+export async function listarAdminsDeConjunto(conjuntoId: string): Promise<AdminDelConjunto[]> {
+  const { data, error } = await supabase
+    .from("admins_conjuntos")
+    .select("user_id, es_propietario, users!inner(nombres, apellidos, email, rol, estado)")
+    .eq("conjunto_id", conjuntoId)
+    .eq("activo", true)
+    .eq("users.rol", "Admin")
+    .eq("users.estado", true);
+
+  if (error) throw error;
+
+  return ((data as any[]) || [])
+    .map(fila => {
+      const u = Array.isArray(fila.users) ? fila.users[0] : fila.users;
+      return {
+        user_id: fila.user_id,
+        nombre_completo: nombreCompleto(u, ""),
+        email: u?.email ?? null,
+        es_propietario: fila.es_propietario,
+      };
+    })
+    // El propietario primero: es el que se preselecciona.
+    .sort((a, b) => Number(b.es_propietario) - Number(a.es_propietario));
+}
+
+export interface PayloadAsignacion {
+  conjunto_id: string;
+  plan_id: string;
+  tipo_periodo: TipoPeriodo;
+  admin_user_id: string;
+  precio_pagado: number;
+  desde: "hoy" | "vencimiento";
+}
+
+export interface RespuestaAsignacion {
+  suscripcionId: string;
+  actualizada: boolean;
+  fechaFin: string;
+  conjunto: string;
+  plan: string;
+}
+
+export const asignarPlan = (payload: PayloadAsignacion) =>
+  postConAuth<RespuestaAsignacion>("/api/v1/superadmin/suscripciones", payload);
+
+export const revocarSuscripcion = (suscripcionId: string) =>
+  postConAuth<{ suscripcion_id: string }>("/api/v1/superadmin/suscripciones/revocar", {
+    suscripcion_id: suscripcionId,
+  });
