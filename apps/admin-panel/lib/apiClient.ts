@@ -21,6 +21,21 @@ async function desempaquetar(res: Response) {
   return json;
 }
 
+/**
+ * Lectura por el servidor.
+ *
+ * Casi todo el panel lee directo desde el navegador con la anon key, pero `contactos` guarda
+ * datos personales de gente que no es usuaria y sus grants están revocados: esas filas solo se
+ * pueden leer con el service_role, desde una ruta de API.
+ */
+export async function getConAuth<T = any>(url: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${await tokenActual()}` },
+  });
+  const { data } = await desempaquetar(res);
+  return data as T;
+}
+
 export async function postConAuth<T = any>(url: string, payload: unknown): Promise<T> {
   const res = await fetch(url, {
     method: "POST",

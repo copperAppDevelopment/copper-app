@@ -38,6 +38,21 @@ export interface FilaAsignacion {
   propietario_email: string | null;
 }
 
+/** Una fila de `contactos`: una solicitud llegada desde la página web. */
+export interface Contacto {
+  id: string;
+  created_at: string | null;
+  nombre: string;
+  apellido: string;
+  email: string;
+  telefono: string | null;
+  nombre_conjunto: string | null;
+  /** Texto libre en la base: las opciones del filtro salen de los propios datos. */
+  tipo_solicitud: string;
+  estado: string;
+  descripcion: string | null;
+}
+
 /** Un administrador del conjunto, para elegir a nombre de quién queda la suscripción. */
 export interface AdminDelConjunto {
   user_id: string;

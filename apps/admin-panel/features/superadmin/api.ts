@@ -1,13 +1,15 @@
 import { supabase } from "@/lib/supabaseClient";
-import { postConAuth } from "@/lib/apiClient";
+import { postConAuth, getConAuth } from "@/lib/apiClient";
 import { nombreCompleto } from "@/lib/formato";
 import type { TipoPeriodo } from "@/lib/conjuntos";
 import type { PlanCompleto } from "@/lib/planesData";
+import type { EstadoContacto } from "@/lib/contactos";
 import type {
   KpisSuperAdmin,
   SuscripcionReciente,
   FilaAsignacion,
   AdminDelConjunto,
+  Contacto,
 } from "./types";
 
 /** Cuántas suscripciones muestra el dashboard. */
@@ -111,13 +113,16 @@ export interface RespuestaAsignacion {
   plan: string;
 }
 
-export const asignarPlan = (payload: PayloadAsignacion) =>
-  postConAuth<RespuestaAsignacion>("/api/v1/superadmin/suscripciones", payload);
+// `postConAuth` devuelve el sobre entero, `{ data }`: hay que desenvolverlo aquí, como hacen
+// las demás features. Sin esto el modal leía `respuesta.actualizada` sobre el sobre y siempre
+// salía indefinido.
+export async function asignarPlan(payload: PayloadAsignacion): Promise<RespuestaAsignacion> {
+  const { data } = await postConAuth("/api/v1/superadmin/suscripciones", payload);
+  return data as RespuestaAsignacion;
+}
 
 export const revocarSuscripcion = (suscripcionId: string) =>
-  postConAuth<{ suscripcion_id: string }>("/api/v1/superadmin/suscripciones/revocar", {
-    suscripcion_id: suscripcionId,
-  });
+  postConAuth("/api/v1/superadmin/suscripciones/revocar", { suscripcion_id: suscripcionId });
 
 /* ── Gestión de planes ────────────────────────────────────────────────────── */
 
@@ -142,18 +147,28 @@ export const PLAN_VACIO: DatosPlan = {
   max_residentes: "",
 };
 
-export const guardarPlan = (datos: DatosPlan, planId?: string) =>
-  postConAuth<{ plan_id: string; creado: boolean }>("/api/v1/superadmin/planes", {
-    ...datos,
-    plan_id: planId,
-  });
+export async function guardarPlan(
+  datos: DatosPlan,
+  planId?: string
+): Promise<{ plan_id: string; creado: boolean; activo?: boolean }> {
+  const { data } = await postConAuth("/api/v1/superadmin/planes", { ...datos, plan_id: planId });
+  return data;
+}
 
 export const cambiarActivoPlan = (planId: string, activo: boolean) =>
-  postConAuth<{ plan_id: string; activo: boolean }>("/api/v1/superadmin/planes", {
-    plan_id: planId,
-    solo_activo: true,
-    activo,
-  });
+  postConAuth("/api/v1/superadmin/planes", { plan_id: planId, solo_activo: true, activo });
+
+/* ── Contactos ────────────────────────────────────────────────────────────── */
+
+/** Por el servidor, no directo: `contactos` tiene los grants de `anon` revocados. */
+export const listarContactos = () =>
+  getConAuth<Contacto[]>("/api/v1/superadmin/contactos");
+
+export const marcarContacto = (contactoId: string, estado: EstadoContacto) =>
+  postConAuth("/api/v1/superadmin/contactos", { contacto_id: contactoId, estado });
+
+export const borrarContacto = (contactoId: string) =>
+  postConAuth("/api/v1/superadmin/contactos", { contacto_id: contactoId, eliminar: true });
 
 /** De la fila a lo que espera el formulario. Los números salen de PostgREST como texto. */
 export const planAFormulario = (plan: PlanCompleto): DatosPlan => ({

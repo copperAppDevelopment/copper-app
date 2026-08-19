@@ -2110,7 +2110,7 @@ export type Database = {
           created_at: string | null
           descripcion: string | null
           email: string
-          estado: string | null
+          estado: Database["public"]["Enums"]["contacto_estado_enum"]
           id: string
           nombre: string
           nombre_conjunto: string | null
@@ -2122,7 +2122,7 @@ export type Database = {
           created_at?: string | null
           descripcion?: string | null
           email: string
-          estado?: string | null
+          estado?: Database["public"]["Enums"]["contacto_estado_enum"]
           id?: string
           nombre: string
           nombre_conjunto?: string | null
@@ -2134,7 +2134,7 @@ export type Database = {
           created_at?: string | null
           descripcion?: string | null
           email?: string
-          estado?: string | null
+          estado?: Database["public"]["Enums"]["contacto_estado_enum"]
           id?: string
           nombre?: string
           nombre_conjunto?: string | null
@@ -9390,6 +9390,7 @@ export type Database = {
     }
     Enums: {
       chat_estado_enum: "Activo" | "Finalizado"
+      contacto_estado_enum: "Pendiente" | "Atendida" | "Rechazada"
       estado_envio_enum: "pendiente" | "entregado"
       estado_pago: "pendiente" | "aprobado" | "rechazado" | "expirado"
       estado_suscripcion: "activa" | "proxima" | "vencida" | "bloqueada"
@@ -9554,6 +9555,7 @@ export const Constants = {
   public: {
     Enums: {
       chat_estado_enum: ["Activo", "Finalizado"],
+      contacto_estado_enum: ["Pendiente", "Atendida", "Rechazada"],
       estado_envio_enum: ["pendiente", "entregado"],
       estado_pago: ["pendiente", "aprobado", "rechazado", "expirado"],
       estado_suscripcion: ["activa", "proxima", "vencida", "bloqueada"],

@@ -147,7 +147,11 @@ export function withSuperAdmin(
       }
 
       const accessToken = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '') ?? '';
-      const body = await req.json().catch(() => ({}));
+
+      // Las lecturas no traen cuerpo. Sin esto sobrevivían por el `catch`, que es distinto de
+      // estar contemplado.
+      const sinCuerpo = req.method === 'GET' || req.method === 'HEAD';
+      const body = sinCuerpo ? {} : await req.json().catch(() => ({}));
 
       return await handler({ user, body, req, accessToken });
     } catch (error: any) {

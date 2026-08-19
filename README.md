@@ -598,6 +598,34 @@ Cosas que no son obvias:
   ([Pricing.tsx](apps/landing/src/features/pricing/Pricing.tsx)): renombrar el Profesional la
   apaga, y dos planes con «pro» encienden dos. Merecería una columna `destacado`.
 
+### Contactos: las solicitudes de la web
+
+`/superadmin/contactos` lista lo que llega por los dos formularios de la landing —contacto y
+eliminación de cuenta—, con buscador, filtros y los botones de marcar atendida o rechazada.
+
+Cosas que no son obvias:
+
+- ⚠️ **La tabla era pública.** `anon` tenía SELECT, INSERT, UPDATE y DELETE sobre `contactos`, que
+  guarda nombre, correo y teléfono de gente que ni siquiera es usuaria: con la clave pública de la
+  landing cualquiera podía descargarse los leads o borrarlos. Ahora `anon` y `authenticated` no
+  tienen ningún permiso sobre ella.
+- **Por eso este módulo lee por el servidor**, con `GET /api/v1/superadmin/contactos`, y no directo
+  desde el navegador como el resto del panel: sin grants, el cliente no la ve. Es la primera
+  lectura del panel que pasa por una ruta, y por eso `lib/apiClient.ts` ganó `getConAuth`.
+- **El formulario de la landing no se entera.** `/api/v1/contact` invoca la edge function
+  `send-contact-email` con la anon key, pero quien escribe la fila es la propia función con el
+  service_role, que no pasa por esos grants.
+- **`estado` es el enum `contacto_estado_enum`** (`Pendiente`, `Atendida`, `Rechazada`),
+  capitalizado como los datos que ya había y como `chat_estado_enum`. La ruta valida el valor antes
+  de escribir: si no, uno desconocido saldría como error `22P02` en un 500 en vez de un 400.
+- **La edge function no escribe `estado`**: se apoya en el default de la columna, que quedó como
+  `'Pendiente'::contacto_estado_enum`.
+- **`tipo_solicitud` sigue siendo texto libre** y las opciones del filtro salen de los propios
+  datos. Ojo a una discrepancia ya existente: el formulario ofrece «Adquirir plan» y en la base hay
+  guardado «Adquirir Plan» con P mayúscula, además de una opción «Alianzas comerciales» que todavía
+  no ha usado nadie.
+- **Borrar una solicitud es definitivo**: no hay claves foráneas hacia `contactos` ni papelera.
+
 ### La landing es estática, salvo los precios
 
 `apps/landing` no tiene adaptador ni `output: 'server'`: **todo se pre-renderiza en el build**. Por
