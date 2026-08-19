@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
-  Bell, RefreshCw, DollarSign, MessageSquare, Landmark
+  Bell, RefreshCw, DollarSign, MessageSquare, Landmark, Building, Receipt, DoorOpen
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
@@ -13,12 +13,16 @@ import { useNoLeidos } from "../../hooks/useNoLeidos";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
 import { GenerarComunicadoModal } from "../../features/comunicados/components/GenerarComunicadoModal";
+import { GenerarCobroModal } from "../../features/cobros/components/GenerarCobroModal";
 
 export type AdminSection =
   | "dashboard"
   | "apartamentos"
+  | "torres"
   | "residentes"
+  | "recepcion"
   | "recaudos"
+  | "cobros"
   | "comunicados"
   | "chats"
   | "reportes"
@@ -34,13 +38,16 @@ export interface AdminSidebarProps {
   hasMultipleConjuntos?: boolean;
 }
 
+/** Modales que el sidebar abre por su cuenta, sin navegar a ninguna ruta. */
+type ModalSidebar = "comunicado" | "cobro";
+
 interface NavItem {
   section: AdminSection;
   label: string;
   href: string | null;
   icon: React.ReactNode;
-  /** No navega: abre un modal desde el propio sidebar. */
-  abreModal?: boolean;
+  /** No navega: abre este modal desde el propio sidebar. */
+  modal?: ModalSidebar;
   /** Muestra el globo de mensajes sin leer. */
   llevaNoLeidos?: boolean;
 }
@@ -48,9 +55,12 @@ interface NavItem {
 const navItems: NavItem[] = [
   { section: "dashboard", label: "Dashboard", href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
   { section: "apartamentos", label: "Apartamentos", href: "/admin/apartamentos", icon: <Building2 className="w-5 h-5" /> },
+  { section: "torres", label: "Torres", href: "/admin/torres", icon: <Building className="w-5 h-5" /> },
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
+  { section: "recepcion", label: "Recepción", href: "/admin/recepcion", icon: <DoorOpen className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
-  { section: "comunicados", label: "Comunicados", href: null, abreModal: true, icon: <Bell className="w-5 h-5" /> },
+  { section: "cobros", label: "Cobros extras", href: null, modal: "cobro", icon: <Receipt className="w-5 h-5" /> },
+  { section: "comunicados", label: "Comunicados", href: null, modal: "comunicado", icon: <Bell className="w-5 h-5" /> },
   { section: "chats", label: "Chats", href: "/admin/chats", llevaNoLeidos: true, icon: <MessageSquare className="w-5 h-5" /> },
   // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
   { section: "reportes", label: "Solicitudes / PQRs", href: "/admin/solicitudes", icon: <FileText className="w-5 h-5" /> },
@@ -73,7 +83,9 @@ export function AdminSidebar({
   const router = useRouter();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
-  const [isComunicadoOpen, setIsComunicadoOpen] = useState(false);
+  // Un único valor y no un booleano por modal: así no pueden abrirse dos a la vez, que con
+  // este `Modal` (dos capas compitiendo por el overflow del body y por Escape) es un lío.
+  const [modalAbierto, setModalAbierto] = useState<ModalSidebar | null>(null);
   const noLeidos = useNoLeidos(conjuntoId);
 
   const handleLogoutConfirm = async () => {
@@ -112,8 +124,8 @@ export function AdminSidebar({
                   className={isActive ? activeClasses : inactiveClasses}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (item.abreModal) {
-                      setIsComunicadoOpen(true);
+                    if (item.modal) {
+                      setModalAbierto(item.modal);
                       return;
                     }
                     // Las secciones sin href todavía no tienen ruta: quedan inertes.
@@ -179,8 +191,15 @@ export function AdminSidebar({
       </aside>
 
       <GenerarComunicadoModal
-        isOpen={isComunicadoOpen}
-        onClose={() => setIsComunicadoOpen(false)}
+        isOpen={modalAbierto === "comunicado"}
+        onClose={() => setModalAbierto(null)}
+        conjuntoId={conjuntoId}
+        conjuntoNombre={conjuntoNombre}
+      />
+
+      <GenerarCobroModal
+        isOpen={modalAbierto === "cobro"}
+        onClose={() => setModalAbierto(null)}
         conjuntoId={conjuntoId}
         conjuntoNombre={conjuntoNombre}
       />

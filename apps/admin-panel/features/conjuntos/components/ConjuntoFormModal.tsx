@@ -9,9 +9,13 @@ import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { Alert } from "@/components/ui/alert";
 import { TIPOS_VIVIENDA, ESTRATOS } from "@/lib/conjuntos";
+import { validarBorradores } from "@/lib/torres";
+import type { BorradorTorre } from "@/lib/torres";
 import * as api from "../api";
 import { CONJUNTO_VACIO } from "../types";
 import type { DatosConjunto } from "../types";
+import { SelectoresUbicacion } from "./SelectoresUbicacion";
+import { TorresBorradorLista } from "./TorresBorradorLista";
 
 export interface ConjuntoFormModalProps {
   isOpen: boolean;
@@ -30,26 +34,56 @@ export function ConjuntoFormModal({
   onGuardado,
 }: ConjuntoFormModalProps) {
   const [form, setForm] = useState<DatosConjunto>(CONJUNTO_VACIO);
+  const [torres, setTorres] = useState<BorradorTorre[]>([]);
   const [foto, setFoto] = useState<File | null>(null);
   const [error, setError] = useState("");
+  const [aviso, setAviso] = useState("");
+  /** Conjunto ya creado que espera a que el usuario lea el aviso de las torres fallidas. */
+  const [pendiente, setPendiente] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
     setError("");
+    setAviso("");
+    setPendiente(null);
     setFoto(null);
+    setTorres([]);
     setForm(inicial ?? CONJUNTO_VACIO);
   }, [isOpen, inicial]);
 
   const cambiar = <K extends keyof DatosConjunto>(clave: K, valor: DatosConjunto[K]) =>
     setForm(previo => ({ ...previo, [clave]: valor }));
 
+  // Las torres solo se crean en el alta; en edición se gestionan desde /admin/torres.
+  const torresAEnviar = conjuntoId || !form.tiene_torres ? [] : torres;
+
   const guardar = async () => {
+    const invalido = validarBorradores(torresAEnviar);
+    if (invalido) {
+      setError(invalido);
+      return;
+    }
+
     setLoading(true);
     setError("");
     try {
-      const { conjunto_id } = await api.guardarConjunto(form, foto, conjuntoId);
-      onGuardado(conjunto_id, !conjuntoId);
+      const respuesta = await api.guardarConjunto(form, foto, conjuntoId, torresAEnviar);
+
+      // El conjunto se creó aunque alguna torre fallara. Se deja el modal abierto con el
+      // aviso: si se cerrara aquí, el mensaje no llegaría a verse y el administrador
+      // creería que están todas.
+      if (respuesta.torres?.fallidas?.length) {
+        setPendiente(respuesta.conjunto_id);
+        setAviso(
+          `El conjunto se creó, pero estas torres no: ${respuesta.torres.fallidas
+            .map(f => `«${f.nombre}» (${f.motivo})`)
+            .join(", ")}. Puedes crearlas desde el módulo de Torres.`
+        );
+        return;
+      }
+
+      onGuardado(respuesta.conjunto_id, !conjuntoId);
       onClose();
     } catch (err: any) {
       setError(err.message);
@@ -72,20 +106,32 @@ export function ConjuntoFormModal({
       busy={loading}
       size="lg"
       footer={
-        <>
-          <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
+        pendiente ? (
           <Button
-            onClick={guardar}
-            loading={loading}
-            disabled={!completo}
-            icon={<Save className="w-4 h-4" />}
+            onClick={() => {
+              onGuardado(pendiente, !conjuntoId);
+              onClose();
+            }}
           >
-            {conjuntoId ? "Guardar" : "Crear y pagar"}
+            Continuar
           </Button>
-        </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={onClose} disabled={loading}>Cancelar</Button>
+            <Button
+              onClick={guardar}
+              loading={loading}
+              disabled={!completo}
+              icon={<Save className="w-4 h-4" />}
+            >
+              {conjuntoId ? "Guardar" : "Crear y pagar"}
+            </Button>
+          </>
+        )
       }
     >
       {error && <Alert variant="danger">{error}</Alert>}
+      {aviso && <Alert variant="warning" title="Torres sin crear">{aviso}</Alert>}
 
       {!conjuntoId && (
         <Alert variant="info">
@@ -112,26 +158,11 @@ export function ConjuntoFormModal({
         disabled={loading}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Input
-          id="conjunto-ciudad"
-          label="Ciudad"
-          placeholder="MEDELLÍN"
-          value={form.ciudad}
-          onChange={(e) => cambiar("ciudad", e.target.value)}
-          disabled={loading}
-        />
-
-        <Input
-          id="conjunto-municipio"
-          label="Código DANE"
-          placeholder="05001"
-          helperText="Código del municipio (5 dígitos)."
-          value={form.codigo_municipio}
-          onChange={(e) => cambiar("codigo_municipio", e.target.value)}
-          disabled={loading}
-        />
-      </div>
+      <SelectoresUbicacion
+        codigoMunicipio={form.codigo_municipio}
+        onChange={(codigo) => cambiar("codigo_municipio", codigo)}
+        disabled={loading}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Select
@@ -179,6 +210,21 @@ export function ConjuntoFormModal({
           Los apartamentos se organizan por torres
         </span>
       </label>
+
+      {form.tiene_torres && (
+        conjuntoId ? (
+          <Alert variant="info">
+            Las torres de este conjunto se gestionan desde el módulo de Torres, para que
+            solo haya un sitio donde crearlas y modificarlas.
+          </Alert>
+        ) : (
+          <TorresBorradorLista
+            borradores={torres}
+            onCambiar={setTorres}
+            disabled={loading}
+          />
+        )
+      )}
 
       <div className="w-full space-y-1 text-left">
         <label

@@ -1,19 +1,12 @@
 import { supabase } from "@/lib/supabaseClient";
 import { postConAuth } from "@/lib/apiClient";
 import type {
-  Concepto, DatosConcepto, ConfiguracionConjunto, DatosConfiguracion, AreaComun, DatosArea,
+  DatosConcepto, ConfiguracionConjunto, DatosConfiguracion, AreaComun, DatosArea,
 } from "./adminTypes";
 
-export async function listarConceptos(conjuntoId: string): Promise<Concepto[]> {
-  const { data, error } = await supabase
-    .from("conceptos_cobro")
-    .select("*")
-    .eq("conjunto_id", conjuntoId)
-    .order("codigo", { ascending: true });
-
-  if (error) throw error;
-  return (data as unknown as Concepto[]) || [];
-}
+// La consulta de conceptos vive en `lib/` desde que también la usa el modal de cobros
+// extras; se reexporta para no tocar a los llamantes de esta feature.
+export { listarConceptos } from "@/lib/conceptosData";
 
 export async function obtenerConfiguracion(conjuntoId: string): Promise<ConfiguracionConjunto | null> {
   const { data, error } = await supabase

@@ -10,9 +10,7 @@
     {
       "files": [
         "app/login/page.tsx",
-        "app/contador/dashboard/page.tsx",
-        "app/recepcion/dashboard/page.tsx",
-        "app/superadmin/dashboard/page.tsx"
+        "app/contador/dashboard/page.tsx"
       ],
       "rules": { "max-lines": "off" }
     }

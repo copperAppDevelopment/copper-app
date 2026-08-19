@@ -62,7 +62,9 @@ export default function AdminPageRouter() {
         setLoadingMsg("Verificando copropiedades...");
         const { data: userConjuntos, error: conjuntosError } = await supabase
           .from("vista_mis_conjuntos_seleccion")
-          .select("*");
+          // Sin este filtro la vista devuelve los conjuntos de TODA la base: no hay RLS.
+          .select("*")
+          .eq("user_id", session.user.id);
 
         if (conjuntosError) {
           console.error("Error cargando conjuntos:", conjuntosError);

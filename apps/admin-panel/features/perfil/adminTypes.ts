@@ -1,18 +1,10 @@
 import type { TipoCalculo, TipoProntoPago } from "@/lib/conceptos";
 
-export interface Concepto {
-  id: string;
-  conjunto_id: string;
-  codigo: string;
-  nombre: string;
-  descripcion: string | null;
-  valor: number;
-  tipo_calculo: string;
-  porcentaje: number | null;
-  aplica_descuento: boolean;
-  es_recurrente: boolean;
-  activo: boolean;
-}
+/**
+ * `Concepto` se mudó a `lib/` cuando el modal de cobros extras pasó a necesitarlo: una
+ * feature no puede importar de otra. Se reexporta para no tocar a sus consumidores.
+ */
+export type { Concepto } from "@/lib/conceptosData";
 
 export interface DatosConcepto {
   codigo: string;

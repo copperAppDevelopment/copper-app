@@ -19,7 +19,7 @@ const accesos: Acceso[] = [
   { label: "Gestionar residentes", icono: <Users className="w-4 h-4" />, href: "/admin/residentes" },
   { label: "Gestionar recaudos", icono: <DollarSign className="w-4 h-4" />, href: "/admin/recaudos" },
   // Sin ruta todavía: se deja inerte, como estaba.
-  { label: "Gestionar plan", icono: <CreditCard className="w-4 h-4" />, href: null },
+  { label: "Gestionar plan", icono: <CreditCard className="w-4 h-4" />, href: "/admin/perfil" },
 ];
 
 export function AccesosRapidos() {

@@ -8,11 +8,10 @@ import { Modal } from "@/components/ui/modal";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { formatoMoneda } from "@/lib/formato";
-import { PERIODOS, ETIQUETA_PERIODO } from "@/lib/conjuntos";
-import type { TipoPeriodo } from "@/lib/conjuntos";
+import { PERIODOS, ETIQUETA_PERIODO, precioDelPlan } from "@/lib/conjuntos";
+import type { TipoPeriodo, Plan } from "@/lib/conjuntos";
 import * as api from "../api";
-import { precioDelPlan } from "../types";
-import type { Plan, SuscripcionActual } from "../types";
+import type { SuscripcionActual } from "../types";
 
 export interface PlanModalProps {
   isOpen: boolean;

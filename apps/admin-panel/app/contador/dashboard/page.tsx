@@ -44,7 +44,9 @@ export default function ContadorDashboard() {
       // Verify if has multiple complexes
       const { data: userConjuntos } = await supabase
         .from("vista_mis_conjuntos_seleccion")
-        .select("conjunto_id");
+        // Sin este filtro la vista devuelve los conjuntos de TODA la base: no hay RLS.
+        .select("conjunto_id")
+        .eq("user_id", session.user.id);
 
       if (userConjuntos && userConjuntos.length > 1) {
         setHasMultipleConjuntos(true);

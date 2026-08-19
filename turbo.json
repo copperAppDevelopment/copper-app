@@ -12,7 +12,11 @@
       ],
       "env": [
         "PUBLIC_*",
-        "SUPABASE_*"
+        "SUPABASE_*",
+        "ONESIGNAL_*",
+        "RESEND_*",
+        "WOMPI_*",
+        "APP_BASE_URL"
       ]
     },
     "dev": {

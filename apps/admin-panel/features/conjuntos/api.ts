@@ -4,11 +4,11 @@ import type {
   ConjuntoListado,
   ConjuntoDetalle,
   DatosConjunto,
-  Plan,
   SuscripcionActual,
   RespuestaCheckout,
 } from "./types";
 import type { TipoPeriodo } from "@/lib/conjuntos";
+import type { BorradorTorre } from "@/lib/torres";
 
 /** Los conjuntos que administra el usuario, activos y pendientes de pago por igual. */
 export async function listarConjuntos(userId: string): Promise<ConjuntoListado[]> {
@@ -66,16 +66,8 @@ export async function obtenerEditables(conjuntoId: string): Promise<DatosConjunt
   };
 }
 
-export async function listarPlanes(): Promise<Plan[]> {
-  const { data, error } = await supabase
-    .from("planes")
-    .select("id, nombre, subtipo, descripcion, precio_mensual, precio_trimestral, precio_anual, max_residentes")
-    .eq("activo", true)
-    .order("precio_mensual", { ascending: true });
-
-  if (error) throw error;
-  return (data as unknown as Plan[]) || [];
-}
+/** Reexporta la consulta compartida: la misma la usa el módulo de planes del SuperAdmin. */
+export { listarPlanesActivos as listarPlanes } from "@/lib/planesData";
 
 export async function suscripcionVigente(conjuntoId: string): Promise<SuscripcionActual | null> {
   const { data, error } = await supabase
@@ -90,23 +82,34 @@ export async function suscripcionVigente(conjuntoId: string): Promise<Suscripcio
   return (data as unknown as SuscripcionActual) || null;
 }
 
-/** Crea o edita el conjunto. `multipart` porque puede llevar foto. */
+export interface RespuestaGuardado {
+  conjunto_id: string;
+  torres?: { creadas: number; fallidas: { nombre: string; motivo: string }[] };
+}
+
+/**
+ * Crea o edita el conjunto. `multipart` porque puede llevar foto.
+ *
+ * Las torres van en el mismo envío, como JSON: si se crearan aparte tras recibir el id,
+ * un fallo dejaría el conjunto sin ellas y el modal ya cerrado. Solo se admiten al crear.
+ */
 export async function guardarConjunto(
   datos: DatosConjunto,
   foto: File | null,
-  conjuntoId?: string
-): Promise<{ conjunto_id: string }> {
+  conjuntoId?: string,
+  torres: BorradorTorre[] = []
+): Promise<RespuestaGuardado> {
   const form = new FormData();
   if (conjuntoId) form.append("conjunto_id", conjuntoId);
 
   form.append("nombre", datos.nombre);
   form.append("direccion", datos.direccion);
-  form.append("ciudad", datos.ciudad);
   form.append("codigo_municipio", datos.codigo_municipio);
   form.append("tipo_vivienda", datos.tipo_vivienda);
   form.append("estrato", datos.estrato);
   form.append("anio_construccion", datos.anio_construccion);
   form.append("tiene_torres", String(datos.tiene_torres));
+  if (torres.length > 0) form.append("torres", JSON.stringify(torres));
   if (foto) form.append("foto", foto);
 
   const { data } = await postFormConAuth("/api/v1/admin/conjuntos", form);

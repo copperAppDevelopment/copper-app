@@ -13,7 +13,10 @@ import Footer from '../features/navigation/Footer.tsx';
 import VideoModal from '../features/testimonials/VideoModal.tsx';
 import { supabase } from '../lib/supabase';
 
-// Obtener los planes directamente desde Supabase en el servidor
+// Los planes se consultan aquí, en el build: la página es estática (no hay adaptador ni
+// `output: 'server'` en astro.config.mjs). Sirven de valor inicial para que la sección de
+// precios se pinte de inmediato; `Pricing` los refresca en el navegador al hidratarse, así un
+// cambio desde el panel se ve al recargar sin esperar a un despliegue.
 const { data: databasePlans, error } = await supabase
   .from('planes')
   .select('*')

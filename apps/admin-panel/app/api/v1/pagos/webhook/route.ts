@@ -1,8 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { secretoEventos, firmaEventoValida } from '@/lib/wompi';
 import type { EventoWompi } from '@/lib/wompi';
-import { normalizarPeriodo, sumarPeriodo, ESTADOS_PAGO_FINALES } from '@/lib/conjuntos';
+import { normalizarPeriodo, ESTADOS_PAGO_FINALES } from '@/lib/conjuntos';
 import type { EstadoPago } from '@/lib/conjuntos';
+import { asignarSuscripcion } from '@/lib/suscripcionesServidor';
 
 /**
  * POST: recibe los eventos de transacción de Wompi. Reemplaza a la edge function
@@ -76,77 +77,34 @@ export async function POST(req: Request) {
       return new Response('OK', { status: 200 });
     }
 
-    const ahora = new Date();
-    let suscripcionId: string | null = null;
+    let suscripcionId: string;
 
-    if (datos.es_renovacion && pago.suscripcion_id) {
-      const { data: actual } = await supabaseAdmin
-        .from('suscripciones')
-        .select('id, fecha_fin')
-        .eq('id', pago.suscripcion_id)
-        .maybeSingle();
+    try {
+      // Antes esto insertaba a ciegas salvo que el pago viniera marcado como renovación, y un
+      // conjunto acabó con tres suscripciones activas a la vez. `asignarSuscripcion` actualiza
+      // siempre la vigente si la hay —y desde que existe el índice único parcial, insertar una
+      // segunda activa sería un error de base de datos—.
+      //
+      // `vencimiento` reproduce lo que hacía la rama de renovación: si aún quedaba vigencia, el
+      // periodo nuevo se encadena en vez de empezar hoy.
+      const resultado = await asignarSuscripcion({
+        conjuntoId,
+        adminUserId,
+        planId,
+        periodo,
+        precio: pago.monto,
+        metodoPago: 'wompi',
+        referencia,
+        desde: 'vencimiento',
+      });
 
-      if (actual) {
-        // Si todavía le quedaba vigencia, el periodo nuevo se encadena a la fecha de fin
-        // en vez de empezar hoy: renovar antes de tiempo no debe regalar días a la casa.
-        const base = new Date(actual.fecha_fin) > ahora ? new Date(actual.fecha_fin) : ahora;
-
-        const { error } = await supabaseAdmin
-          .from('suscripciones')
-          .update({
-            fecha_fin: sumarPeriodo(base, periodo).toISOString(),
-            // Minúscula: el enum `estado_suscripcion` rechaza el 'Activa' que escribía
-            // la edge function.
-            estado: 'activa',
-            plan_id: planId,
-            tipo_periodo: periodo,
-            precio_pagado: pago.monto,
-            metodo_pago: 'wompi',
-            referencia_pago: referencia,
-          } as any)
-          .eq('id', actual.id);
-
-        if (error) {
-          console.error('Error al renovar la suscripción:', error);
-          return new Response('Error', { status: 500 });
-        }
-
-        suscripcionId = actual.id;
-      }
+      suscripcionId = resultado.suscripcionId;
+    } catch (error) {
+      console.error('Error al registrar la suscripción del pago:', error);
+      // 500 a propósito: aquí sí conviene que Wompi reintente, porque el cobro se hizo y el
+      // conjunto se quedaría sin suscripción.
+      return new Response('Error', { status: 500 });
     }
-
-    if (!suscripcionId) {
-      const { data: nueva, error } = await supabaseAdmin
-        .from('suscripciones')
-        .insert({
-          admin_user_id: adminUserId,
-          plan_id: planId,
-          conjunto_id: conjuntoId,
-          tipo_periodo: periodo,
-          fecha_inicio: ahora.toISOString(),
-          fecha_fin: sumarPeriodo(ahora, periodo).toISOString(),
-          estado: 'activa',
-          precio_pagado: pago.monto,
-          metodo_pago: 'wompi',
-          referencia_pago: referencia,
-        } as any)
-        .select('id')
-        .single();
-
-      if (error || !nueva) {
-        console.error('Error al crear la suscripción:', error);
-        // 500 a propósito: aquí sí conviene que Wompi reintente, porque el cobro se hizo
-        // y el conjunto se quedaría sin suscripción.
-        return new Response('Error', { status: 500 });
-      }
-
-      suscripcionId = nueva.id;
-    }
-
-    // `activo` es la única fuente de verdad del conjunto. La edge function escribía
-    // `estado = true` sobre una columna de texto y dejaba la cadena 'true'.
-    await supabaseAdmin.from('conjuntos').update({ activo: true }).eq('id', conjuntoId);
-    await supabaseAdmin.from('users').update({ estado: true } as any).eq('id', adminUserId);
 
     await supabaseAdmin
       .from('pagos')
