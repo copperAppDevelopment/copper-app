@@ -2,15 +2,19 @@ import { NextResponse } from 'next/server';
 import { getAuthUser } from '../../../../../lib/auth';
 import { supabaseAdmin } from '../../../../../lib/supabaseAdmin';
 
+/**
+ * PATCH: el residente aprueba o rechaza una visita a su apartamento.
+ *
+ * El sobre `{ success, message }` es distinto del `{ data }` del resto del panel porque lo
+ * consume la app móvil ya publicada; no se puede cambiar hasta que salga una build nueva.
+ */
 export async function PATCH(req: Request) {
   try {
-    // 1. Validar autenticación del residente
     const user = await getAuthUser(req);
     if (!user) {
       return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    // 2. Extraer cuerpo
     const body = await req.json();
     const { visitaId, estado } = body;
 
@@ -22,19 +26,50 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'Estado de visita inválido (debe ser aprobado o rechazado)' }, { status: 400 });
     }
 
-    // 3. Actualizar el registro en la tabla visitas
-    const { error } = await supabaseAdmin
+    const { data: visita } = await supabaseAdmin
+      .from('visitas')
+      .select('id, apartamento_id')
+      .eq('id', visitaId)
+      .maybeSingle();
+
+    if (!visita) {
+      return NextResponse.json({ error: 'La visita no existe' }, { status: 404 });
+    }
+
+    // Faltaba: sin esto, cualquier residente autenticado aprobaba la visita de otro
+    // apartamento con solo conocer su id.
+    const { data: residencia } = await supabaseAdmin
+      .from('residentes')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('apartamento_id', visita.apartamento_id)
+      .eq('activo', true)
+      .maybeSingle();
+
+    if (!residencia) {
+      return NextResponse.json({ error: 'Esta visita no es de tu apartamento' }, { status: 403 });
+    }
+
+    // Condicionado a que siga pendiente: el residente y la portería pueden responder a la
+    // vez, y sin esto gana el último y `autorizado_por` queda sobrescrito.
+    const { data: actualizada, error } = await supabaseAdmin
       .from('visitas')
       .update({
         estado_autorizacion: estado,
         autorizado_por: user.id,
         fecha_autorizacion: new Date().toISOString(),
       })
-      .eq('id', visitaId);
+      .eq('id', visitaId)
+      .eq('estado_autorizacion', 'pendiente')
+      .select('id');
 
     if (error) {
       console.error('Error al actualizar estado de visita:', error);
       return NextResponse.json({ error: 'Error interno del servidor al actualizar la visita' }, { status: 500 });
+    }
+
+    if (!actualizada || actualizada.length === 0) {
+      return NextResponse.json({ error: 'Esta visita ya fue gestionada' }, { status: 409 });
     }
 
     return NextResponse.json({ success: true, message: `Visita ${estado} con éxito.` });

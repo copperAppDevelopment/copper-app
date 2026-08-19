@@ -2329,26 +2329,38 @@ export type Database = {
         Row: {
           apartamento_id: string
           empresa_mensajeria: string
-          estado: string
+          entregado_por: string | null
+          estado: Database["public"]["Enums"]["estado_envio_enum"]
           fecha: string | null
+          fecha_entrega: string | null
           id: string
           observaciones: string | null
+          recibido_por: string | null
+          registrado_por: string | null
         }
         Insert: {
           apartamento_id: string
           empresa_mensajeria: string
-          estado: string
+          entregado_por?: string | null
+          estado?: Database["public"]["Enums"]["estado_envio_enum"]
           fecha?: string | null
+          fecha_entrega?: string | null
           id?: string
           observaciones?: string | null
+          recibido_por?: string | null
+          registrado_por?: string | null
         }
         Update: {
           apartamento_id?: string
           empresa_mensajeria?: string
-          estado?: string
+          entregado_por?: string | null
+          estado?: Database["public"]["Enums"]["estado_envio_enum"]
           fecha?: string | null
+          fecha_entrega?: string | null
           id?: string
           observaciones?: string | null
+          recibido_por?: string | null
+          registrado_por?: string | null
         }
         Relationships: [
           {
@@ -2406,6 +2418,146 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vista_visitas_recepcion"
             referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -4735,6 +4887,7 @@ export type Database = {
           motivo: string | null
           nombres: string
           observaciones: string | null
+          registrado_por: string | null
           telefono: string | null
         }
         Insert: {
@@ -4749,6 +4902,7 @@ export type Database = {
           motivo?: string | null
           nombres: string
           observaciones?: string | null
+          registrado_por?: string | null
           telefono?: string | null
         }
         Update: {
@@ -4763,6 +4917,7 @@ export type Database = {
           motivo?: string | null
           nombres?: string
           observaciones?: string | null
+          registrado_por?: string | null
           telefono?: string | null
         }
         Relationships: [
@@ -4821,6 +4976,76 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vista_visitas_recepcion"
             referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -5997,14 +6222,20 @@ export type Database = {
           apartamento_id: string | null
           conjunto_id: string | null
           empresa_mensajeria: string | null
-          estado: string | null
+          entregado_por: string | null
+          entregado_por_nombre: string | null
+          estado: Database["public"]["Enums"]["estado_envio_enum"] | null
           fecha: string | null
+          fecha_entrega: string | null
           id: string | null
           label_apartamento: string | null
           numero_apartamento: string | null
           numero_apartamento_num: number | null
           observaciones: string | null
           piso: number | null
+          recibido_por: string | null
+          registrado_por: string | null
+          registrado_por_nombre: string | null
           torre_id: string | null
           torre_nombre: string | null
         }
@@ -6099,6 +6330,146 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -8384,6 +8755,8 @@ export type Database = {
         Row: {
           apartamento_id: string | null
           autorizado_por: string | null
+          autorizado_por_nombre: string | null
+          autorizado_por_rol: string | null
           conjunto_id: string | null
           estado_autorizacion:
             | Database["public"]["Enums"]["estado_visita_enum"]
@@ -8398,6 +8771,8 @@ export type Database = {
           numero_apartamento_num: number | null
           observaciones: string | null
           piso: number | null
+          registrado_por: string | null
+          registrado_por_nombre: string | null
           telefono: string | null
           torre_id: string | null
           torre_nombre: string | null
@@ -8494,6 +8869,76 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
     }
@@ -8552,10 +8997,9 @@ export type Database = {
           p_apartamento_id: string
           p_empresa_mensajeria: string
           p_enviado_por: string
-          p_estado: string
           p_observaciones: string
         }
-        Returns: undefined
+        Returns: string
       }
       crear_torre_con_pisos: {
         Args: {
@@ -8577,7 +9021,7 @@ export type Database = {
           p_observaciones: string
           p_telefono: string
         }
-        Returns: undefined
+        Returns: string
       }
       eliminar_torre_si_vacia: { Args: { p_torre_id: string }; Returns: number }
       estado_suscripcion_por_fecha: {
@@ -8829,6 +9273,7 @@ export type Database = {
     }
     Enums: {
       chat_estado_enum: "Activo" | "Finalizado"
+      estado_envio_enum: "pendiente" | "entregado"
       estado_pago: "pendiente" | "aprobado" | "rechazado" | "expirado"
       estado_suscripcion: "activa" | "proxima" | "vencida" | "bloqueada"
       estado_visita_enum: "pendiente" | "aprobado" | "rechazado"
@@ -8842,7 +9287,7 @@ export type Database = {
       solicitud_tipo_enum:
         | "Mantenimiento"
         | "Seguridad"
-        | "Administración"
+        | "Administraci├│n"
         | "Parqueaderos"
         | "Otros"
       tipo_comunicado_enum: "Comunicado" | "Reporte"
@@ -8995,6 +9440,7 @@ export const Constants = {
   public: {
     Enums: {
       chat_estado_enum: ["Activo", "Finalizado"],
+      estado_envio_enum: ["pendiente", "entregado"],
       estado_pago: ["pendiente", "aprobado", "rechazado", "expirado"],
       estado_suscripcion: ["activa", "proxima", "vencida", "bloqueada"],
       estado_visita_enum: ["pendiente", "aprobado", "rechazado"],
@@ -9009,7 +9455,7 @@ export const Constants = {
       solicitud_tipo_enum: [
         "Mantenimiento",
         "Seguridad",
-        "Administración",
+        "Administraci├│n",
         "Parqueaderos",
         "Otros",
       ],

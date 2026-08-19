@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
-  Bell, RefreshCw, DollarSign, MessageSquare, Landmark, Building, Receipt
+  Bell, RefreshCw, DollarSign, MessageSquare, Landmark, Building, Receipt, DoorOpen
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
@@ -20,6 +20,7 @@ export type AdminSection =
   | "apartamentos"
   | "torres"
   | "residentes"
+  | "recepcion"
   | "recaudos"
   | "cobros"
   | "comunicados"
@@ -56,6 +57,7 @@ const navItems: NavItem[] = [
   { section: "apartamentos", label: "Apartamentos", href: "/admin/apartamentos", icon: <Building2 className="w-5 h-5" /> },
   { section: "torres", label: "Torres", href: "/admin/torres", icon: <Building className="w-5 h-5" /> },
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
+  { section: "recepcion", label: "Recepción", href: "/admin/recepcion", icon: <DoorOpen className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
   { section: "cobros", label: "Cobros extras", href: null, modal: "cobro", icon: <Receipt className="w-5 h-5" /> },
   { section: "comunicados", label: "Comunicados", href: null, modal: "comunicado", icon: <Bell className="w-5 h-5" /> },

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthUser } from './auth';
-import { esAdminDeConjunto } from './adminAuth';
+import { rolEnConjunto } from './adminAuth';
+import type { RolEquipo } from './equipo';
 
 /** Sobre estándar de las rutas del panel: `{ data }` en éxito, `{ error }` en fallo. */
 export const ok = <T,>(data: T, status = 200) =>
@@ -23,6 +24,8 @@ export class ErrorHttp extends Error {
 export interface ContextoAdmin {
   user: { id: string };
   conjuntoId: string;
+  /** Con qué rol pertenece el llamante al conjunto. Útil para auditar quién hizo qué. */
+  rol: RolEquipo;
   /** El JSON del cuerpo, o el `FormData` ya leído en las rutas multipart. */
   body: any;
   req: Request;
@@ -31,6 +34,15 @@ export interface ContextoAdmin {
 }
 
 export interface OpcionesAdmin {
+  /**
+   * Roles del equipo que pueden usar la ruta. **Por defecto solo `Admin`.**
+   *
+   * El default no es una precaución teórica: a `admins_conjuntos` entra todo el equipo, así
+   * que antes de existir esta opción un recepcionista podía llamar a cualquier ruta de
+   * `/api/v1/admin/**` de su conjunto. Dejarlo en `['Admin']` cierra esa puerta para todas
+   * las rutas que no digan lo contrario.
+   */
+  roles?: RolEquipo[];
   /**
    * De dónde sale el `conjunto_id`. Por defecto del cuerpo.
    * `recaudos/reintentar` lo resuelve desde la base: recibe el id de la carga y el
@@ -76,11 +88,14 @@ export function withAdminConjunto(
 
       if (!conjuntoId) return fail('Falta el conjunto_id', 400);
 
-      if (!(await esAdminDeConjunto(user.id, conjuntoId))) {
-        return fail('No administras este conjunto', 403);
+      const rol = await rolEnConjunto(user.id, conjuntoId);
+      const permitidos = opts.roles ?? ['Admin'];
+
+      if (!rol || !permitidos.includes(rol)) {
+        return fail('No tienes permiso sobre este conjunto', 403);
       }
 
-      return await handler({ user, conjuntoId, body, req, accessToken });
+      return await handler({ user, conjuntoId, rol, body, req, accessToken });
     } catch (error: any) {
       if (error instanceof ErrorHttp) {
         return fail(error.message, error.status);

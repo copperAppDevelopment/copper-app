@@ -103,7 +103,9 @@ export default function LoginPage() {
       // For Admin, Recepcion, Contador roles: Check complexes they manage
       const { data: userConjuntos, error: conjuntosError } = await supabase
         .from('vista_mis_conjuntos_seleccion')
-        .select('*');
+        // Sin este filtro la vista devuelve los conjuntos de TODA la base: no hay RLS.
+        .select('*')
+        .eq('user_id', authUser.id);
 
       if (conjuntosError) {
         console.error("Error al obtener conjuntos asociados:", conjuntosError);

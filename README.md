@@ -187,8 +187,21 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
 });
 ```
 
-Esto no es comodidad: con RLS desactivado en la base, `esAdminDeConjunto` es la **única** frontera
-de autorización que existe. Centralizarla evita que una ruta nueva se olvide de ella.
+Esto no es comodidad: con RLS desactivado en la base, este envoltorio es la **única** frontera de
+autorización que existe. Centralizarla evita que una ruta nueva se olvide de ella.
+
+La frontera es **pertenencia + rol**, no solo pertenencia. `rolEnConjunto` devuelve con qué rol
+está el usuario en `admins_conjuntos`, y el envoltorio admite **solo `Admin` por defecto**:
+
+```ts
+export const POST = withAdminConjunto(handler, { roles: ['Admin', 'Recepcion'] });
+```
+
+⚠️ **Ese default no es decorativo.** Antes se comprobaba solo la pertenencia, y a
+`admins_conjuntos` entra **todo** el equipo: un recepcionista podía llamar a cualquier ruta de
+`/api/v1/admin/**` de su conjunto, incluida `equipo/vincular`, que hace `update users set rol` con
+lo que mande el cliente — es decir, podía ascenderse a `Admin` él mismo. Una ruta nueva que no
+declare `roles` queda cerrada a todo el que no sea administrador.
 
 > **Excepción documentada:** las rutas de `app/api/v1/residents/**` devuelven
 > `{ success, message }` en sus DELETE. Las consume la app móvil publicada, así que se mantienen
@@ -224,6 +237,11 @@ En la base de datos:
 
 - **`reportes_legacy`** — resto de la fusión de `reportes` en `comunicados`. Conserva 9 filas de
   prueba sin `conjunto_id` que no se pudieron migrar. Nada la lee ni la escribe; se puede borrar.
+- **`notifications.envio_id`** — no existe, así que un envío no se puede relacionar con su aviso.
+  Añadirla obligaría a recrear `vista_notificaciones_residente`, que consume la app **publicada**, y
+  hoy no cambiaría nada observable: la edge function `Send-Notification` no manda `additionalData`,
+  así que el deep-link por `id_visita` de `useOneSignal.ts` tampoco funciona. Va junto cuando salga
+  una build nueva del móvil.
 - **Permisos de tabla de `anon` y `authenticated`** — con RLS desactivada, ambos roles conservan
   `INSERT`/`UPDATE`/`DELETE` sobre todas las tablas, `cargos_mensuales` incluida. Cerrar las RPC
   una a una no lo arregla: mientras esto siga así, la única frontera real es que nadie use la anon
@@ -445,6 +463,42 @@ antes era un campo de texto y un código mal tecleado daba un 500 por violación
   `select distinct`, y traer las 1.122 filas para agrupar en el cliente choca con su
   **límite de 1.000, que trunca sin devolver error**: faltarían municipios y no habría ni
   un aviso. Los municipios se piden filtrados por departamento (el mayor tiene 125).
+
+### Recepción: visitas y envíos
+
+La misma página la comparten dos rutas: `/admin/recepcion` y `/recepcion/dashboard`, que es donde
+aterriza el rol `Recepcion`. El contenido vive en `RecepcionPanel`
+([features/recepcion/](apps/admin-panel/features/recepcion/)) y cada ruta le pone su armazón —
+`PageShell` con el sidebar que corresponda. `AdminSidebar` no vale para recepción: enlaza a rutas
+donde un recepcionista no puede entrar y monta los modales de cobros y comunicados, cuyos endpoints
+le responden 403.
+
+**La notificación al residente la manda la base, no el panel.** Las RPC `crear_visita` y
+`crear_envio` insertan la fila en `notifications`, y un trigger sobre esa tabla llama a la edge
+function `Send-Notification`, que es quien habla con OneSignal. El panel solo llama a la RPC.
+
+Cosas que no son obvias:
+
+- **Las RPC estaban abiertas a `anon` y eran `SECURITY DEFINER`**: cualquiera con la anon key podía
+  crear visitas en cualquier apartamento y dispararle un push al residente. Ahora solo las llama el
+  service role. ⚠️ Antes de cerrarlas había **un cliente externo usándolas** (9 notificaciones, la
+  última del 23/07/2026, ninguna originada en este repo): si algo dejó de funcionar en portería, es
+  eso.
+- **Los estados son enums**: `estado_visita_enum` y `estado_envio_enum`. `envios.estado` era texto
+  libre y llegó a tener `'  Pendiente'` con espacios delante, escrito por ese cliente externo.
+- **Los cambios de estado son condicionales** (`.eq('estado', 'pendiente')`) y devuelven 409 si no
+  afectan a ninguna fila. Residente y portería pueden responder la misma visita a la vez, y sin eso
+  gana el último sobrescribiendo `autorizado_por`; además hace idempotente el doble clic del
+  portero.
+- **El conjunto de las rutas de estado sale de la fila, no del cuerpo**, vía `resolverConjunto`. Si
+  lo eligiera el cliente, bastaría con mandar el conjunto propio y el id de una visita ajena.
+- **`visitas.autorizado_por` no tiene clave foránea**, así que PostgREST no puede resolver el nombre
+  con un embed: el `join` a `users` vive dentro de las vistas de recepción, que exponen también el
+  rol para distinguir «aprobado por el residente» de «aprobado en portería».
+- **El rango de fechas se filtra en la consulta**, no en memoria: `useTablaLocal` pagina sobre lo
+  que se le dé, y un conjunto de 200 apartamentos genera miles de visitas al año.
+- **`notifications.leida` pasó a `default false`.** Nacían todas marcadas como leídas, así que
+  ningún contador de pendientes podía funcionar.
 
 ### Verificar el build sin romper el dev server
 

@@ -59,7 +59,9 @@ export default function SelectConjuntoPage() {
         // 3️⃣ Fetch complexes from vista_mis_conjuntos_seleccion
         const { data: selectionList, error: listError } = await supabase
           .from('vista_mis_conjuntos_seleccion')
-          .select('*');
+          // Sin este filtro la vista devuelve los conjuntos de TODA la base: no hay RLS.
+          .select('*')
+          .eq('user_id', session.user.id);
 
         if (listError) {
           console.error("Error al cargar conjuntos de selección:", listError);
