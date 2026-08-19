@@ -3130,7 +3130,7 @@ export type Database = {
       }
       planes: {
         Row: {
-          activo: boolean | null
+          activo: boolean
           created_at: string | null
           descripcion: string | null
           id: string
@@ -3142,7 +3142,7 @@ export type Database = {
           subtipo: string
         }
         Insert: {
-          activo?: boolean | null
+          activo?: boolean
           created_at?: string | null
           descripcion?: string | null
           id?: string
@@ -3154,7 +3154,7 @@ export type Database = {
           subtipo?: string
         }
         Update: {
-          activo?: boolean | null
+          activo?: boolean
           created_at?: string | null
           descripcion?: string | null
           id?: string

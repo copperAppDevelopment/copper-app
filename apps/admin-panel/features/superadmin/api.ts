@@ -1,7 +1,8 @@
 import { supabase } from "@/lib/supabaseClient";
 import { postConAuth } from "@/lib/apiClient";
 import { nombreCompleto } from "@/lib/formato";
-import type { TipoPeriodo, Plan } from "@/lib/conjuntos";
+import type { TipoPeriodo } from "@/lib/conjuntos";
+import type { PlanCompleto } from "@/lib/planesData";
 import type {
   KpisSuperAdmin,
   SuscripcionReciente,
@@ -60,16 +61,7 @@ export async function listarAsignaciones(): Promise<FilaAsignacion[]> {
   return (data as unknown as FilaAsignacion[]) || [];
 }
 
-export async function listarPlanesActivos(): Promise<Plan[]> {
-  const { data, error } = await supabase
-    .from("planes")
-    .select("id, nombre, subtipo, descripcion, precio_mensual, precio_trimestral, precio_anual, max_residentes")
-    .eq("activo", true)
-    .order("precio_mensual", { ascending: true });
-
-  if (error) throw error;
-  return (data as unknown as Plan[]) || [];
-}
+export { listarPlanesActivos, listarTodosLosPlanes } from "@/lib/planesData";
 
 /**
  * Los administradores activos del conjunto: la suscripción tiene que quedar a nombre de uno.
@@ -126,3 +118,50 @@ export const revocarSuscripcion = (suscripcionId: string) =>
   postConAuth<{ suscripcion_id: string }>("/api/v1/superadmin/suscripciones/revocar", {
     suscripcion_id: suscripcionId,
   });
+
+/* ── Gestión de planes ────────────────────────────────────────────────────── */
+
+/** Los campos del formulario. Los números viajan como texto y los convierte el servidor. */
+export interface DatosPlan {
+  nombre: string;
+  subtipo: string;
+  descripcion: string;
+  precio_mensual: string;
+  precio_trimestral: string;
+  precio_anual: string;
+  max_residentes: string;
+}
+
+export const PLAN_VACIO: DatosPlan = {
+  nombre: "",
+  subtipo: "Básico",
+  descripcion: "",
+  precio_mensual: "",
+  precio_trimestral: "",
+  precio_anual: "",
+  max_residentes: "",
+};
+
+export const guardarPlan = (datos: DatosPlan, planId?: string) =>
+  postConAuth<{ plan_id: string; creado: boolean }>("/api/v1/superadmin/planes", {
+    ...datos,
+    plan_id: planId,
+  });
+
+export const cambiarActivoPlan = (planId: string, activo: boolean) =>
+  postConAuth<{ plan_id: string; activo: boolean }>("/api/v1/superadmin/planes", {
+    plan_id: planId,
+    solo_activo: true,
+    activo,
+  });
+
+/** De la fila a lo que espera el formulario. Los números salen de PostgREST como texto. */
+export const planAFormulario = (plan: PlanCompleto): DatosPlan => ({
+  nombre: plan.nombre,
+  subtipo: plan.subtipo,
+  descripcion: plan.descripcion ?? "",
+  precio_mensual: String(plan.precio_mensual ?? ""),
+  precio_trimestral: String(plan.precio_trimestral ?? ""),
+  precio_anual: String(plan.precio_anual ?? ""),
+  max_residentes: String(plan.max_residentes ?? ""),
+});

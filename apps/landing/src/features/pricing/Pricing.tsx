@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { selectedPlanStore } from "../../stores/appStore";
+import { supabase } from "../../lib/supabase";
 import type { Database } from "@copper/database";
 
 type DbPlan = Database["public"]["Tables"]["planes"]["Row"];
@@ -9,8 +10,34 @@ interface PricingProps {
   plans: DbPlan[];
 }
 
-export default function Pricing({ plans }: PricingProps) {
+export default function Pricing({ plans: initialPlans }: PricingProps) {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "yearly">("monthly");
+
+  // Los planes llegan horneados en el HTML —la página es estática— y se refrescan aquí al
+  // hidratarse, para que un cambio de precios desde el panel se vea al recargar y no haya que
+  // esperar a un despliegue. Si la consulta falla se conservan los del build: es preferible un
+  // precio de hace unos días a una sección de precios vacía.
+  const [plans, setPlans] = useState<DbPlan[]>(initialPlans);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("planes")
+        .select("*")
+        .eq("activo", true)
+        .order("precio_mensual", { ascending: true });
+
+      if (error) {
+        console.error("Error refreshing plans from Supabase:", error);
+        return;
+      }
+      if (!cancelled && data?.length) setPlans(data as DbPlan[]);
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-CO", {
@@ -57,8 +84,17 @@ export default function Pricing({ plans }: PricingProps) {
           </div>
         </div>
 
-        {/* Pricing Cards Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch pt-4">
+        {/* Pricing Cards Grid. Con menos de tres planes activos se centran en vez de quedar
+            pegadas a la izquierda con un hueco a la derecha. */}
+        <div
+          className={`grid grid-cols-1 gap-8 items-stretch pt-4 mx-auto ${
+            plans.length >= 3
+              ? "lg:grid-cols-3"
+              : plans.length === 2
+                ? "lg:grid-cols-2 max-w-4xl"
+                : "max-w-md"
+          }`}
+        >
           {plans.map((plan) => {
             const isPro = plan.nombre.toLowerCase().includes("pro") || plan.nombre.toLowerCase().includes("profesional");
             

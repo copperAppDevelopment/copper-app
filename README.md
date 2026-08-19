@@ -567,6 +567,48 @@ Cosas que no son obvias:
   `admin_user_id` sin exigir `conjunto_id`, así que atribuyen el plan de un conjunto a todos los
   demás del mismo administrador. Este módulo no las usa.
 
+### Planes comerciales
+
+`/superadmin/planes` es la única vía de escritura sobre `planes`: crea, edita y activa o desactiva.
+Los datos compartidos viven en [lib/planesData.ts](apps/admin-panel/lib/planesData.ts), que
+reemplazó a dos copias idénticas de la misma consulta en `features/conjuntos` y
+`features/superadmin`.
+
+Cosas que no son obvias:
+
+- **`anon` ya no puede escribir en `planes`.** Sin RLS, cualquiera con la clave pública podía
+  cambiar los precios desde el navegador. Se revocaron `insert`, `update`, `delete` y `truncate`
+  de `anon` y `authenticated`; **el `select` se queda**, porque lo necesitan la landing y los dos
+  modales de plan del panel.
+- **Solo puede haber 3 planes activos**, que es lo que la página de precios sabe pintar. Lo impone
+  el trigger `trg_planes_tope_activos`, no solo el endpoint: es una regla del negocio. Un plan
+  nuevo creado con el cupo lleno nace inactivo, para poder prepararlo antes de reemplazar a otro.
+- **Editar uno de los tres activos no cuenta como un cuarto**: el trigger excluye la propia fila.
+- **No se borran planes.** `suscripciones_plan_fk` es `ON DELETE NO ACTION` y `plan_id` es
+  `NOT NULL`, así que un plan con suscripciones no se puede borrar ni desreferenciar. Desactivar es
+  el equivalente y conserva el historial.
+- **`activo` pasó a `NOT NULL DEFAULT true`.** Era nullable y las cuatro lecturas filtran
+  `.eq('activo', true)`: un plan con `NULL` desaparecía de la landing y de los modales sin error.
+- **`subtipo` no se edita**, solo se elige al crear. Son los tres literales del CHECK
+  `planes_subtipo_check` (`Básico`, `Profesional`, `Enterprise`), no un enum de la base.
+- **Un precio en cero rompe el checkout** de ese periodo (`pagos/crear` devuelve 400), y
+  **desactivar un plan impide renovarlo y asignarlo** (404 en el checkout y en la asignación
+  manual). El modal avisa de ambas cosas.
+- ⚠️ **La insignia «MÁS POPULAR» de la landing se decide buscando `"pro"` dentro del nombre**
+  ([Pricing.tsx](apps/landing/src/features/pricing/Pricing.tsx)): renombrar el Profesional la
+  apaga, y dos planes con «pro» encienden dos. Merecería una columna `destacado`.
+
+### La landing es estática, salvo los precios
+
+`apps/landing` no tiene adaptador ni `output: 'server'`: **todo se pre-renderiza en el build**. Por
+eso la consulta de `index.astro` corre una sola vez y los datos quedan horneados en el HTML.
+
+La sección de precios es la excepción: recibe los planes del build como valor inicial y **los
+refresca en el navegador al hidratarse**, así un cambio desde el panel se ve al recargar y no hay
+que esperar a un despliegue. Si esa consulta falla se conservan los del build: es preferible un
+precio de hace unos días a una sección vacía. Cualquier otro dato que se edite desde el panel
+**seguirá necesitando un redespliegue de la landing**.
+
 ### Verificar el build sin romper el dev server
 
 Un `next build` normal escribe en el mismo `.next/` que usa `next dev`, y deja al servidor de

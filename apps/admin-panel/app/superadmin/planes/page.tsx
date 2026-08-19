@@ -2,7 +2,7 @@
 
 import { useSuperAdminSession } from "@/hooks/useSuperAdminSession";
 import { SuperAdminPageShell } from "@/components/layout/superadmin-page-shell";
-import { ModuloPendiente } from "@/features/superadmin/components/ModuloPendiente";
+import { PlanesPanel } from "@/features/superadmin/components/PlanesPanel";
 
 export default function SuperAdminPlanesPage() {
   const sesion = useSuperAdminSession();
@@ -12,9 +12,9 @@ export default function SuperAdminPlanesPage() {
       sesion={sesion}
       active="planes"
       titulo="Planes"
-      subtitulo="Planes comerciales de Copper"
+      subtitulo="Planes comerciales de Copper y sus precios"
     >
-      <ModuloPendiente descripcion="Aquí se listarán y editarán los planes: precios mensual, trimestral y anual, tope de residentes y si están activos." />
+      <PlanesPanel sesionCargando={sesion.loading} />
     </SuperAdminPageShell>
   );
 }

@@ -7,7 +7,7 @@ import type {
   SuscripcionActual,
   RespuestaCheckout,
 } from "./types";
-import type { TipoPeriodo, Plan } from "@/lib/conjuntos";
+import type { TipoPeriodo } from "@/lib/conjuntos";
 import type { BorradorTorre } from "@/lib/torres";
 
 /** Los conjuntos que administra el usuario, activos y pendientes de pago por igual. */
@@ -66,16 +66,8 @@ export async function obtenerEditables(conjuntoId: string): Promise<DatosConjunt
   };
 }
 
-export async function listarPlanes(): Promise<Plan[]> {
-  const { data, error } = await supabase
-    .from("planes")
-    .select("id, nombre, subtipo, descripcion, precio_mensual, precio_trimestral, precio_anual, max_residentes")
-    .eq("activo", true)
-    .order("precio_mensual", { ascending: true });
-
-  if (error) throw error;
-  return (data as unknown as Plan[]) || [];
-}
+/** Reexporta la consulta compartida: la misma la usa el módulo de planes del SuperAdmin. */
+export { listarPlanesActivos as listarPlanes } from "@/lib/planesData";
 
 export async function suscripcionVigente(conjuntoId: string): Promise<SuscripcionActual | null> {
   const { data, error } = await supabase
