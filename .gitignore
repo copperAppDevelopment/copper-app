@@ -49,6 +49,9 @@ apps/mobile-residents/GoogleService-Info.plist
 
 docs\app_store_certificate.p12
 
+# Plantillas de correo de Supabase Auth: se pegan a mano en el dashboard y no se versionan.
+supabase/templates/
+
 # macOS
 .DS_Store
 

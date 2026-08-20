@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Alert } from "@/components/ui/alert";
 import { useCambioEmail } from "../hooks/useCambioEmail";
-import { CodigoInput } from "./CodigoInput";
+import { CodigoInput } from "@/components/ui/codigo-input";
 
 export interface CambiarEmailModalProps {
   isOpen: boolean;

@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Alert } from "@/components/ui/alert";
-import { useCambioPassword } from "../hooks/useCambioPassword";
-import { CodigoInput } from "./CodigoInput";
+import { CodigoInput } from "@/components/ui/codigo-input";
+import { useRecuperarPassword, MINIMO_PASSWORD } from "@/hooks/useRecuperarPassword";
 
 export interface CambiarPasswordModalProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ export function CambiarPasswordModal({
   const [password, setPassword] = useState("");
   const [repetida, setRepetida] = useState("");
 
-  const c = useCambioPassword(email, () => {
+  const c = useRecuperarPassword(() => {
     onCambiada();
     cerrar();
   });
@@ -53,7 +53,7 @@ export function CambiarPasswordModal({
         <>
           <Button variant="outline" onClick={cerrar} disabled={c.loading}>Cancelar</Button>
           {esSolicitud ? (
-            <Button onClick={c.solicitar} loading={c.loading}>Enviar código</Button>
+            <Button onClick={() => c.solicitar(email)} loading={c.loading}>Enviar código</Button>
           ) : (
             <Button
               onClick={() => c.confirmar(codigo, password, repetida)}
@@ -70,8 +70,8 @@ export function CambiarPasswordModal({
 
       {esSolicitud ? (
         <Alert variant="info">
-          Al confirmar el código podrás escribir una contraseña nueva. La sesión actual se
-          mantiene abierta.
+          Al confirmar el código podrás escribir una contraseña nueva. Aquí seguirás con la
+          sesión abierta.
         </Alert>
       ) : (
         <>
@@ -83,7 +83,7 @@ export function CambiarPasswordModal({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={c.loading}
-            helperText="Mínimo 8 caracteres."
+            helperText={`Mínimo ${MINIMO_PASSWORD} caracteres.`}
           />
           <Input
             id="password-repetida"
