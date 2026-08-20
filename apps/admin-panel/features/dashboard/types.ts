@@ -14,6 +14,15 @@ export interface KpisAdmin {
   fecha_fin_suscripcion: string | null;
 }
 
+/** Lo que la lista de tareas necesita y los KPIs no traen. */
+export interface PendientesConjunto {
+  /** `false` mientras el pago de la suscripción no se apruebe. */
+  activo: boolean;
+  tieneTorres: boolean;
+  /** La cuota de administración nace en cero: sin ella no se puede facturar. */
+  cuotaDefinida: boolean;
+}
+
 export interface Solicitud {
   numero_apartamento: string | null;
   nombre_residente: string | null;

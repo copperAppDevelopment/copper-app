@@ -598,6 +598,50 @@ Cosas que no son obvias:
   ([Pricing.tsx](apps/landing/src/features/pricing/Pricing.tsx)): renombrar el Profesional la
   apaga, y dos planes con «pro» encienden dos. Merecería una columna `destacado`.
 
+### Registro público de administradores
+
+`/registro` en el panel: cuenta → conjunto → plan → pago. El botón «Registrarse Ahora» de la
+landing lleva allí, y los «Comenzar Ahora» de la sección de precios añaden `?plan=<id>` para dejar
+el plan preseleccionado.
+
+Cosas que no son obvias:
+
+- **Solo el primer paso es nuevo.** Los pasos 2 y 3 reutilizan `ConjuntoFormModal` y `PlanModal`,
+  los mismos que usa un administrador desde el panel. El asistente solo orquesta.
+- **`POST /api/v1/auth/registro-admin` es la primera vía que crea un usuario con rol `Admin`**:
+  hasta ahora se nacía por invitación de otro administrador o como residente desde la app. Escribir
+  `rol: 'Admin'` no es cosmético: `rolEnConjunto` mira el rol global, así que sin él `pagos/crear`
+  responde 403 y el recorrido se rompe justo al cobrar.
+- **La cuenta nace activa; el que nace bloqueado es el conjunto** (`activo: false`), y lo activa el
+  webhook al aprobarse el pago. Un administrador sin pagar entra al panel, pero sus residentes no
+  pueden usar la app.
+- **El límite por IP se comprueba después de validar**, no al entrar. Si contara los intentos que
+  fallan por una errata, tres equivocaciones dejarían a alguien fuera cinco minutos. Lo descubrí
+  bloqueándome a mí mismo al probarlo.
+- **Se puede reanudar**: quien abandona y vuelve a `/registro` continúa donde estaba —si ya hay
+  sesión salta el paso 1, si ya tiene conjunto sin pagar salta al plan— en vez de crear un segundo.
+- **`admin/conjuntos` no comprobaba el rol**: cualquier usuario autenticado, un residente incluido,
+  podía crear conjuntos. Ahora exige `users.rol = 'Admin'` activo.
+- **El callejón sin salida**: un administrador sin conjuntos acababa en `/select-conjunto`, que con
+  cero conjuntos no ofrecía ninguna acción. `useSesionPanel` gana `exigeConjunto`, que solo usa
+  `/admin/conjuntos` —la única página con sentido antes del primer conjunto—, y la pantalla de
+  selección gana un botón para crearlo.
+- **La lista de tareas del dashboard** (`ChecklistOnboarding`) desaparece entera cuando están las
+  cuatro hechas: activar el conjunto, crear apartamentos, fijar la cuota de administración —que
+  nace en cero y sin ella no se factura nada— e invitar residentes.
+- ⚠️ **Un conjunto no se puede borrar**, aunque las 17 claves foráneas sean en cascada: el trigger
+  `trg_proteger_conceptos` impide borrar los conceptos `ADMIN` y `MORA`, y el borrado en cascada
+  choca con él. Para limpiar uno hay que desactivar el trigger un instante.
+
+**El muro de pago, que no existía.** `anon` podía escribir en `suscripciones` y `pagos` con la
+clave pública de la landing: darse una suscripción activa, o marcar un pago pendiente como
+aprobado sin pagar. Se revocó la escritura ahí y en `torres`, `torre_pisos`, `apartamentos` y
+`ubicaciones`, más el `execute` de sus RPC.
+
+⚠️ **Al revocar funciones, `revoke ... from anon, authenticated` no cierra nada.** Postgres concede
+`EXECUTE` a `PUBLIC` por defecto y ese grant sobrevive; hay que quitárselo a `public` y devolvérselo
+a `service_role`. La primera versión de esta migración parecía correcta y dejaba la RPC abierta.
+
 ### Quitar el acceso: usuarios y conjuntos
 
 `/superadmin/usuarios` lista a los administradores con cuántos conjuntos tienen y el plan de cada

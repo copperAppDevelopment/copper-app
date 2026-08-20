@@ -322,13 +322,15 @@ export default function LoginPage() {
             {/* Bottom info link */}
             <div className="space-y-1.5 text-center pt-2">
               <p className="text-xs text-zinc-500 font-light">
-                ¿Aún no eres cliente? Solicita información en nuestro portal público
+                ¿Aún no tienes cuenta? Registra tu copropiedad en unos minutos
               </p>
+              {/* Antes esto apuntaba a `http://localhost:3000` en duro, así que en producción
+                  llevaba a ninguna parte. */}
               <a
-                href="http://localhost:3000/#contacto"
+                href="/registro"
                 className="inline-flex items-center gap-1.5 text-brand hover:text-brand-hover font-bold text-xs transition-colors cursor-pointer"
               >
-                Volver a la Landing
+                Crear mi cuenta
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>

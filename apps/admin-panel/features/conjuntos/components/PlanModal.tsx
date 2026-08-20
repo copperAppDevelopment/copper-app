@@ -18,6 +18,8 @@ export interface PlanModalProps {
   conjuntoId: string;
   /** La suscripción vigente, para marcar el plan en curso. */
   suscripcion?: SuscripcionActual | null;
+  /** Plan preseleccionado, para cuando se llega desde la página de precios con `?plan=`. */
+  planInicial?: string;
   onClose: () => void;
 }
 
@@ -27,7 +29,9 @@ export interface PlanModalProps {
  * No confirma nada por su cuenta: quien activa la suscripción es el webhook cuando Wompi
  * aprueba la transacción. Aquí solo se abre el cobro y se redirige.
  */
-export function PlanModal({ isOpen, conjuntoId, suscripcion, onClose }: PlanModalProps) {
+export function PlanModal({
+  isOpen, conjuntoId, suscripcion, planInicial, onClose,
+}: PlanModalProps) {
   const [planes, setPlanes] = useState<Plan[]>([]);
   const [planId, setPlanId] = useState("");
   const [periodo, setPeriodo] = useState<TipoPeriodo>("mensual");
@@ -46,7 +50,9 @@ export function PlanModal({ isOpen, conjuntoId, suscripcion, onClose }: PlanModa
       .then(lista => {
         if (cancelado) return;
         setPlanes(lista);
-        setPlanId(suscripcion?.plan_id ?? lista[0]?.id ?? "");
+        // El plan pedido solo vale si sigue activo: la lista ya viene filtrada.
+        const pedido = lista.some(p => p.id === planInicial) ? planInicial : undefined;
+        setPlanId(pedido ?? suscripcion?.plan_id ?? lista[0]?.id ?? "");
       })
       .catch(e => {
         console.error("Error al cargar los planes:", e);
@@ -55,7 +61,7 @@ export function PlanModal({ isOpen, conjuntoId, suscripcion, onClose }: PlanModa
       .finally(() => { if (!cancelado) setCargando(false); });
 
     return () => { cancelado = true; };
-  }, [isOpen, suscripcion?.plan_id]);
+  }, [isOpen, suscripcion?.plan_id, planInicial]);
 
   const pagar = async () => {
     setPagando(true);

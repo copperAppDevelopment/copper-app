@@ -150,7 +150,18 @@ export default function SelectConjuntoPage() {
               <Home className="w-8 h-8" />
             </div>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm">No tienes ningún conjunto residencial asignado.</p>
-            <p className="text-zinc-500 dark:text-zinc-650 text-xs max-w-xs mx-auto">Solicita la vinculación de tu usuario con administración o el SuperAdmin.</p>
+            <p className="text-zinc-500 dark:text-zinc-650 text-xs max-w-xs mx-auto">
+              Si eres administrador, crea el tuyo. Si no, solicita la vinculación de tu usuario con
+              administración o el SuperAdmin.
+            </p>
+            {/* Sin esto, quien se registra y no llega a crear su conjunto queda encerrado aquí:
+                el resto del panel exige un conjunto seleccionado. */}
+            <button
+              onClick={() => router.push("/admin/conjuntos")}
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Crear mi primer conjunto
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-4xl">
