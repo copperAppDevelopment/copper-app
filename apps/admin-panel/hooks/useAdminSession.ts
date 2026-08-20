@@ -1,7 +1,7 @@
 'use client';
 
 import { useSesionPanel } from "./useSesionPanel";
-import type { SesionPanel } from "./useSesionPanel";
+import type { SesionPanel, OpcionesSesion } from "./useSesionPanel";
 
 /**
  * Sesión de las páginas de `/admin`: exige rol `Admin`.
@@ -13,6 +13,6 @@ export type AdminSession = SesionPanel;
 
 const SOLO_ADMIN = ["Admin"] as const;
 
-export function useAdminSession(): AdminSession {
-  return useSesionPanel([...SOLO_ADMIN]);
+export function useAdminSession(opciones?: OpcionesSesion): AdminSession {
+  return useSesionPanel([...SOLO_ADMIN], opciones);
 }

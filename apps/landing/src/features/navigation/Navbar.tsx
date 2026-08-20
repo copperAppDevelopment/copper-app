@@ -25,11 +25,11 @@ export default function Navbar() {
     window.location.href = `${adminPanelUrl}/login`;
   };
 
+  // Antes solo hacía scroll al formulario de contacto: registrarse era, en la práctica,
+  // escribirle a ventas. Ahora lleva al asistente de registro del panel.
   const handleOpenDemo = () => {
-    const contactSection = document.getElementById("contacto");
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: "smooth" });
-    }
+    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3001";
+    window.location.href = `${adminPanelUrl}/registro`;
   };
 
   return (

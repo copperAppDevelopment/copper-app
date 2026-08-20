@@ -35,6 +35,19 @@ export async function POST(req: Request) {
     const user = await getAuthUser(req);
     if (!user) return fail('No autorizado', 401);
 
+    // Faltaba: cualquier usuario autenticado —un residente incluido— podía crear conjuntos.
+    // `withAdminConjunto` no sirve aquí porque al crear todavía no hay conjunto, así que el
+    // rol se comprueba a mano.
+    const { data: perfil } = await supabaseAdmin
+      .from('users')
+      .select('rol, estado, cuenta_bloqueada')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (perfil?.rol !== 'Admin' || perfil?.estado === false || perfil?.cuenta_bloqueada === true) {
+      return fail('Necesitas una cuenta de administrador activa', 403);
+    }
+
     const form = await req.formData();
     const conjuntoId = texto(form, 'conjunto_id');
     const esEdicion = Boolean(conjuntoId);

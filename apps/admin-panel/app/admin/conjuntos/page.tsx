@@ -14,7 +14,9 @@ import { ConjuntoFormModal } from "@/features/conjuntos/components/ConjuntoFormM
 import { PlanModal } from "@/features/conjuntos/components/PlanModal";
 
 export default function ConjuntosPage() {
-  const sesion = useAdminSession();
+  // La única página del panel que tiene sentido antes de tener el primer conjunto: quien acaba
+  // de registrarse llega aquí sin nada seleccionado.
+  const sesion = useAdminSession({ exigeConjunto: false });
   const router = useRouter();
   const c = useConjuntos(sesion.userId);
 
@@ -49,9 +51,14 @@ export default function ConjuntosPage() {
 
       {c.conjuntos.length === 0 ? (
         <Card className="shadow-sm">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center py-8">
-            Todavía no administras ningún conjunto.
-          </p>
+          <div className="text-center py-8 space-y-4">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Todavía no administras ningún conjunto. Crea el primero para empezar.
+            </p>
+            <Button onClick={() => setFormAbierto(true)} icon={<Plus className="w-4 h-4" />}>
+              Crear mi primer conjunto
+            </Button>
+          </div>
         </Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

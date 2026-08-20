@@ -29,7 +29,21 @@ export interface SesionPanel {
  *
  * Mientras `loading` sea true la página no debe consultar nada: `conjuntoId` aún está vacío.
  */
-export function useSesionPanel(rolesPermitidos: RolEquipo[]): SesionPanel {
+export interface OpcionesSesion {
+  /**
+   * Si `false`, no redirige a `/select-conjunto` cuando no hay conjunto elegido.
+   *
+   * Lo usa `/admin/conjuntos`, que es la única página con sentido antes de tener el primero:
+   * sin esto, quien se registra y abandona antes de crear su conjunto queda encerrado en
+   * `/select-conjunto`, que con cero conjuntos no ofrece ninguna salida.
+   */
+  exigeConjunto?: boolean;
+}
+
+export function useSesionPanel(
+  rolesPermitidos: RolEquipo[],
+  { exigeConjunto = true }: OpcionesSesion = {}
+): SesionPanel {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState("");
@@ -74,7 +88,7 @@ export function useSesionPanel(rolesPermitidos: RolEquipo[]): SesionPanel {
       }
 
       const conjunto = getConjuntoSeleccionado();
-      if (!conjunto) {
+      if (!conjunto && exigeConjunto) {
         router.push("/select-conjunto");
         return;
       }
@@ -92,15 +106,15 @@ export function useSesionPanel(rolesPermitidos: RolEquipo[]): SesionPanel {
       setUserId(session.user.id);
       setUserEmail(session.user.email || "");
       setRol(suyo as RolEquipo);
-      setConjuntoId(conjunto.id);
-      setConjuntoNombre(conjunto.nombre);
+      setConjuntoId(conjunto?.id ?? "");
+      setConjuntoNombre(conjunto?.nombre ?? "");
       setHasMultipleConjuntos(unicos.length > 1);
       setLoading(false);
     }
 
     verificar();
     return () => { cancelado = true; };
-  }, [router, clave]);
+  }, [router, clave, exigeConjunto]);
 
   return { loading, userId, userEmail, rol, conjuntoId, conjuntoNombre, hasMultipleConjuntos };
 }
