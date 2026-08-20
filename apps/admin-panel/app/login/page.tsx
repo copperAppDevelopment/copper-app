@@ -3,18 +3,20 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, User, Lock, ArrowRight, ShieldCheck, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, User, Lock, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
 import { setConjuntoSeleccionado, clearConjuntoSeleccionado } from "../../lib/conjunto";
+import { RecuperarPasswordForm } from "../../components/auth/RecuperarPasswordForm";
 
 export default function LoginPage() {
   const router = useRouter();
+  const [modo, setModo] = useState<"entrar" | "recuperar">("entrar");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
+  const [avisoMsg, setAvisoMsg] = useState("");
 
   // Clean up session if accessing login page to allow fresh sign-in
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function LoginPage() {
       return;
     }
     setErrorMsg("");
-    setSuccessMsg("");
+    setAvisoMsg("");
     setIsSubmitting(true);
 
     try {
@@ -80,23 +82,21 @@ export default function LoginPage() {
         return;
       }
 
-      setSuccessMsg("¡Sesión iniciada con éxito! Redirigiendo...");
-
       // 4️⃣ Check role and route accordingly
+      //
+      // Se navega en el acto. Antes había un cartel de «sesión iniciada» y un segundo de espera
+      // para que diera tiempo a leerlo: un retardo puesto solo para justificar el mensaje.
+      // `isSubmitting` se queda encendido mientras se navega, que es lo que evita el doble envío.
       const role = profile.rol;
 
       if (role === 'Residente') {
         // Residents only access via mobile
-        setTimeout(() => {
-          router.push("/residente/no-access");
-        }, 1000);
+        router.push("/residente/no-access");
         return;
       }
 
       if (role === 'SuperAdmin') {
-        setTimeout(() => {
-          router.push("/superadmin/dashboard");
-        }, 1000);
+        router.push("/superadmin/dashboard");
         return;
       }
 
@@ -117,28 +117,26 @@ export default function LoginPage() {
       );
       const count = uniqueConjuntos.length;
 
-      setTimeout(() => {
-        if (count === 0) {
-          // If no complexes, redirect to role dashboard anyway but show empty state
-          if (role === 'Admin') router.push("/admin/dashboard");
-          else if (role === 'Recepcion') router.push("/recepcion/dashboard");
-          else if (role === 'Contador') router.push("/contador/dashboard");
-          else router.push("/");
-        } else if (count === 1 && uniqueConjuntos[0]) {
-          // If only 1 complex, auto-select it and go to dashboard
-          const selectedConjunto = uniqueConjuntos[0];
-          setConjuntoSeleccionado(selectedConjunto);
+      if (count === 0) {
+        // If no complexes, redirect to role dashboard anyway but show empty state
+        if (role === 'Admin') router.push("/admin/dashboard");
+        else if (role === 'Recepcion') router.push("/recepcion/dashboard");
+        else if (role === 'Contador') router.push("/contador/dashboard");
+        else router.push("/");
+      } else if (count === 1 && uniqueConjuntos[0]) {
+        // If only 1 complex, auto-select it and go to dashboard
+        const selectedConjunto = uniqueConjuntos[0];
+        setConjuntoSeleccionado(selectedConjunto);
 
-          if (role === 'Admin') router.push("/admin/dashboard");
-          else if (role === 'Recepcion') router.push("/recepcion/dashboard");
-          else if (role === 'Contador') router.push("/contador/dashboard");
-          else router.push("/");
-        } else {
-          // If multiple complexes, redirect to selection screen
-          clearConjuntoSeleccionado();
-          router.push("/select-conjunto");
-        }
-      }, 1000);
+        if (role === 'Admin') router.push("/admin/dashboard");
+        else if (role === 'Recepcion') router.push("/recepcion/dashboard");
+        else if (role === 'Contador') router.push("/contador/dashboard");
+        else router.push("/");
+      } else {
+        // If multiple complexes, redirect to selection screen
+        clearConjuntoSeleccionado();
+        router.push("/select-conjunto");
+      }
 
     } catch (err: any) {
       console.error("Unexpected login error:", err);
@@ -228,6 +226,16 @@ export default function LoginPage() {
             RIGHT COLUMN: LOGIN FORM
             ======================================================== */}
         <div className="flex-1 p-8 sm:p-12 md:p-16 flex flex-col justify-center bg-white dark:bg-zinc-900">
+          {modo === "recuperar" ? (
+            <RecuperarPasswordForm
+              onVolver={(aviso) => {
+                setModo("entrar");
+                setErrorMsg("");
+                setPassword("");
+                setAvisoMsg(aviso ?? "");
+              }}
+            />
+          ) : (
           <div className="max-w-md w-full mx-auto space-y-10">
 
             <div className="text-left space-y-2">
@@ -246,10 +254,10 @@ export default function LoginPage() {
                 <span>{errorMsg}</span>
               </div>
             )}
-            {successMsg && (
+            {avisoMsg && (
               <div className="p-4 rounded-xl bg-emerald-950/80 border border-emerald-900 text-emerald-200 text-xs font-semibold text-left flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-500 shrink-0" />
-                <span>{successMsg}</span>
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                <span>{avisoMsg}</span>
               </div>
             )}
 
@@ -299,6 +307,16 @@ export default function LoginPage() {
                 </div>
               </div>
 
+              <div className="flex justify-end -mt-4">
+                <button
+                  type="button"
+                  onClick={() => { setModo("recuperar"); setErrorMsg(""); setAvisoMsg(""); }}
+                  className="text-xs text-zinc-500 hover:text-brand transition-colors cursor-pointer"
+                >
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+
               {/* Submit Button */}
               <button
                 type="submit"
@@ -336,6 +354,7 @@ export default function LoginPage() {
             </div>
 
           </div>
+          )}
         </div>
 
       </div>

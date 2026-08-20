@@ -284,6 +284,13 @@ como enlace**:
 | Auth → Email Templates | *Change Email Address* y *Reset Password* deben usar `{{ .Token }}`, no `{{ .ConfirmationURL }}` |
 | Auth → Providers → Email | *Secure email change* **desactivado**, para que se pida un solo código (al correo nuevo) en vez de dos |
 
+**El HTML de las plantillas no está en el repo**: vive solo en el dashboard, que es el único sitio
+donde surte efecto. `supabase/templates/` está en `.gitignore` por si quieres tener una copia local.
+
+Una sola plantilla, *Reset Password*, sirve a los **dos** sitios que llaman a
+`resetPasswordForEmail`: el modal del perfil y la recuperación desde el login. Supabase no distingue
+quién la pidió, así que cambiarla por un enlace rompe los dos a la vez.
+
 `trg_sync_email` sobre `auth.users` copia el correo a `public.users`: no hace falta actualizarlo a
 mano desde el cliente.
 

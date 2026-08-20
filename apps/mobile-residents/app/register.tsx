@@ -93,8 +93,10 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (contrasena.length < 6) {
-      Alert.alert('Contraseña débil', 'La contraseña debe tener mínimo 6 caracteres.');
+    // Ocho, como el panel y como la pantalla de recuperación: si aquí se aceptaran seis, el
+    // residente no podría volver a poner su propia contraseña al recuperarla.
+    if (contrasena.length < 8) {
+      Alert.alert('Contraseña débil', 'La contraseña debe tener mínimo 8 caracteres.');
       return;
     }
 
@@ -224,7 +226,7 @@ export default function RegisterScreen() {
 
           <CustomInput
             label="Contraseña *"
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mínimo 8 caracteres"
             secureTextEntry
             autoCapitalize="none"
             value={contrasena}
