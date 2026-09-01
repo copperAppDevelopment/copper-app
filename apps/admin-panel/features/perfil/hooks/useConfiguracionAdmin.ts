@@ -14,6 +14,9 @@ const CONFIG_VACIA: DatosConfiguracion = {
   pronto_pago_valor: "",
   pronto_pago_porcentaje: "",
   pronto_pago_dias: "",
+  nit: "",
+  telefono: "",
+  email: "",
 };
 
 /** La base guarda el porcentaje como fracción (0.02) y la UI lo muestra como 2. */
@@ -47,6 +50,9 @@ export function useConfiguracionAdmin(conjuntoId: string) {
         pronto_pago_porcentaje:
           cfg?.pronto_pago_porcentaje != null ? String(cfg.pronto_pago_porcentaje) : "",
         pronto_pago_dias: cfg?.pronto_pago_dias != null ? String(cfg.pronto_pago_dias) : "",
+        nit: cfg?.nit ?? "",
+        telefono: cfg?.telefono ?? "",
+        email: cfg?.email ?? "",
       });
       setError("");
     } catch (e) {

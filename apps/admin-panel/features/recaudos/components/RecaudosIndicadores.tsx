@@ -8,10 +8,19 @@ export interface RecaudosIndicadoresProps {
   sinAbonar: number;
   sinAplicar: number;
   cantidad: number;
+  /** De qué periodo hablan estas cifras: «junio de 2026», «todos los periodos»… */
+  etiquetaPeriodo: string;
+  hayPeriodo: boolean;
 }
 
+/**
+ * Las cifras son del periodo seleccionado, no del histórico, y **no** responden a la búsqueda
+ * ni al filtro de estado: los totales del mes se mantienen quietos mientras se busca dentro
+ * de él. Por eso el contador de aquí y el de la tabla pueden discrepar, y por eso cada uno
+ * dice de qué está hablando.
+ */
 export function RecaudosIndicadores({
-  totalRecaudado, totalAbonado, sinAbonar, sinAplicar, cantidad,
+  totalRecaudado, totalAbonado, sinAbonar, sinAplicar, cantidad, etiquetaPeriodo, hayPeriodo,
 }: RecaudosIndicadoresProps) {
   return (
     <section className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -19,11 +28,15 @@ export function RecaudosIndicadores({
         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider">
           Total recaudado
         </p>
+        <p className="text-[11px] text-brand font-semibold mt-0.5 capitalize">
+          {etiquetaPeriodo}
+        </p>
         <p className="text-2xl font-extrabold text-zinc-900 dark:text-white mt-2">
           {formatoMoneda(totalRecaudado)}
         </p>
         <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-2">
-          {cantidad} recaudos registrados
+          {cantidad === 1 ? "1 recaudo" : `${cantidad} recaudos`}
+          {hayPeriodo ? ` en ${etiquetaPeriodo}` : " registrados"}
         </p>
       </Card>
 

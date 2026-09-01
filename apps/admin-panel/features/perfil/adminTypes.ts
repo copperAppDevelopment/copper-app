@@ -26,6 +26,10 @@ export interface ConfiguracionConjunto {
   pronto_pago_valor: number | null;
   pronto_pago_porcentaje: number | null;
   pronto_pago_dias: number | null;
+  /** Datos del emisor. Viven en `conjuntos`, pero se editan en esta misma pantalla. */
+  nit: string | null;
+  telefono: string | null;
+  email: string | null;
 }
 
 export interface DatosConfiguracion {
@@ -35,6 +39,9 @@ export interface DatosConfiguracion {
   pronto_pago_valor: string;
   pronto_pago_porcentaje: string;
   pronto_pago_dias: string;
+  nit: string;
+  telefono: string;
+  email: string;
 }
 
 export interface AreaComun {

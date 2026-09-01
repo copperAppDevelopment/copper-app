@@ -6,6 +6,7 @@ import { useBalancesData } from '../../src/features/balances/hooks/useBalancesDa
 import { BalancesSummaryCard } from '../../src/features/balances/components/BalancesSummaryCard';
 import { BalancesFilters } from '../../src/features/balances/components/BalancesFilters';
 import { MovementHistoryCard } from '../../src/features/balances/components/MovementHistoryCard';
+import { DescargarCuentaCobro } from '../../src/features/balances/components/DescargarCuentaCobro';
 
 import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
 
@@ -55,6 +56,9 @@ export default function MisBalancesScreen() {
             ultimoPago={indicators?.ultimo_pago}
             linkPago={indicators?.link_pago}
           />
+
+          {/* Cuenta de cobro en PDF: los meses salen del propio historial */}
+          <DescargarCuentaCobro history={history} />
 
           {/* Barra de Filtros interactiva */}
           <BalancesFilters

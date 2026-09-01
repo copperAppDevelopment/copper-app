@@ -5,12 +5,19 @@ import { useState, useEffect, useCallback } from "react";
 import { useTablaLocal } from "@/hooks/useTablaLocal";
 import { listarOpcionesApartamento, etiquetaApartamento, type ApartamentoOpcion } from "@/lib/apartamentos";
 import * as api from "../api";
-import { totalAplicado, estadoDe } from "../utils";
+import {
+  totalAplicado, estadoDe, periodoActual, anioMesDe, campoDePeriodo, etiquetaPeriodo,
+} from "../utils";
 import type {
-  Recaudo, Carga, FiltroEstado, ResultadoCarga, NuevoRecaudo,
+  Recaudo, Carga, FiltroEstado, BasePeriodo, ResultadoCarga, NuevoRecaudo,
 } from "../types";
 
 const PAGE_SIZE = 15;
+
+/** El mes en curso, partido, que es con lo que abre la página. */
+const HOY = periodoActual();
+const ANIO_ACTUAL = HOY.slice(0, 4);
+const MES_ACTUAL = HOY.slice(5, 7);
 
 export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
   const [loading, setLoading] = useState(true);
@@ -22,6 +29,13 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
   const [filtro, setFiltro] = useState("");
   const [filtroEstado, setFiltroEstado] = useState<FiltroEstado>("todos");
   const [aplicandoId, setAplicandoId] = useState<string | null>(null);
+
+  // La página abre por el mes en curso, no por el histórico completo.
+  const [anio, setAnio] = useState(ANIO_ACTUAL);
+  const [mes, setMes] = useState(MES_ACTUAL);
+  // Por `fecha` y no por `periodo`: al entrar interesa lo que entró en caja este mes. El
+  // selector deja cambiar al mes contable, que es otra pregunta.
+  const [basePeriodo, setBasePeriodo] = useState<BasePeriodo>("fecha");
 
   const recargar = useCallback(async (id: string) => {
     try {
@@ -45,19 +59,58 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
     })();
   }, [sesionCargando, conjuntoId, recargar]);
 
-  const totalRecaudado = recaudos.reduce((s, r) => s + Number(r.valor_total ?? 0), 0);
-  const totalAbonado = recaudos.reduce((s, r) => s + totalAplicado(r), 0);
-  const indicadores = {
-    totalRecaudado,
-    totalAbonado,
-    sinAbonar: totalRecaudado - totalAbonado,
-    sinAplicar: recaudos.filter(r => totalAplicado(r) === 0).length,
-    cantidad: recaudos.length,
-  };
+  // Primera etapa: el periodo. De aquí cuelgan los indicadores, para que los totales del mes
+  // no se muevan mientras se busca un apartamento dentro de él.
+  const enPeriodo = React.useMemo(() => {
+    if (!anio && !mes) return recaudos;
+    return recaudos.filter(r => {
+      const partes = anioMesDe(campoDePeriodo(r, basePeriodo));
+      if (!partes) return false;
+      if (anio && partes.anio !== anio) return false;
+      if (mes && partes.mes !== mes) return false;
+      return true;
+    });
+  }, [recaudos, anio, mes, basePeriodo]);
 
+  const indicadores = React.useMemo(() => {
+    const totalRecaudado = enPeriodo.reduce((s, r) => s + Number(r.valor_total ?? 0), 0);
+    const totalAbonado = enPeriodo.reduce((s, r) => s + totalAplicado(r), 0);
+    return {
+      totalRecaudado,
+      totalAbonado,
+      sinAbonar: totalRecaudado - totalAbonado,
+      sinAplicar: enPeriodo.filter(r => totalAplicado(r) === 0).length,
+      cantidad: enPeriodo.length,
+    };
+  }, [enPeriodo]);
+
+  // Aparte y sobre la lista entera: es lo que alimenta el aviso de la página, que tiene que
+  // seguir viendo los pendientes de otros meses aunque se esté mirando uno solo.
+  const sinAplicarTotal = React.useMemo(
+    () => recaudos.filter(r => totalAplicado(r) === 0).length,
+    [recaudos]
+  );
+
+  /**
+   * Los años que existen de verdad, en vez de un rango fijo, para no ofrecer meses vacíos.
+   * Se añaden siempre el año en curso —viene seleccionado por defecto y puede no tener ni un
+   * recaudo— y el que esté elegido, por si al cambiar de base deja de existir: un `Select`
+   * cuyo `value` no está entre sus `options` se pinta vacío y parece roto.
+   */
+  const opcionesAnio = React.useMemo(() => {
+    const anios = new Set<string>([ANIO_ACTUAL]);
+    if (anio) anios.add(anio);
+    for (const r of recaudos) {
+      const partes = anioMesDe(campoDePeriodo(r, basePeriodo));
+      if (partes) anios.add(partes.anio);
+    }
+    return [...anios].sort().reverse().map(a => ({ value: a, label: a }));
+  }, [recaudos, basePeriodo, anio]);
+
+  // Segunda etapa: lo que ve la tabla.
   const filtrados = React.useMemo(() => {
     const termino = filtro.trim().toLowerCase();
-    return recaudos.filter(r => {
+    return enPeriodo.filter(r => {
       if (filtroEstado !== "todos" && estadoDe(r) !== filtroEstado) return false;
       if (!termino) return true;
       return (
@@ -66,7 +119,7 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
         (r.origen || "").toLowerCase().includes(termino)
       );
     });
-  }, [recaudos, filtro, filtroEstado]);
+  }, [enPeriodo, filtro, filtroEstado]);
 
   const tabla = useTablaLocal(filtrados, {
     pageSize: PAGE_SIZE,
@@ -81,6 +134,28 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
 
   const cambiarEstado = (valor: FiltroEstado) => {
     setFiltroEstado(valor);
+    tabla.reiniciarPagina();
+  };
+
+  const cambiarAnio = (valor: string) => {
+    setAnio(valor);
+    tabla.reiniciarPagina();
+  };
+
+  const cambiarMes = (valor: string) => {
+    setMes(valor);
+    tabla.reiniciarPagina();
+  };
+
+  const cambiarBasePeriodo = (valor: BasePeriodo) => {
+    setBasePeriodo(valor);
+    tabla.reiniciarPagina();
+  };
+
+  /** La salida del filtro por defecto: sin esto habría que adivinar qué selector tocar. */
+  const limpiarPeriodo = () => {
+    setAnio("");
+    setMes("");
     tabla.reiniciarPagina();
   };
 
@@ -128,10 +203,21 @@ export function useRecaudos(conjuntoId: string, sesionCargando: boolean) {
     loading,
     error,
     indicadores,
+    sinAplicarTotal,
     filtro,
     cambiarFiltro,
     filtroEstado,
     cambiarEstado,
+    anio,
+    cambiarAnio,
+    mes,
+    cambiarMes,
+    basePeriodo,
+    cambiarBasePeriodo,
+    opcionesAnio,
+    limpiarPeriodo,
+    etiquetaPeriodo: etiquetaPeriodo(anio, mes),
+    hayPeriodo: Boolean(anio || mes),
     tabla,
     cargas,
     opcionesApartamento,
