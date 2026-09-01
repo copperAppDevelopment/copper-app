@@ -57,7 +57,9 @@ export default function RecaudosPage() {
     }
   };
 
-  const { sinAplicar } = r.indicadores;
+  // El total, no el del periodo: con la página abriendo filtrada por el mes en curso, este
+  // aviso es lo único que delata un recaudo sin aplicar de un mes anterior.
+  const sinAplicar = r.sinAplicarTotal;
 
   return (
     <AdminPageShell
@@ -85,10 +87,15 @@ export default function RecaudosPage() {
           {sinAplicar === 1
             ? "Hay 1 recaudo sin aplicar: está registrado pero no se ha abonado a ningún cargo."
             : `Hay ${sinAplicar} recaudos sin aplicar: están registrados pero no se han abonado a ningún cargo.`}
+          {r.hayPeriodo && " La cuenta es de todos los periodos, no solo del que estás viendo."}
         </p>
       )}
 
-      <RecaudosIndicadores {...r.indicadores} />
+      <RecaudosIndicadores
+        {...r.indicadores}
+        etiquetaPeriodo={r.etiquetaPeriodo}
+        hayPeriodo={r.hayPeriodo}
+      />
 
       <RecaudosTabla
         tabla={r.tabla}
@@ -96,6 +103,16 @@ export default function RecaudosPage() {
         onFiltroChange={r.cambiarFiltro}
         filtroEstado={r.filtroEstado}
         onEstadoChange={r.cambiarEstado}
+        anio={r.anio}
+        onAnioChange={r.cambiarAnio}
+        mes={r.mes}
+        onMesChange={r.cambiarMes}
+        basePeriodo={r.basePeriodo}
+        onBasePeriodoChange={r.cambiarBasePeriodo}
+        opcionesAnio={r.opcionesAnio}
+        onLimpiarPeriodo={r.limpiarPeriodo}
+        hayPeriodo={r.hayPeriodo}
+        etiquetaPeriodo={r.etiquetaPeriodo}
         onAplicar={r.aplicar}
         aplicandoId={r.aplicandoId}
       />

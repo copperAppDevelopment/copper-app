@@ -13,6 +13,7 @@ import type { TipoCalculo } from "@/lib/conceptos";
 import { useConfiguracionAdmin } from "../hooks/useConfiguracionAdmin";
 import { ConceptoModal } from "./ConceptoModal";
 import { ConfiguracionPagoForm } from "./ConfiguracionPagoForm";
+import { AvisosCobroCard } from "./AvisosCobroCard";
 import type { Concepto } from "../adminTypes";
 
 export function TabAdministracion({ conjuntoId }: { conjuntoId: string }) {
@@ -107,6 +108,12 @@ export function TabAdministracion({ conjuntoId }: { conjuntoId: string }) {
         guardando={c.guardando}
         onCambiar={c.cambiar}
         onGuardar={c.guardarConfig}
+      />
+
+      {/* Después del formulario: el calendario depende del pronto pago que se configura arriba. */}
+      <AvisosCobroCard
+        prontoPagoHabilitado={c.form.pronto_pago_habilitado}
+        prontoPagoDias={c.form.pronto_pago_dias}
       />
 
       <ConceptoModal

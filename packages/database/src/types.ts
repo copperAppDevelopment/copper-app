@@ -135,6 +135,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "fk_admins_conjuntos_user"
             columns: ["user_id"]
             isOneToOne: false
@@ -202,6 +223,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -336,6 +364,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
           {
@@ -499,6 +548,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "areas_conjuntos_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "areas_conjuntos_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "areas_conjuntos_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       audit_logs: {
@@ -607,6 +677,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "audit_logs_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -744,6 +821,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargas_recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "cargas_recaudos_creado_por_fkey"
             columns: ["creado_por"]
             isOneToOne: false
@@ -813,6 +911,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "cargas_recaudos_creado_por_fkey"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       cargos_mensuales: {
@@ -820,6 +925,7 @@ export type Database = {
           apartamento_id: string
           concepto_id: string
           conjunto_id: string
+          descuento_aplicado: number
           fecha_generado: string | null
           fecha_vencimiento: string | null
           id: string
@@ -836,6 +942,7 @@ export type Database = {
           apartamento_id: string
           concepto_id: string
           conjunto_id: string
+          descuento_aplicado?: number
           fecha_generado?: string | null
           fecha_vencimiento?: string | null
           id?: string
@@ -852,6 +959,7 @@ export type Database = {
           apartamento_id?: string
           concepto_id?: string
           conjunto_id?: string
+          descuento_aplicado?: number
           fecha_generado?: string | null
           fecha_vencimiento?: string | null
           id?: string
@@ -1024,6 +1132,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
           {
@@ -1261,6 +1390,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "chat_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       chats: {
@@ -1393,6 +1529,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "chats_receptor_id_fkey"
             columns: ["receptor_id"]
             isOneToOne: false
@@ -1460,6 +1617,13 @@ export type Database = {
             columns: ["receptor_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "chats_receptor_id_fkey"
+            columns: ["receptor_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -1699,6 +1863,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "comunicados_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "comunicados_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "comunicados_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "comunicados_creado_por_fk"
             columns: ["creado_por"]
             isOneToOne: false
@@ -1766,6 +1951,13 @@ export type Database = {
             columns: ["creado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "comunicados_creado_por_fk"
+            columns: ["creado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -1905,6 +2097,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "conceptos_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "conceptos_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "conceptos_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       conjuntos: {
@@ -1915,11 +2128,14 @@ export type Database = {
           codigo_municipio: string
           created_at: string | null
           direccion: string
+          email: string | null
           estado: string | null
           estrato: number | null
           foto_url: string | null
           id: string
+          nit: string | null
           nombre: string
+          telefono: string | null
           tiene_torres: boolean
           tipo_vivienda: string
           updated_at: string | null
@@ -1932,11 +2148,14 @@ export type Database = {
           codigo_municipio: string
           created_at?: string | null
           direccion: string
+          email?: string | null
           estado?: string | null
           estrato?: number | null
           foto_url?: string | null
           id?: string
+          nit?: string | null
           nombre: string
+          telefono?: string | null
           tiene_torres?: boolean
           tipo_vivienda: string
           updated_at?: string | null
@@ -1949,11 +2168,14 @@ export type Database = {
           codigo_municipio?: string
           created_at?: string | null
           direccion?: string
+          email?: string | null
           estado?: string | null
           estrato?: number | null
           foto_url?: string | null
           id?: string
+          nit?: string | null
           nombre?: string
+          telefono?: string | null
           tiene_torres?: boolean
           tipo_vivienda?: string
           updated_at?: string | null
@@ -2103,6 +2325,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "conjuntos_configuracion_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "conjuntos_configuracion_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "conjuntos_configuracion_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -2468,6 +2711,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "envios_registrado_por_fkey"
             columns: ["registrado_por"]
             isOneToOne: false
@@ -2535,6 +2785,13 @@ export type Database = {
             columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -2739,6 +2996,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "invitaciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "invitaciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "invitaciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       mascotas: {
@@ -2815,6 +3093,219 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]
+          },
+        ]
+      }
+      notificaciones_cobro: {
+        Row: {
+          apartamento_id: string
+          conjunto_id: string
+          enviada_en: string
+          id: string
+          notification_id: number | null
+          periodo: string
+          tipo: string
+        }
+        Insert: {
+          apartamento_id: string
+          conjunto_id: string
+          enviada_en?: string
+          id?: string
+          notification_id?: number | null
+          periodo: string
+          tipo: string
+        }
+        Update: {
+          apartamento_id?: string
+          conjunto_id?: string
+          enviada_en?: string
+          id?: string
+          notification_id?: number | null
+          periodo?: string
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "conjuntos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_configuracion_actual"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashbard_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_editar_conjunto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_administracion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_con_suscripcion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_seleccion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notificaciones_cobro_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "vista_notificaciones_residente"
+            referencedColumns: ["id_notification"]
           },
         ]
       }
@@ -2967,6 +3458,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "notifications_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notifications_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "notifications_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "notifications_enviado_por_fkey"
             columns: ["enviado_por"]
             isOneToOne: false
@@ -3034,6 +3546,13 @@ export type Database = {
             columns: ["enviado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_enviado_por_fkey"
+            columns: ["enviado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -3113,6 +3632,27 @@ export type Database = {
             columns: ["suscripcion_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["suscripcion_id"]
           },
           {
@@ -3379,6 +3919,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "recaudos_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       reportes_legacy: {
@@ -3563,6 +4124,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "reportes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "reportes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "reportes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       residentes: {
@@ -3745,6 +4327,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "residente_user_fk"
             columns: ["user_id"]
             isOneToOne: false
@@ -3812,6 +4415,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "residente_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -4000,6 +4610,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "solicitudes_residente_fk"
             columns: ["residente_id"]
             isOneToOne: false
@@ -4168,6 +4799,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "suscripciones_conjunto_id_fkey"
             columns: ["conjunto_id"]
             isOneToOne: false
@@ -4256,6 +4894,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
           {
@@ -4464,6 +5123,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       transacciones_conjunto: {
@@ -4586,6 +5266,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "tx_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "tx_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "tx_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       transacciones_superadmin: {
@@ -4679,6 +5380,13 @@ export type Database = {
             columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "tx_super_admin_user_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -5032,6 +5740,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
     }
@@ -5141,6 +5856,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "fk_admins_conjuntos_user"
             columns: ["user_id"]
             isOneToOne: false
@@ -5208,6 +5944,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -5313,6 +6056,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -5451,6 +6215,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "chats_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "chats_receptor_id_fkey"
             columns: ["admin_user_id"]
             isOneToOne: false
@@ -5518,6 +6303,13 @@ export type Database = {
             columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "chats_receptor_id_fkey"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -5639,6 +6431,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "residente_user_fk"
+            columns: ["residente_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       vista_cobros_manuales: {
@@ -5758,6 +6557,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -5924,6 +6744,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "residente_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       vista_departamentos: {
@@ -6071,6 +6898,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "suscripciones_conjunto_id_fkey"
             columns: ["conjunto_id"]
             isOneToOne: false
@@ -6159,6 +6993,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
           {
@@ -6317,6 +7172,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "envios_entregado_por_fkey"
             columns: ["entregado_por"]
             isOneToOne: false
@@ -6387,6 +7263,13 @@ export type Database = {
             referencedColumns: ["user_id"]
           },
           {
+            foreignKeyName: "envios_entregado_por_fkey"
+            columns: ["entregado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "envios_registrado_por_fkey"
             columns: ["registrado_por"]
             isOneToOne: false
@@ -6454,6 +7337,13 @@ export type Database = {
             columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "envios_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -6583,6 +7473,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       vista_gestion_solicitudes_detalle: {
@@ -6686,6 +7597,13 @@ export type Database = {
             columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -6835,6 +7753,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       vista_gestion_torres: {
@@ -6944,6 +7883,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "torres_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       vista_historial_pagos_suscripcion: {
@@ -6995,6 +7955,27 @@ export type Database = {
             columns: ["suscripcion_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["suscripcion_id"]
+          },
+          {
+            foreignKeyName: "pagos_suscripcion_id_fkey"
+            columns: ["suscripcion_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["suscripcion_id"]
           },
           {
@@ -7079,6 +8060,13 @@ export type Database = {
             columns: ["admin_user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -7170,6 +8158,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -7278,6 +8287,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -7403,6 +8433,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       vista_mis_conjuntos: {
@@ -7489,6 +8540,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
           {
@@ -7599,6 +8657,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       vista_mis_conjuntos_con_suscripcion: {
@@ -7698,6 +8763,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       vista_mis_conjuntos_seleccion: {
@@ -7776,6 +8848,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -7888,6 +8967,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
         ]
@@ -8003,6 +9103,27 @@ export type Database = {
             columns: ["conjunto_id"]
             isOneToOne: false
             referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "solicitudes_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
             referencedColumns: ["conjunto_id"]
           },
           {
@@ -8233,6 +9354,27 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_conjunto"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
       }
       vista_personas_apartamento: {
@@ -8420,6 +9562,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "residente_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "residente_user_fk"
             columns: ["user_id"]
             isOneToOne: false
@@ -8487,6 +9650,13 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "residente_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -8721,6 +9891,13 @@ export type Database = {
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["user_id"]
           },
+          {
+            foreignKeyName: "residente_user_fk"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       vista_superadmin_admin_conjuntos: {
@@ -8730,7 +9907,9 @@ export type Database = {
           conjunto_id: string | null
           conjunto_vetado: boolean | null
           es_propietario: boolean | null
-          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           fecha_fin: string | null
           nombre_conjunto: string | null
           nombre_plan: string | null
@@ -8739,23 +9918,285 @@ export type Database = {
           tipo_periodo: string | null
           user_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
-      vista_superadmin_usuarios: {
+      vista_superadmin_asignacion: {
         Row: {
-          created_at: string | null
-          cuenta_bloqueada: boolean | null
-          documento: string | null
-          email: string | null
-          estado: boolean | null
-          nombre_completo: string | null
-          rol: string | null
-          telefono: string | null
-          total_conjuntos: number | null
-          ultimo_login: string | null
-          user_id: string | null
+          admin_user_id: string | null
+          ciudad: string | null
+          conjunto_activo: boolean | null
+          conjunto_id: string | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
+          fecha_fin: string | null
+          fecha_inicio: string | null
+          metodo_pago: string | null
+          nombre_conjunto: string | null
+          nombre_plan: string | null
+          plan_id: string | null
+          precio_pagado: number | null
+          propietario_email: string | null
+          propietario_id: string | null
+          propietario_nombre: string | null
+          suscripcion_id: string | null
+          tipo_periodo: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_admin_fk"
+            columns: ["admin_user_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_plan_fk"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "planes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "suscripciones_plan_fk"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "vista_historial_pagos_suscripcion"
+            referencedColumns: ["plan_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_plan_fk"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["plan_id"]
+          },
+        ]
       }
       vista_superadmin_conjuntos: {
         Row: {
@@ -8764,7 +10205,9 @@ export type Database = {
           conjunto_id: string | null
           created_at: string | null
           direccion: string | null
-          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
+          estado_suscripcion:
+            | Database["public"]["Enums"]["estado_suscripcion"]
+            | null
           estrato: number | null
           fecha_fin: string | null
           fecha_inicio: string | null
@@ -8785,29 +10228,85 @@ export type Database = {
           tipo_vivienda: string | null
           vetado: boolean | null
         }
-        Relationships: []
-      }
-      vista_superadmin_asignacion: {
-        Row: {
-          admin_user_id: string | null
-          ciudad: string | null
-          conjunto_activo: boolean | null
-          conjunto_id: string | null
-          estado_suscripcion: Database["public"]["Enums"]["estado_suscripcion"] | null
-          fecha_fin: string | null
-          fecha_inicio: string | null
-          metodo_pago: string | null
-          nombre_conjunto: string | null
-          nombre_plan: string | null
-          plan_id: string | null
-          precio_pagado: number | null
-          propietario_email: string | null
-          propietario_id: string | null
-          propietario_nombre: string | null
-          suscripcion_id: string | null
-          tipo_periodo: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "fk_admins_conjuntos_user"
+            columns: ["propietario_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       vista_superadmin_kpis: {
         Row: {
@@ -8933,7 +10432,44 @@ export type Database = {
             referencedRelation: "vista_pagos_detalle"
             referencedColumns: ["conjunto_id"]
           },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "suscripciones_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
         ]
+      }
+      vista_superadmin_usuarios: {
+        Row: {
+          created_at: string | null
+          cuenta_bloqueada: boolean | null
+          documento: string | null
+          email: string | null
+          estado: boolean | null
+          nombre_completo: string | null
+          rol: string | null
+          telefono: string | null
+          total_conjuntos: number | null
+          ultimo_login: string | null
+          user_id: string | null
+        }
+        Relationships: []
       }
       vista_visitas_recepcion: {
         Row: {
@@ -9054,6 +10590,27 @@ export type Database = {
             referencedColumns: ["conjunto_id"]
           },
           {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "apt_conjunto_fk"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
             foreignKeyName: "visitas_registrado_por_fkey"
             columns: ["registrado_por"]
             isOneToOne: false
@@ -9121,6 +10678,13 @@ export type Database = {
             columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "visitas_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
             referencedColumns: ["user_id"]
           },
         ]
@@ -9212,6 +10776,11 @@ export type Database = {
         Args: { p_fecha_fin: string }
         Returns: Database["public"]["Enums"]["estado_suscripcion"]
       }
+      fecha_limite_pronto_pago: {
+        Args: { p_dias: number; p_periodo: string }
+        Returns: string
+      }
+      formato_pesos: { Args: { p_valor: number }; Returns: string }
       generar_apartamentos_sin_torres: {
         Args: { payload: Json }
         Returns: {
@@ -9428,6 +10997,8 @@ export type Database = {
         Args: { curlopt: string; value: string }
         Returns: boolean
       }
+      nombre_mes: { Args: { p_periodo: string }; Returns: string }
+      notificar_cobros_diario: { Args: { p_hoy?: string }; Returns: number }
       revertir_cobro_manual: {
         Args: {
           p_concepto_codigo: string

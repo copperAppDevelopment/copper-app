@@ -8,22 +8,50 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+export interface AccesosRapidosProps {
+  /** Abre el modal de comunicados, que monta la página. */
+  onEnviarComunicado: () => void;
+  /** Abre el modal de alta de apartamento, que monta la página. */
+  onRegistrarApartamento: () => void;
+}
+
 interface Acceso {
   label: string;
   icono: React.ReactNode;
   href: string | null;
 }
 
+interface Operacion {
+  titulo: string;
+  descripcion: string;
+  onClick: () => void;
+}
+
 const accesos: Acceso[] = [
   { label: "Ver apartamentos", icono: <Building2 className="w-4 h-4" />, href: "/admin/apartamentos" },
   { label: "Gestionar residentes", icono: <Users className="w-4 h-4" />, href: "/admin/residentes" },
   { label: "Gestionar recaudos", icono: <DollarSign className="w-4 h-4" />, href: "/admin/recaudos" },
-  // Sin ruta todavía: se deja inerte, como estaba.
+  // No hay ruta propia de plan: la suscripción se gestiona desde la pestaña del perfil.
   { label: "Gestionar plan", icono: <CreditCard className="w-4 h-4" />, href: "/admin/perfil" },
 ];
 
-export function AccesosRapidos() {
+export function AccesosRapidos({
+  onEnviarComunicado, onRegistrarApartamento,
+}: AccesosRapidosProps) {
   const router = useRouter();
+
+  const operaciones: Operacion[] = [
+    {
+      titulo: "Enviar Comunicado",
+      descripcion: "Notifica a todos los residentes mediante push.",
+      onClick: onEnviarComunicado,
+    },
+    {
+      titulo: "Registrar Apartamento",
+      descripcion: "Crea una nueva unidad y asocia propietarios.",
+      onClick: onRegistrarApartamento,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -56,19 +84,13 @@ export function AccesosRapidos() {
 
       <Card title="Operaciones del Sistema" className="shadow-sm">
         <div className="space-y-3">
-          {[
-            {
-              titulo: "Enviar Comunicado",
-              descripcion: "Notifica a todos los residentes mediante push.",
-            },
-            {
-              titulo: "Registrar Apartamento",
-              descripcion: "Crea una nueva unidad y asocia propietarios.",
-            },
-          ].map(op => (
-            <div
+          {/* Un `button` y no un `div`: ahora sí hacen algo, y así responden al teclado. */}
+          {operaciones.map(op => (
+            <button
               key={op.titulo}
-              className="p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:border-brand/40 transition-colors cursor-pointer flex items-center justify-between text-zinc-800 dark:text-white"
+              type="button"
+              onClick={op.onClick}
+              className="w-full p-3 bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-xl hover:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition-colors cursor-pointer flex items-center justify-between text-zinc-800 dark:text-white"
             >
               <div>
                 <h3 className="font-semibold text-xs text-left">{op.titulo}</h3>
@@ -77,7 +99,7 @@ export function AccesosRapidos() {
                 </p>
               </div>
               <Plus className="w-4 h-4 text-brand shrink-0" />
-            </div>
+            </button>
           ))}
         </div>
       </Card>

@@ -8,6 +8,10 @@ import { esTipoProntoPago } from '@/lib/conceptos';
  * Va por `upsert` sobre `conjunto_id`, que ahora tiene índice único: antes nada impedía
  * crear una segunda fila, y `generar_cargos_mensuales` hace JOIN contra esta tabla, así que
  * un duplicado habría duplicado todos los cargos del conjunto.
+ *
+ * Escribe además el NIT, el teléfono y el correo, que viven en `conjuntos` pero se editan
+ * aquí: son los datos del emisor que salen impresos en la cuenta de cobro, así que pertenecen
+ * a esta pantalla y no a la de crear el conjunto, que es de una sola pasada.
  */
 export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
   const habilitado = Boolean(body.pronto_pago_habilitado);
@@ -16,6 +20,16 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
   const linkPago = String(body.link_pago ?? '').trim();
   if (linkPago && !/^https?:\/\//i.test(linkPago)) {
     return fail('El enlace de pago debe empezar por http:// o https://', 400);
+  }
+
+  // Texto libre: hay NIT con dígito de verificación, con guiones y con puntos, y no nos toca
+  // a nosotros decidir cómo lo escribe cada administración.
+  const nit = String(body.nit ?? '').trim();
+  const telefono = String(body.telefono ?? '').trim();
+  const email = String(body.email ?? '').trim().toLowerCase();
+
+  if (email && !email.includes('@')) {
+    return fail('El correo de contacto no parece válido', 400);
   }
 
   let valor: number | null = null;
@@ -66,6 +80,16 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
   if (error) {
     console.error('Error al guardar la configuración:', error);
     return fail('No se pudo guardar la configuración', 500);
+  }
+
+  const { error: errorEmisor } = await supabaseAdmin
+    .from('conjuntos')
+    .update({ nit: nit || null, telefono: telefono || null, email: email || null } as any)
+    .eq('id', conjuntoId);
+
+  if (errorEmisor) {
+    console.error('Error al guardar los datos del emisor:', errorEmisor);
+    return fail('Se guardó el cobro, pero no los datos de la cuenta de cobro', 500);
   }
 
   return ok({ conjunto_id: conjuntoId });

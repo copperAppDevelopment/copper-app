@@ -1,4 +1,4 @@
-import { periodoActual } from "@/lib/conceptos";
+import { periodoActual, ultimoDiaDelPeriodo } from "@/lib/conceptos";
 import type { Concepto } from "@/lib/conceptosData";
 
 export interface NuevoCobro {
@@ -37,21 +37,8 @@ export interface ResultadoReversion {
   bloqueados: number;
 }
 
-/**
- * Último día del periodo, que es el vencimiento por defecto.
- *
- * Es la misma fecha que pone el cron, y no da igual: `aplicar_recaudo` reparte cada pago
- * entre los cargos pendientes `order by fecha_vencimiento`. Un vencimiento arbitrario
- * —«hoy + 30 días»— colaría el cobro nuevo por delante de deudas más antiguas.
- */
-export function ultimoDiaDelPeriodo(periodo: string): string {
-  const anio = Number(periodo.slice(0, 4));
-  const mes = Number(periodo.slice(5, 7));
-  if (!anio || !mes) return "";
-  // El día 0 del mes siguiente es el último del actual.
-  const fecha = new Date(Date.UTC(anio, mes, 0));
-  return fecha.toISOString().slice(0, 10);
-}
+// Subido a `lib/` cuando la cuenta de cobro lo necesitó: una feature no importa de otra.
+export { ultimoDiaDelPeriodo } from "@/lib/conceptos";
 
 /** Meses seleccionables: doce atrás y tres adelante desde el actual. */
 export function opcionesPeriodo(): { value: string; label: string }[] {

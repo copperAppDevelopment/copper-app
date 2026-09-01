@@ -1,5 +1,14 @@
 export type FiltroEstado = "todos" | "aplicados" | "parciales" | "sin_aplicar";
 
+/**
+ * Sobre qué campo se aplica el filtro de mes y año.
+ *
+ * No son intercambiables: `periodo` es el mes contable al que se imputa el recaudo y `fecha`
+ * es cuándo entró el dinero. Un pago de junio recibido el 3 de julio cae en meses distintos
+ * según cuál se mire, y las dos preguntas son legítimas.
+ */
+export type BasePeriodo = "periodo" | "fecha";
+
 export interface Recaudo {
   id: string;
   fecha: string;

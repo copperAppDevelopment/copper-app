@@ -188,7 +188,7 @@ export function ConjuntoFormModal({
 
         <Input
           id="conjunto-anio"
-          label="Año de construcción"
+          label="Año Construcción"
           type="number"
           placeholder="2015"
           value={form.anio_construccion}

@@ -158,7 +158,7 @@ export default function DetalleConjuntoPage() {
                     etiqueta={detalle.tipo_vivienda === "Casas" ? "Casas" : "Apartamentos"}
                     valor={detalle.num_viviendas}
                   />
-                  <Dato etiqueta="Año de construcción" valor={detalle.anio_construccion} />
+                  <Dato etiqueta="Año Construcción" valor={detalle.anio_construccion} />
                   <Dato
                     etiqueta="Valor de administración"
                     valor={

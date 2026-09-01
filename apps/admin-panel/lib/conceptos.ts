@@ -48,3 +48,44 @@ export function periodoActual(): string {
   const hoy = new Date();
   return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}`;
 }
+
+/**
+ * Último día del periodo, que es el vencimiento por defecto.
+ *
+ * Es la misma fecha que pone el cron, y no da igual: `aplicar_recaudo` reparte cada pago
+ * entre los cargos pendientes `order by fecha_vencimiento`. Un vencimiento arbitrario
+ * —«hoy + 30 días»— colaría el cobro nuevo por delante de deudas más antiguas.
+ *
+ * Vive aquí y no en `features/cobros/` porque también lo necesita la cuenta de cobro, y una
+ * feature no importa de otra.
+ */
+export function ultimoDiaDelPeriodo(periodo: string): string {
+  const anio = Number(periodo.slice(0, 4));
+  const mes = Number(periodo.slice(5, 7));
+  if (!anio || !mes) return "";
+  // El día 0 del mes siguiente es el último del actual.
+  const fecha = new Date(Date.UTC(anio, mes, 0));
+  return fecha.toISOString().slice(0, 10);
+}
+
+/**
+ * Hasta qué día se puede pagar con descuento, para un periodo dado.
+ *
+ * Espejo de la función `fecha_limite_pronto_pago` de la base, que es la que decide de verdad
+ * al aplicar el recaudo. `pronto_pago_dias` es un **día del mes** (1..28), no un plazo desde
+ * la emisión: para `2026-09` con 10, el descuento vale hasta el 2026-09-10 inclusive.
+ *
+ * Sin días configurados no hay plazo, y devuelve cadena vacía.
+ */
+export function fechaLimiteProntoPago(periodo: string, dias: number | null): string {
+  if (!dias || dias < 1 || !/^\d{4}-\d{2}$/.test(periodo)) return "";
+  return `${periodo}-${String(dias).padStart(2, "0")}`;
+}
+
+/** Primer día del periodo, la fecha de emisión cuando no hay cargos que la fijen. */
+export function primerDiaDelPeriodo(periodo: string): string {
+  return /^\d{4}-\d{2}$/.test(periodo) ? `${periodo}-01` : "";
+}
+
+/** El formato que exige toda la facturación; se valida en varias rutas de API. */
+export const PATRON_PERIODO = /^\d{4}-(0[1-9]|1[0-2])$/;

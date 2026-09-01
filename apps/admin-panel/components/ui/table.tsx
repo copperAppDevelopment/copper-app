@@ -19,7 +19,9 @@ export interface CommonTableProps<T> {
   pageSize?: number;
   totalRows?: number;
   onPageChange?: (page: number) => void;
-  emptyMessage?: string;
+  /** `ReactNode` y no `string` para que el estado vacío pueda ofrecer una salida, como
+   *  «quita el filtro», y no solo describir lo que no hay. */
+  emptyMessage?: React.ReactNode;
 }
 
 export function CommonTable<T>({

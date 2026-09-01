@@ -40,6 +40,49 @@ export function ConfiguracionPagoForm({
           helperText="La administración no se cobra por pasarela: este enlace se copia en cada cargo que se genera."
         />
 
+        {/* Datos del emisor. Se guardan en `conjuntos`, no en la configuración, pero se editan
+            aquí porque solo se usan para imprimir la cuenta de cobro. */}
+        <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
+          <div>
+            <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+              Datos para la cuenta de cobro
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+              Salen impresos en el PDF que descargan los residentes. Los que dejes vacíos
+              sencillamente no aparecen.
+            </p>
+          </div>
+
+          <Input
+            id="config-nit"
+            label="NIT"
+            placeholder="900.123.456-7"
+            value={form.nit}
+            onChange={(e) => onCambiar("nit", e.target.value)}
+            disabled={guardando}
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              id="config-telefono"
+              label="Teléfono de contacto"
+              placeholder="300 000 0000"
+              value={form.telefono}
+              onChange={(e) => onCambiar("telefono", e.target.value)}
+              disabled={guardando}
+            />
+            <Input
+              id="config-email"
+              label="Correo de contacto"
+              type="email"
+              placeholder="administracion@conjunto.co"
+              value={form.email}
+              onChange={(e) => onCambiar("email", e.target.value)}
+              disabled={guardando}
+            />
+          </div>
+        </div>
+
         <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 space-y-4">
           <label htmlFor="config-pronto" className="flex items-center gap-2.5 cursor-pointer">
             <input
