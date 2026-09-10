@@ -1,46 +1,67 @@
 import { useEffect } from 'react';
 import { OneSignal, LogLevel } from 'react-native-onesignal';
-import type { NotificationClickEvent } from 'react-native-onesignal';
+import type { NotificationClickEvent, NotificationWillDisplayEvent } from 'react-native-onesignal';
 import { useAuthStore } from '../../../stores/authStore';
+import { invalidarPorNotificacion } from '../../../lib/queryClient';
 
 const ONESIGNAL_APP_ID = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID || '84ebf9ec-0ab7-4607-ad72-b5a1687d7517';
 
+/**
+ * Llega una notificación con la app abierta.
+ *
+ * Solo caduca las consultas para que la lista se actualice sin que el usuario haga nada. **No se
+ * llama a `event.preventDefault()`**: registrar el listener no impide que el aviso se muestre,
+ * pero `preventDefault()` sí lo suprimiría.
+ */
+const alRecibirEnPrimerPlano = (_event: NotificationWillDisplayEvent) => {
+  invalidarPorNotificacion();
+};
+
+const alTocarNotificacion = (event: NotificationClickEvent) => {
+  const data = event.notification.additionalData as any;
+  const title = event.notification.title?.toLowerCase() || '';
+  const body = event.notification.body?.toLowerCase() || '';
+
+  // Quien la toca viene a leerla: lo primero es que no encuentre la lista vieja.
+  invalidarPorNotificacion();
+
+  // Criterio de redirección calificada a Comunicados (Visitas / Envíos)
+  const isVisitaOrEnvio =
+    (data && (data.id_visita || data.type === 'visita' || data.type === 'envio')) ||
+    title.includes('visita') ||
+    title.includes('envio') ||
+    title.includes('envío') ||
+    body.includes('visita') ||
+    body.includes('envio') ||
+    body.includes('envío');
+
+  if (isVisitaOrEnvio) {
+    useAuthStore.getState().setPendingRedirectRoute('/(tabs)/notificaciones');
+  }
+};
+
 export function useOneSignal() {
-  // Inicialización de OneSignal
+  /** Inicializa OneSignal y devuelve la función que quita sus listeners. */
   const initOneSignal = () => {
     try {
       // Habilitar logs en modo desarrollo para depuración
       if (__DEV__) {
         OneSignal.Debug.setLogLevel(LogLevel.Verbose);
       }
-      
+
       console.log('Inicializando OneSignal con App ID:', ONESIGNAL_APP_ID);
       OneSignal.initialize(ONESIGNAL_APP_ID);
 
-      // Registrar el listener de clics en notificaciones
-      OneSignal.Notifications.addEventListener('click', (event: NotificationClickEvent) => {
-        console.log('Notificación cliqueada por el usuario:', event.notification);
-        const data = event.notification.additionalData as any;
-        const title = event.notification.title?.toLowerCase() || '';
-        const body = event.notification.body?.toLowerCase() || '';
+      OneSignal.Notifications.addEventListener('click', alTocarNotificacion);
+      OneSignal.Notifications.addEventListener('foregroundWillDisplay', alRecibirEnPrimerPlano);
 
-        // Criterio de redirección calificada a Comunicados (Visitas / Envíos)
-        const isVisitaOrEnvio = 
-          (data && (data.id_visita || data.type === 'visita' || data.type === 'envio')) ||
-          title.includes('visita') || 
-          title.includes('envio') || 
-          title.includes('envío') ||
-          body.includes('visita') || 
-          body.includes('envio') || 
-          body.includes('envío');
-
-        if (isVisitaOrEnvio) {
-          console.log('[OneSignal] Clic en notificación calificada. Seteando redirección pendiente...');
-          useAuthStore.getState().setPendingRedirectRoute('/(tabs)/notificaciones');
-        }
-      });
+      return () => {
+        OneSignal.Notifications.removeEventListener('click', alTocarNotificacion);
+        OneSignal.Notifications.removeEventListener('foregroundWillDisplay', alRecibirEnPrimerPlano);
+      };
     } catch (error) {
       console.error('Error inicializando OneSignal:', error);
+      return undefined;
     }
   };
 

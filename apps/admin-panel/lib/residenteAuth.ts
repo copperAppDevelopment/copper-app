@@ -17,7 +17,8 @@ export interface ContextoResidente {
   user: { id: string };
   residenteId: string;
   conjuntoId: string;
-  apartamentoId: string | null;
+  /** Nunca es nulo: `residenteAutorizado` rechaza antes al residente sin apartamento. */
+  apartamentoId: string;
 }
 
 /** Mensajes pensados para que el móvil pueda mostrarlos tal cual. */
@@ -25,6 +26,13 @@ const CUENTA_INACTIVA =
   'Tu cuenta está inactiva. Comunícate con el administrador de tu conjunto.';
 const CONJUNTO_INACTIVO =
   'Tu conjunto no tiene el servicio activo en este momento. Comunícate con su administración.';
+/**
+ * Quien se registra desde la app móvil queda sin apartamento: `/api/v1/auth/register` crea el
+ * residente con `conjunto_id` pero sin `apartamento_id`, y un administrador se lo asigna desde
+ * Residentes. Hasta entonces no hay nada que mostrarle, porque todo cuelga del apartamento.
+ */
+const SIN_APARTAMENTO =
+  'Aún no tienes un apartamento asignado. El administrador de tu conjunto debe asignarte uno para que puedas entrar a la app.';
 
 /**
  * Devuelve el residente del token o lanza `ErrorHttp`, que el envoltorio de la ruta traduce a
@@ -54,6 +62,7 @@ export async function residenteAutorizado(req: Request): Promise<ContextoResiden
 
   if (!residente) throw new ErrorHttp('Perfil de residente no encontrado', 404);
   if (residente.activo === false) throw new ErrorHttp(CUENTA_INACTIVA, 403);
+  if (!residente.apartamento_id) throw new ErrorHttp(SIN_APARTAMENTO, 403);
 
   const { data: conjunto } = await supabaseAdmin
     .from('conjuntos')

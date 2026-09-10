@@ -26,14 +26,8 @@ export const POST = withResidente(async ({ conjuntoId, apartamentoId }, req) => 
     return Response.json({ error: 'El periodo debe tener el formato YYYY-MM' }, { status: 400 });
   }
 
-  // Hay residentes activos sin apartamento asignado; para ellos no existe cuenta de cobro.
-  if (!apartamentoId) {
-    return Response.json(
-      { error: 'Todavía no tienes un apartamento asignado. Comunícate con la administración.' },
-      { status: 409 }
-    );
-  }
-
+  // El residente sin apartamento ya no llega hasta aquí: `withResidente` lo rechaza con 403 y
+  // un mensaje común a todas las rutas.
   let cuenta;
   try {
     cuenta = await construirCuentaCobro({ conjuntoId, apartamentoId, periodo });

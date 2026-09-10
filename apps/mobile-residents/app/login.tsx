@@ -97,7 +97,21 @@ export default function LoginScreen() {
         return;
       }
 
-      // 5️⃣ Validar que el conjunto tenga el servicio activo
+      // 5️⃣ Validar que ya tenga apartamento asignado
+      //
+      // Quien se registra desde la app queda sin apartamento hasta que un administrador se lo
+      // asigne. Dejarlo entrar solo le mostraría pantallas vacías sin explicarle por qué.
+      if (!residente.apartamento_id) {
+        await supabase.auth.signOut();
+        Alert.alert(
+          'Falta asignarte un apartamento',
+          'Aún no tienes un apartamento asignado. El administrador de tu conjunto debe asignarte uno para que puedas entrar a la app.'
+        );
+        setLoading(false);
+        return;
+      }
+
+      // 6️⃣ Validar que el conjunto tenga el servicio activo
       //
       // El bloqueo de verdad está en el servidor, en `/api/v1/residents/**`: esta pantalla casi
       // nunca se ejecuta, porque la sesión queda guardada en el teléfono y la app abre directa
@@ -118,7 +132,7 @@ export default function LoginScreen() {
         return;
       }
 
-      // 6️⃣ Cargar sesión e IDs en el Zustand store (AppState)
+      // 7️⃣ Cargar sesión e IDs en el Zustand store (AppState)
       login(
         session,
         {
