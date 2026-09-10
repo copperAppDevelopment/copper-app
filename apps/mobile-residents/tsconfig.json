@@ -3,18 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
-    // pnpm guarda cada paquete en `.pnpm/`, y desde ahí el `.d.ts` de un tercero no alcanza
-    // ningún `@types/react`: `expo-camera` declara `CameraView extends Component` contra un
-    // React sin tipar, y su clase deja de valer como componente JSX (TS2786).
-    //
-    // Se apunta al paquete de tipos y no al de React, que es JavaScript sin declaraciones.
-    // No es el viejo pin a React 18 —aquel congelaba una versión vieja a propósito—, y no
-    // afecta al runtime: Metro resuelve por su cuenta, esto solo lo lee TypeScript.
-    // Va por app y no hoisteando `@types/*` en la raíz, porque admin-panel usa otra versión
-    // y una copia compartida haría visible la equivocada.
+    // Ojo al tocar `paths`: `expo/metro-config` los aplica también como alias de Metro
+    // —es lo que hace funcionar el `@/*` de aquí abajo—, así que un mapeo pensado solo
+    // para TypeScript rompe el bundle. `react` se resuelve por node_modules, no por aquí.
     "paths": {
-      "react": ["./node_modules/@types/react"],
-      "react/*": ["./node_modules/@types/react/*"],
       "@/*": ["./src/*"]
     }
   },
