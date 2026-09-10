@@ -264,7 +264,7 @@ export default function RegisterScreen() {
       <Modal visible={showScanner} animationType="slide" transparent={false}>
         <View style={styles.scannerContainer}>
           <CameraView
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             onBarcodeScanned={handleBarCodeScanned}
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
@@ -367,7 +367,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   scannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    // React Native 0.85 quitó `StyleSheet.absoluteFillObject`; `absoluteFill` es un estilo
+    // registrado y no se puede desparramar, así que aquí van las propiedades tal cual.
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',
