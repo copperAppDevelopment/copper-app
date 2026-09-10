@@ -6,6 +6,9 @@ workflows:
     integrations:
       app_store_connect: "Code Magic API Key Admin"
     environment:
+      # Expo SDK 56 subió el mínimo a Xcode 26.4; se fija explícitamente para no depender
+      # de qué imagen traiga Codemagic por defecto.
+      xcode: latest
       node: latest
       ruby: 3.2.2
       groups:
@@ -61,36 +64,6 @@ workflows:
         script: |
           cd apps/mobile-residents/ios
           pod install
-      - name: Patch fmt (clang 17+)
-        script: |
-          # fmt 11.0.2 (pineado por React Native 0.76.9) no compila con clang 17+
-          # (Xcode 16.3 en adelante): la validación consteval de format strings hace
-          # aritmética de punteros que ya no cuenta como expresión constante.
-          #
-          # No sirve pasar -DFMT_USE_CONSTEVAL=0: la cadena en base.h es un #if, no
-          # un #ifndef, así que la cabecera pisa cualquier define externo. Hay que
-          # forzar la primera rama para que gane. La validación pasa a runtime.
-          #
-          # Va aquí y no en el repo porque Pods/ lo regenera pod install.
-          python3 - <<'PY'
-          import pathlib, re, stat, sys
-
-          header = pathlib.Path("apps/mobile-residents/ios/Pods/fmt/include/fmt/base.h")
-          source = header.read_text(encoding="utf-8")
-
-          pattern = re.compile(
-              r"#if !defined\(__cpp_lib_is_constant_evaluated\)(\s*\n\s*#\s*define FMT_USE_CONSTEVAL 0)"
-          )
-          patched, n = pattern.subn(r"#if 1  /* CI: consteval roto con clang 17+ */\1", source, count=1)
-
-          if n != 1:
-              sys.exit("No se encontró la cadena FMT_USE_CONSTEVAL en base.h; revisar versión de fmt.")
-
-          # CocoaPods deja los fuentes descargados en solo lectura (0444).
-          header.chmod(header.stat().st_mode | stat.S_IWUSR)
-          header.write_text(patched, encoding="utf-8")
-          print("fmt/base.h parcheado: FMT_USE_CONSTEVAL forzado a 0")
-          PY
       - name: Set up keychain
         script: |
           keychain initialize

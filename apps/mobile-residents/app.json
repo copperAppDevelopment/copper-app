@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/logo-copper.png",
     "userInterfaceStyle": "dark",
-    "splash": {
-      "image": "./assets/logo-copper.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#f8fafc"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.copper.residents",
@@ -53,7 +48,15 @@
       ],
       "expo-asset",
       "expo-font",
-      "expo-splash-screen"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/logo-copper.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#f8fafc"
+        }
+      ],
+      "expo-status-bar"
     ],
     "scheme": "copper-residents",
     "extra": {

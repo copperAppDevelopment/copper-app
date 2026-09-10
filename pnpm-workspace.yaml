@@ -8,3 +8,10 @@ allowBuilds:
   protobufjs: true
   sharp: true
   unrs-resolver: true
+
+# @expo/dom-webview es un peer opcional del overlay de errores de Expo. Al subir de SDK 52 a
+# 57, pnpm se quedó con la resolución 55.0.6 aunque @expo/log-box pide ^57.0.1 y esa versión
+# sí está publicada; ni `update --latest` ni `dedupe` la mueven. Se puede quitar cuando el
+# lockfile se regenere desde cero.
+overrides:
+  '@expo/dom-webview': ~57.0.1
