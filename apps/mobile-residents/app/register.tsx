@@ -263,7 +263,6 @@ export default function RegisterScreen() {
       {/* Camera / QR Code Scanner Modal */}
       <Modal visible={showScanner} animationType="slide" transparent={false}>
         <View style={styles.scannerContainer}>
-          {/* @ts-expect-error - React 18/19 typings collision workaround */}
           <CameraView
             style={StyleSheet.absoluteFillObject}
             onBarcodeScanned={handleBarCodeScanned}

@@ -9,6 +9,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
+/** El literal se ensancharía a `string` y dejaría de cuadrar con el prop de Ionicons. */
+type NombreIcono = React.ComponentProps<typeof Ionicons>['name'];
+
 interface CustomAlertProps {
   visible: boolean;
   title: string;
@@ -34,7 +37,7 @@ export function CustomAlert({
 }: CustomAlertProps) {
   
   // Determinar icono y color según el tipo de alerta
-  const getHeaderIcon = () => {
+  const getHeaderIcon = (): { name: NombreIcono; color: string; bgColor: string } => {
     switch (type) {
       case 'success':
         return { name: 'checkmark-circle-outline', color: '#22c55e', bgColor: '#f0fdf4' };
@@ -68,7 +71,6 @@ export function CustomAlert({
         <View style={styles.alertContainer}>
           {/* Cabecera con Icono */}
           <View style={[styles.iconWrapper, { backgroundColor: iconConfig.bgColor }]}>
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name={iconConfig.name} size={36} color={iconConfig.color} />
           </View>
 

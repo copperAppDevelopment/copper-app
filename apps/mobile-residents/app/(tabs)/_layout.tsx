@@ -5,7 +5,6 @@ import { FloatingChatButton } from '../../src/features/chat/components/FloatingC
 export default function TabsLayout() {
   return (
     <>
-      {/* @ts-expect-error - React 18/19 type collision in Monorepo */}
       <Tabs
         screenOptions={{
           headerStyle: {
@@ -28,7 +27,6 @@ export default function TabsLayout() {
             title: 'Inicio',
             headerTitle: 'Panel de Residente',
             tabBarIcon: ({ color, size }) => {
-              // @ts-expect-error - React 18/19 vector icons compatibility
               return <Ionicons name="home-outline" size={size} color={color} />;
             },
           }}
@@ -39,7 +37,6 @@ export default function TabsLayout() {
             title: 'Comunicados',
             headerTitle: 'Comunicados y Avisos',
             tabBarIcon: ({ color, size }) => {
-              // @ts-expect-error - React 18/19 vector icons compatibility
               return <Ionicons name="notifications-outline" size={size} color={color} />;
             },
           }}
@@ -50,7 +47,6 @@ export default function TabsLayout() {
             title: 'Balances',
             headerTitle: 'Mis Saldos y Balances',
             tabBarIcon: ({ color, size }) => {
-              // @ts-expect-error - React 18/19 vector icons compatibility
               return <Ionicons name="wallet-outline" size={size} color={color} />;
             },
           }}
@@ -61,7 +57,6 @@ export default function TabsLayout() {
             title: 'Solicitudes',
             headerTitle: 'Solicitudes y PQRs',
             tabBarIcon: ({ color, size }) => {
-              // @ts-expect-error - React 18/19 vector icons compatibility
               return <Ionicons name="document-text-outline" size={size} color={color} />;
             },
           }}
@@ -72,7 +67,6 @@ export default function TabsLayout() {
             title: 'Mi Perfil',
             headerTitle: 'Mi Cuenta',
             tabBarIcon: ({ color, size }) => {
-              // @ts-expect-error - React 18/19 vector icons compatibility
               return <Ionicons name="person-outline" size={size} color={color} />;
             },
           }}

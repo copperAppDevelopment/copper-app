@@ -77,7 +77,6 @@ export function ProfileHeader({
 
         {/* Overlay con ícono de cámara */}
         <View style={styles.cameraIconBadge}>
-          {/* @ts-expect-error - React 18/19 vector icons compatibility */}
           <Ionicons name="camera" size={14} color="#ffffff" />
         </View>
 

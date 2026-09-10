@@ -92,7 +92,6 @@ export function CreateRequestModal({
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Radicar Nueva Solicitud</Text>
               <TouchableOpacity onPress={handleClose} activeOpacity={0.7} style={styles.closeBtn}>
-                {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                 <Ionicons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>

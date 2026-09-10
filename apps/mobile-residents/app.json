@@ -11,7 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#f8fafc"
     },
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.copper.residents",
@@ -22,7 +22,6 @@
     },
     "android": {
       "package": "com.copper.residents",
-      "kotlinVersion": "1.9.25",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo-copper.png",
         "backgroundColor": "#ffffff"
@@ -34,18 +33,9 @@
     },
     "plugins": [
       [
-        "expo-build-properties",
-        {
-          "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35
-          }
-        }
-      ],
-      [
         "onesignal-expo-plugin",
         {
-          "mode": "development"
+          "mode": "production"
         }
       ],
       "expo-router",
@@ -61,7 +51,9 @@
           "photosPermission": "Copper necesita acceso a tus fotos para actualizar tu foto de perfil.",
           "cameraPermission": "Copper necesita acceso a la cámara para tomar tu foto de perfil."
         }
-      ]
+      ],
+      "expo-asset",
+      "expo-font"
     ],
     "scheme": "copper-residents",
     "extra": {
@@ -69,23 +61,6 @@
         "origin": false
       },
       "eas": {
-        "build": {
-          "experimental": {
-            "ios": {
-              "appExtensions": [
-                {
-                  "targetName": "OneSignalNotificationServiceExtension",
-                  "bundleIdentifier": "com.copper.residents.OneSignalNotificationServiceExtension",
-                  "entitlements": {
-                    "com.apple.security.application-groups": [
-                      "group.com.copper.residents.onesignal"
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        },
         "projectId": "b5a7c87d-880a-457c-908d-d9365207faca"
       }
     },

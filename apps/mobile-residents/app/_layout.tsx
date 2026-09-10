@@ -89,7 +89,6 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" />
-      {/* @ts-expect-error - React 18/19 type collision workaround */}
       <Stack
         screenOptions={{
           headerStyle: {

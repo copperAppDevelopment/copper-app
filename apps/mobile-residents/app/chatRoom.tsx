@@ -56,11 +56,9 @@ function ChatRoomSkeleton() {
   return (
     <View style={styles.container}>
       {/* Header Esqueleto */}
-      {/* @ts-expect-error - React 18/19 safe area view compatibility */}
       <SafeAreaView edges={['top']} style={styles.safeHeader}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} disabled>
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name="arrow-back" size={24} color="#94a3b8" />
           </TouchableOpacity>
           <View style={styles.headerTitleContainer}>
@@ -294,7 +292,6 @@ export default function ChatRoomScreen() {
               onPress={() => handleAttachmentPress(item)}
               activeOpacity={0.8}
             >
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="document-attach-outline" size={24} color={isMe ? '#ffffff' : '#8A1C14'} />
               <Text style={[styles.fileText, isMe ? styles.myFileText : styles.theirFileText]} numberOfLines={1}>
                 {item.file_name.split('/').pop() || 'Descargar archivo'}
@@ -332,11 +329,9 @@ export default function ChatRoomScreen() {
     >
       <Stack.Screen options={{ headerShown: false }} />
       {/* Header envuelto en SafeAreaView para evitar que se meta debajo del notch */}
-      {/* @ts-expect-error - React 18/19 safe area view compatibility */}
       <SafeAreaView edges={['top']} style={styles.safeHeader}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name="arrow-back" size={24} color="#0f172a" />
           </TouchableOpacity>
           <View style={styles.headerTitleContainer}>
@@ -360,7 +355,6 @@ export default function ChatRoomScreen() {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <View style={styles.emptyFeedContainer}>
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name="chatbubbles-outline" size={48} color="#94a3b8" />
             <Text style={styles.emptyFeedTitle}>¡Comienza la conversación!</Text>
             <Text style={styles.emptyFeedText}>Escribe un mensaje de consulta o adjunta un archivo para que el administrador te asista.</Text>
@@ -375,7 +369,6 @@ export default function ChatRoomScreen() {
             <Image source={{ uri: pendingAttachment.uri }} style={styles.imagePreview} />
           ) : (
             <View style={styles.filePreviewBadge}>
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="document" size={28} color="#8A1C14" />
             </View>
           )}
@@ -389,7 +382,6 @@ export default function ChatRoomScreen() {
             style={styles.clearPreviewBtn}
             onPress={() => setPendingAttachment(null)}
           >
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name="close-circle" size={24} color="#64748b" />
           </TouchableOpacity>
         </View>
@@ -398,7 +390,6 @@ export default function ChatRoomScreen() {
       {/* Sección inferior de Entrada */}
       {isChatFinalizado ? (
         <View style={styles.finalizadoContainer}>
-          {/* @ts-expect-error - React 18/19 vector icons compatibility */}
           <Ionicons name="lock-closed" size={16} color="#64748b" style={styles.lockIcon} />
           <Text style={styles.finalizadoText}>
             Esta conversación ha sido finalizada y no acepta nuevos mensajes.
@@ -409,15 +400,12 @@ export default function ChatRoomScreen() {
           {/* Botón Adjuntos */}
           <View style={styles.attachmentButtons}>
             <TouchableOpacity style={styles.attachmentBtn} onPress={handleTakePhoto} disabled={isSending}>
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="camera-outline" size={22} color="#475569" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.attachmentBtn} onPress={handlePickImage} disabled={isSending}>
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="image-outline" size={22} color="#475569" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.attachmentBtn} onPress={handlePickDocument} disabled={isSending}>
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="document-outline" size={22} color="#475569" />
             </TouchableOpacity>
           </View>
@@ -442,7 +430,6 @@ export default function ChatRoomScreen() {
             {isSending ? (
               <ActivityIndicator size="small" color="#ffffff" />
             ) : (
-              // @ts-expect-error - React 18/19 vector icons compatibility
               <Ionicons name="send" size={18} color="#ffffff" />
             )}
           </TouchableOpacity>
@@ -453,7 +440,6 @@ export default function ChatRoomScreen() {
       <Modal visible={!!selectedImage} transparent animationType="fade">
         <View style={styles.zoomContainer}>
           <TouchableOpacity style={styles.closeZoomBtn} onPress={() => setSelectedImage(null)}>
-            {/* @ts-expect-error - React 18/19 vector icons compatibility */}
             <Ionicons name="close" size={32} color="#ffffff" />
           </TouchableOpacity>
           {selectedImage && (

@@ -136,7 +136,6 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
           onPress={() => handleOpenModal()}
           activeOpacity={0.8}
         >
-          {/* @ts-expect-error - React 18/19 vector icons compatibility */}
           <Ionicons name="add-circle-outline" size={18} color="#8A1C14" />
           <Text style={styles.addBtnText}>Agregar</Text>
         </TouchableOpacity>
@@ -157,11 +156,9 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
 
               <View style={styles.actions}>
                 <TouchableOpacity onPress={() => handleOpenModal(item)} style={styles.actionBtn}>
-                  {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                   <Ionicons name="create-outline" size={18} color="#64748b" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleDelete(item)} style={styles.actionBtn}>
-                  {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                   <Ionicons name="trash-outline" size={18} color="#dc2626" />
                 </TouchableOpacity>
               </View>
@@ -181,7 +178,6 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
                 {editingItem ? 'Editar Vehículo' : 'Agregar Vehículo'}
               </Text>
               <TouchableOpacity onPress={handleCloseModal}>
-                {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                 <Ionicons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>

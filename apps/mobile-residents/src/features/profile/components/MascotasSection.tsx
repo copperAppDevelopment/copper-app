@@ -136,7 +136,6 @@ export function MascotasSection({ pets = [], onMutate }: MascotasSectionProps) {
           onPress={() => handleOpenModal()}
           activeOpacity={0.8}
         >
-          {/* @ts-expect-error - React 18/19 vector icons compatibility */}
           <Ionicons name="add-circle-outline" size={18} color="#8A1C14" />
           <Text style={styles.addBtnText}>Agregar</Text>
         </TouchableOpacity>
@@ -156,11 +155,9 @@ export function MascotasSection({ pets = [], onMutate }: MascotasSectionProps) {
 
               <View style={styles.actions}>
                 <TouchableOpacity onPress={() => handleOpenModal(item)} style={styles.actionBtn}>
-                  {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                   <Ionicons name="create-outline" size={18} color="#64748b" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => handleDelete(item)} style={styles.actionBtn}>
-                  {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                   <Ionicons name="trash-outline" size={18} color="#dc2626" />
                 </TouchableOpacity>
               </View>
@@ -180,7 +177,6 @@ export function MascotasSection({ pets = [], onMutate }: MascotasSectionProps) {
                 {editingItem ? 'Editar Mascota' : 'Agregar Mascota'}
               </Text>
               <TouchableOpacity onPress={handleCloseModal}>
-                {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                 <Ionicons name="close" size={24} color="#64748b" />
               </TouchableOpacity>
             </View>

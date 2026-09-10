@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { OneSignal, LogLevel } from 'react-native-onesignal';
+import type { NotificationClickEvent } from 'react-native-onesignal';
 import { useAuthStore } from '../../../stores/authStore';
 
 const ONESIGNAL_APP_ID = process.env.EXPO_PUBLIC_ONESIGNAL_APP_ID || '84ebf9ec-0ab7-4607-ad72-b5a1687d7517';
@@ -17,7 +18,7 @@ export function useOneSignal() {
       OneSignal.initialize(ONESIGNAL_APP_ID);
 
       // Registrar el listener de clics en notificaciones
-      OneSignal.Notifications.addEventListener('click', (event) => {
+      OneSignal.Notifications.addEventListener('click', (event: NotificationClickEvent) => {
         console.log('Notificación cliqueada por el usuario:', event.notification);
         const data = event.notification.additionalData as any;
         const title = event.notification.title?.toLowerCase() || '';

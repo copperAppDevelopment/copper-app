@@ -100,7 +100,6 @@ export default function MisSolicitudesScreen() {
               onPress={() => router.push('/(tabs)/soporte')}
               activeOpacity={0.8}
             >
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="chatbubbles-outline" size={16} color="#8A1C14" style={styles.btnIcon} />
               <Text style={styles.chatHistoryText}>Chats</Text>
             </TouchableOpacity>
@@ -110,7 +109,6 @@ export default function MisSolicitudesScreen() {
               onPress={() => setModalVisible(true)}
               activeOpacity={0.8}
             >
-              {/* @ts-expect-error - React 18/19 vector icons compatibility */}
               <Ionicons name="add" size={16} color="#ffffff" style={styles.btnIcon} />
               <Text style={styles.floatingActionText}>Radicar PQR</Text>
             </TouchableOpacity>
@@ -148,7 +146,6 @@ export default function MisSolicitudesScreen() {
                     activeOpacity={0.7}
                   >
                     <View style={styles.filterCardHeader}>
-                      {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                       <Ionicons
                         name={item.icon as any}
                         size={16}

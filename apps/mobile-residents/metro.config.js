@@ -15,20 +15,9 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, 'node_modules'),
 ];
 
-// 3. Interceptar solicitudes de resolución de React de forma estricta
-// Esto redirige obligatoriamente cualquier import de 'react' al node_modules local de la app móvil (React 18)
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === 'react' || moduleName.startsWith('react/')) {
-    const localReactPath = path.resolve(projectRoot, 'node_modules', moduleName);
-    return context.resolveRequest(context, localReactPath, platform);
-  }
-  return context.resolveRequest(context, moduleName, platform);
-};
-
-// 4. Aliases de respaldo adicionales
-config.resolver.extraNodeModules = {
-  'react': path.resolve(projectRoot, 'node_modules/react'),
-  'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
-};
+// Aquí vivía un `resolveRequest` que forzaba todo import de 'react' al node_modules local,
+// porque la móvil iba en React 18 mientras el resto del monorepo ya estaba en React 19.
+// Desde Expo SDK 53 la móvil también usa React 19: sobra, y mantenerlo congelaría la
+// resolución en una copia vieja.
 
 module.exports = config;
