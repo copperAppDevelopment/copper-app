@@ -23,7 +23,6 @@ export function FloatingChatButton() {
         onPress={() => setModalVisible(true)}
         activeOpacity={0.95}
       >
-        {/* @ts-expect-error - React 18/19 vector icons compatibility */}
         <Ionicons name="chatbubble-ellipses" size={20} color="#ffffff" />
       </TouchableOpacity>
 

@@ -42,7 +42,6 @@ function ChatItem({ chat, onPress }: ChatItemProps) {
       </View>
 
       <View style={styles.cardBody}>
-        {/* @ts-expect-error - React 18/19 vector icons compatibility */}
         <Ionicons name="chatbox-ellipses-outline" size={16} color="#64748b" style={styles.msgIcon} />
         <Text style={styles.lastMsg} numberOfLines={1}>
           {chat.ultimo_mensaje || 'No hay mensajes en esta conversación.'}
@@ -95,7 +94,6 @@ export default function SoporteScreen() {
   if (isError) {
     return (
       <View style={styles.centerContainer}>
-        {/* @ts-expect-error - React 18/19 vector icons compatibility */}
         <Ionicons name="alert-circle-outline" size={48} color="#dc2626" />
         <Text style={styles.errorText}>Ocurrió un error al cargar las consultas.</Text>
         <TouchableOpacity style={styles.retryBtn} onPress={() => refetch()}>
@@ -129,7 +127,6 @@ export default function SoporteScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <View style={styles.emptyIconContainer}>
-                {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                 <Ionicons name="chatbubbles-outline" size={64} color="#94a3b8" />
               </View>
               <Text style={styles.emptyTitle}>¿Necesitas soporte?</Text>

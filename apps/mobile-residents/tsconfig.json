@@ -3,11 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
-    "typeRoots": ["./node_modules/@types"],
+    // Ojo al tocar `paths`: `expo/metro-config` los aplica también como alias de Metro
+    // —es lo que hace funcionar el `@/*` de aquí abajo—, así que un mapeo pensado solo
+    // para TypeScript rompe el bundle. `react` se resuelve por node_modules, no por aquí.
     "paths": {
-      "react": ["./node_modules/react"],
-      "react/*": ["./node_modules/react/*"],
-      "@types/react": ["./node_modules/@types/react"],
       "@/*": ["./src/*"]
     }
   },

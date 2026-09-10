@@ -1,20 +1,11 @@
 import { Stack, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useAuthStore } from "../src/stores/authStore";
 import { useOneSignal } from "../src/features/profile/hooks/useOneSignal";
 import { supabase } from "../src/lib/supabase";
-
-// Crear cliente de React Query
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { queryClient } from "../src/lib/queryClient";
 
 export default function RootLayout() {
   const { initOneSignal, loginUser, logoutUser } = useOneSignal();
@@ -47,10 +38,9 @@ export default function RootLayout() {
     };
   }, []);
 
-  // 2. Inicializar OneSignal una sola vez al montar el Layout
-  useEffect(() => {
-    initOneSignal();
-  }, []);
+  // 2. Inicializar OneSignal una sola vez al montar el Layout. Devuelve la limpieza de sus
+  //    listeners, que antes quedaban registrados para siempre.
+  useEffect(() => initOneSignal(), []);
 
   // 3. Sincronizar estado de sesión del usuario en OneSignal
   useEffect(() => {
@@ -89,7 +79,6 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" />
-      {/* @ts-expect-error - React 18/19 type collision workaround */}
       <Stack
         screenOptions={{
           headerStyle: {

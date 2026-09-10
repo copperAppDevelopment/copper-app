@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ActivityIndicator, Text, ScrollView, Alert } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, View, Text, ScrollView, Alert, RefreshControl } from 'react-native';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useFocusEffect } from 'expo-router';
 import { useAuthStore } from '../../src/stores/authStore';
 import { CircularNoticesCard } from '../../src/features/dashboard/components/CircularNoticesCard';
 
@@ -35,24 +36,23 @@ function NotificacionesSkeleton() {
 export default function NotificacionesScreen() {
   const token = useAuthStore((state) => state.session?.access_token);
   const queryClient = useQueryClient();
-  const [isScreenLoading, setIsScreenLoading] = useState(true);
 
   // React Query para notificaciones
-  const { data: notifications, isLoading, error } = useQuery({
+  const { data: notifications, isLoading, isRefetching, error, refetch } = useQuery({
     queryKey: ['notifications', token],
     queryFn: () => fetchNotifications(token),
     enabled: !!token,
   });
 
-  useEffect(() => {
-    // Si la query ya no está cargando y los datos de notificación están listos en caché o cargados
-    if (!isLoading && notifications !== undefined) {
-      const timer = setTimeout(() => {
-        setIsScreenLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isLoading, notifications]);
+  /**
+   * Las pantallas de pestañas no se desmontan, así que `refetchOnMount` no vuelve a dispararse
+   * nunca: sin esto había que reiniciar la app o cerrar sesión para ver una notificación nueva.
+   */
+  useFocusEffect(
+    useCallback(() => {
+      if (token) refetch();
+    }, [token, refetch])
+  );
 
   // Función para manejar la aprobación / rechazo de visitas
   const handleVisitAction = async (visitaId: string, estado: 'aprobado' | 'rechazado') => {
@@ -82,9 +82,11 @@ export default function NotificacionesScreen() {
           : 'Has rechazado el ingreso de la visita.'
       );
 
-      // Invalidar las queries para refrescar la interfaz (Dashboard y Notificaciones)
-      await queryClient.invalidateQueries({ queryKey: ['notifications', token] });
-      await queryClient.invalidateQueries({ queryKey: ['dashboard', token] });
+      // Invalidar las queries para refrescar la interfaz (Dashboard y Notificaciones).
+      // Por prefijo, sin el token: si la sesión se refresca, la clave cambia y una invalidación
+      // exacta dejaría fuera la entrada nueva.
+      await queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      await queryClient.invalidateQueries({ queryKey: ['dashboard'] });
 
     } catch (err: any) {
       console.error('Error al procesar acción de visita:', err);
@@ -92,10 +94,23 @@ export default function NotificacionesScreen() {
     }
   };
 
-  const showSkeleton = isScreenLoading && !error;
+  // Solo la primera carga muestra el esqueleto: en un refresco ya hay lista que enseñar, y
+  // sustituirla por barras grises la haría parpadear.
+  const showSkeleton = isLoading && !error;
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContainer}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.scrollContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefetching && !isLoading}
+          onRefresh={refetch}
+          colors={['#8A1C14']}
+          tintColor="#8A1C14"
+        />
+      }
+    >
       {showSkeleton ? (
         <NotificacionesSkeleton />
       ) : error ? (
@@ -122,16 +137,6 @@ const styles = StyleSheet.create({
   scrollContainer: {
     padding: 20,
     paddingBottom: 40,
-  },
-  loaderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 100,
-  },
-  loaderText: {
-    color: '#64748b',
-    fontSize: 14,
-    marginTop: 12,
   },
   errorContainer: {
     alignItems: 'center',

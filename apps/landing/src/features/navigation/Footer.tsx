@@ -1,5 +1,17 @@
 import Logo from "./Logo";
 
+/**
+ * Rutas propias, no anclas: la Play Store exige URLs públicas y directas para la política de
+ * privacidad y los términos, y desde ahí se copian.
+ */
+const enlacesLegales = [
+  { nombre: "Términos", href: "/terminos-servicio" },
+  { nombre: "Privacidad", href: "/aviso-privacidad" },
+  { nombre: "Tratamiento de datos", href: "/autorizacion-datos" },
+  { nombre: "Cookies", href: "/politica-cookies" },
+  { nombre: "Eliminar cuenta", href: "/eliminar-cuenta" },
+];
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -81,16 +93,16 @@ export default function Footer() {
           <p>
             © {currentYear} Copper App. Todos los derechos reservados.
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-zinc-350 transition-colors">
-              Términos
-            </a>
-            <a href="#" className="hover:text-zinc-350 transition-colors">
-              Privacidad
-            </a>
-            <a href="#" className="hover:text-zinc-350 transition-colors">
-              Política de datos
-            </a>
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+            {enlacesLegales.map((enlace) => (
+              <a
+                key={enlace.href}
+                href={enlace.href}
+                className="hover:text-zinc-300 transition-colors"
+              >
+                {enlace.nombre}
+              </a>
+            ))}
           </div>
         </div>
 

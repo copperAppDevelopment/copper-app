@@ -77,7 +77,6 @@ export function ProfileHeader({
 
         {/* Overlay con ícono de cámara */}
         <View style={styles.cameraIconBadge}>
-          {/* @ts-expect-error - React 18/19 vector icons compatibility */}
           <Ionicons name="camera" size={14} color="#ffffff" />
         </View>
 
@@ -150,7 +149,13 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
   },
   loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    // React Native 0.85 quitó `StyleSheet.absoluteFillObject`; `absoluteFill` es un estilo
+    // registrado y no se puede desparramar, así que aquí van las propiedades tal cual.
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     backgroundColor: 'rgba(15, 23, 42, 0.5)',
     borderRadius: 45,
     alignItems: 'center',

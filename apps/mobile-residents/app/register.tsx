@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { CustomCard } from '../src/components/common/CustomCard';
 import { CustomInput } from '../src/components/common/CustomInput';
@@ -41,7 +42,11 @@ export default function RegisterScreen() {
   // Estados de control
   const [loading, setLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
-  
+
+  // `onBarcodeScanned` se dispara por fotograma mientras la cámara enfoca el código, así que sin
+  // esta guarda se encadenan varias alertas por un solo escaneo.
+  const leyendo = useRef(false);
+
   // Permisos de Cámara
   const [permission, requestPermission] = useCameraPermissions();
 
@@ -62,14 +67,23 @@ export default function RegisterScreen() {
       }
     }
     
+    leyendo.current = false;
     setShowScanner(true);
   };
 
   const handleBarCodeScanned = ({ data }: { data: string }) => {
-    // Al escanear con éxito, extraemos el código y cerramos la cámara
+    if (leyendo.current) return;
+    leyendo.current = true;
+
+    // El identificador se guarda pero no se muestra: al residente no le dice nada y solo invita
+    // a manipularlo. Quien comprueba que el conjunto existe es el servidor, al registrar.
     setConjuntoId(data.trim());
     setShowScanner(false);
-    Alert.alert('Código QR escaneado', 'Conjunto vinculado exitosamente.');
+  };
+
+  const cerrarScanner = () => {
+    leyendo.current = true;
+    setShowScanner(false);
   };
 
   const handleRegister = async () => {
@@ -81,10 +95,18 @@ export default function RegisterScreen() {
       !documento ||
       !email ||
       !contrasena ||
-      !confirmarContrasena ||
-      !conjuntoId
+      !confirmarContrasena
     ) {
       Alert.alert('Campos incompletos', 'Por favor diligencia todos los campos del formulario.');
+      return;
+    }
+
+    // Aparte del resto: ya no es un campo que se olvide llenar, sino un paso que falta hacer.
+    if (!conjuntoId) {
+      Alert.alert(
+        'Falta vincular el conjunto',
+        'Escanea el código QR que te entrega la administración de tu conjunto.'
+      );
       return;
     }
 
@@ -128,10 +150,11 @@ export default function RegisterScreen() {
         throw new Error(data.error || 'Ocurrió un error en el servidor al registrarse.');
       }
 
-      // Registro exitoso
+      // El registro deja al residente sin apartamento: se lo asigna un administrador desde el
+      // panel. Decirle «ya puedes iniciar sesión» sería falso, porque hasta entonces no entra.
       Alert.alert(
-        '¡Registro Exitoso!',
-        'Tu usuario ha sido registrado. Ya puedes iniciar sesión con tus credenciales.',
+        '¡Registro exitoso!',
+        'Tu cuenta quedó creada. El administrador de tu conjunto debe asignarte un apartamento; hasta entonces no podrás entrar a la app. Te recomendamos avisarle que ya te registraste.',
         [
           {
             text: 'Aceptar',
@@ -207,21 +230,29 @@ export default function RegisterScreen() {
             onChangeText={setEmail}
           />
 
-          {/* QR Scan & Link Section */}
+          {/* Vinculación del conjunto por QR */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Vincular Conjunto (ID / QR) *</Text>
-            <View style={styles.qrRow}>
-              <CustomInput
-                placeholder="UUID del conjunto"
-                autoCapitalize="none"
-                value={conjuntoId}
-                onChangeText={setConjuntoId}
-                containerStyle={{ flex: 1, marginRight: 10, marginBottom: 0 }}
-              />
-              <TouchableOpacity style={styles.qrBtn} onPress={handleOpenScanner}>
-                <Text style={styles.qrBtnText}>Escanear QR</Text>
-              </TouchableOpacity>
-            </View>
+            <Text style={styles.label}>Vincular Conjunto *</Text>
+
+            {conjuntoId ? (
+              <View style={styles.qrVinculado}>
+                <Ionicons name="checkmark-circle" size={20} color="#16a34a" />
+                <Text style={styles.qrVinculadoTexto}>Conjunto vinculado</Text>
+                <TouchableOpacity onPress={handleOpenScanner}>
+                  <Text style={styles.qrRepetir}>Escanear otro</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <>
+                <TouchableOpacity style={styles.qrBtn} onPress={handleOpenScanner}>
+                  <Ionicons name="qr-code-outline" size={18} color="#ffffff" />
+                  <Text style={styles.qrBtnText}>Escanear QR del conjunto</Text>
+                </TouchableOpacity>
+                <Text style={styles.qrAyuda}>
+                  Pídele el código QR a la administración de tu conjunto.
+                </Text>
+              </>
+            )}
           </View>
 
           <CustomInput
@@ -263,9 +294,8 @@ export default function RegisterScreen() {
       {/* Camera / QR Code Scanner Modal */}
       <Modal visible={showScanner} animationType="slide" transparent={false}>
         <View style={styles.scannerContainer}>
-          {/* @ts-expect-error - React 18/19 typings collision workaround */}
           <CameraView
-            style={StyleSheet.absoluteFillObject}
+            style={StyleSheet.absoluteFill}
             onBarcodeScanned={handleBarCodeScanned}
             barcodeScannerSettings={{
               barcodeTypes: ['qr'],
@@ -274,7 +304,7 @@ export default function RegisterScreen() {
           <View style={styles.scannerOverlay}>
             <View style={styles.scannerOutline} />
             <Text style={styles.scannerTip}>Encuadra el código QR del conjunto</Text>
-            <TouchableOpacity style={styles.closeScannerBtn} onPress={() => setShowScanner(false)}>
+            <TouchableOpacity style={styles.closeScannerBtn} onPress={cerrarScanner}>
               <Text style={styles.closeScannerText}>Cancelar</Text>
             </TouchableOpacity>
           </View>
@@ -327,13 +357,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  qrRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   qrBtn: {
     backgroundColor: '#8A1C14',
+    flexDirection: 'row',
+    gap: 8,
     paddingVertical: 13,
     paddingHorizontal: 16,
     borderRadius: 12,
@@ -343,8 +370,38 @@ const styles = StyleSheet.create({
   },
   qrBtnText: {
     color: '#ffffff',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  qrAyuda: {
+    fontSize: 11,
+    color: '#64748b',
+    marginTop: 6,
+    marginLeft: 4,
+  },
+  qrVinculado: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#f0fdf4',
+    borderWidth: 1,
+    borderColor: '#bbf7d0',
+    borderRadius: 12,
+    paddingVertical: 13,
+    paddingHorizontal: 16,
+    minHeight: 48,
+  },
+  qrVinculadoTexto: {
+    flex: 1,
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#166534',
+  },
+  qrRepetir: {
     fontSize: 12,
     fontWeight: 'bold',
+    color: '#8A1C14',
+    textDecorationLine: 'underline',
   },
   footer: {
     flexDirection: 'row',
@@ -368,7 +425,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   scannerOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    // React Native 0.85 quitó `StyleSheet.absoluteFillObject`; `absoluteFill` es un estilo
+    // registrado y no se puede desparramar, así que aquí van las propiedades tal cual.
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0,0,0,0.5)',

@@ -18,7 +18,6 @@ export function WelcomeCard({ userName, conjuntoNombre, apartamentoInfo }: Welco
           {conjuntoNombre || 'Copropiedad'} • {apartamentoInfo || 'Apartamento'}
         </Text>
       </View>
-      {/* @ts-expect-error - React 18/19 vector icons compatibility */}
       <Ionicons name="sparkles" size={24} color="#8A1C14" />
     </CustomCard>
   );

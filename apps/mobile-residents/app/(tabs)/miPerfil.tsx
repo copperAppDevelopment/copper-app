@@ -144,7 +144,6 @@ export default function MiPerfilScreen() {
                 onPress={() => setActiveTab(tab.key)}
                 activeOpacity={0.7}
               >
-                {/* @ts-expect-error - React 18/19 vector icons compatibility */}
                 <Ionicons
                   name={tab.icon as any}
                   size={16}
