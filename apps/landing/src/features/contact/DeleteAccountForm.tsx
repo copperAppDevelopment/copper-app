@@ -6,8 +6,34 @@ import {
   RefreshCw,
   Info
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+
+/** Campos que la app móvil puede precargar. Cualquier otra clave del fragmento se ignora. */
+const PRECARGABLES = ["nombre", "apellido", "email", "telefono", "conjunto"] as const;
+const LARGO_MAXIMO = 200;
+
+/**
+ * Lee los datos que manda la app desde la zona de peligro del perfil.
+ *
+ * Llegan en el fragmento (`#`) y no en la query: el navegador nunca lo envía al servidor, así que
+ * nombre, correo y teléfono no quedan en los logs del hosting. Después de leerlos se borran de la
+ * barra, para que tampoco queden en el historial ni en un marcador.
+ */
+function leerPrecarga(): Partial<Record<(typeof PRECARGABLES)[number], string>> {
+  const fragmento = window.location.hash.replace(/^#/, "");
+  if (!fragmento) return {};
+
+  const parametros = new URLSearchParams(fragmento);
+  const datos: Partial<Record<(typeof PRECARGABLES)[number], string>> = {};
+  for (const clave of PRECARGABLES) {
+    const valor = parametros.get(clave)?.trim();
+    if (valor) datos[clave] = valor.slice(0, LARGO_MAXIMO);
+  }
+
+  window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  return datos;
+}
 
 export default function DeleteAccountForm() {
   const [formData, setFormData] = useState({
@@ -23,6 +49,15 @@ export default function DeleteAccountForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // En un efecto y no en el estado inicial: la página se genera estática en el servidor, y leer
+  // `window` al renderizar rompería la hidratación.
+  useEffect(() => {
+    const precarga = leerPrecarga();
+    if (Object.keys(precarga).length > 0) {
+      setFormData((actual) => ({ ...actual, ...precarga }));
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -44,7 +79,7 @@ export default function DeleteAccountForm() {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3051";
       const payload = {
         nombre: formData.nombre,
         apellido: formData.apellido,

@@ -67,7 +67,7 @@ export default function ContactForm() {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3051";
       const response = await fetch(`${apiUrl}/api/v1/contact`, {
         method: "POST",
         headers: {

@@ -53,8 +53,8 @@ Ejecuta estos comandos en la raíz del monorepo:
 pnpm dev
 ```
 Esto levantará simultáneamente:
-- **Landing Page (Astro):** `http://localhost:3000`
-- **Admin Dashboard & API (Next.js):** `http://localhost:3001`
+- **Landing Page (Astro):** `http://localhost:3050`
+- **Admin Dashboard & API (Next.js):** `http://localhost:3051`
 - **App Móvil (Metro Bundler de Expo):** Enrutador para emuladores.
 
 ### Compilar todos los proyectos del workspace:

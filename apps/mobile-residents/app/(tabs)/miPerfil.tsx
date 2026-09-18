@@ -13,6 +13,7 @@ import { ConvivientesSection } from '../../src/features/profile/components/Convi
 import { VehiculosSection } from '../../src/features/profile/components/VehiculosSection';
 import { MascotasSection } from '../../src/features/profile/components/MascotasSection';
 import { EmpleadosSection } from '../../src/features/profile/components/EmpleadosSection';
+import { ZonaPeligro } from '../../src/features/profile/components/ZonaPeligro';
 
 import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
 import { CustomAlert } from '../../src/components/common/CustomAlert';
@@ -233,6 +234,18 @@ export default function MiPerfilScreen() {
           style={styles.logoutBtn}
           onPress={handleLogout}
         />
+
+        {/* 5. Lo destructivo, al final. Solo con el perfil cargado: sin datos no hay nada que
+            precargar en el formulario de la web. */}
+        {!isLoading && profile && (
+          <ZonaPeligro
+            nombres={user?.nombres}
+            apellidos={user?.apellidos}
+            email={user?.email}
+            telefono={user?.phone_number}
+            conjunto={profile.dashboard?.conjunto_nombre}
+          />
+        )}
       </ScrollView>
 
       {/* Alerta de confirmación de logout */}

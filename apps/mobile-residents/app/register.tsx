@@ -126,7 +126,7 @@ export default function RegisterScreen() {
 
     try {
       // 2️⃣ Invocar endpoint de registro seguro en Next.js
-      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3001'; // Cambiar a la IP de desarrollo local de tu máquina para pruebas físicas
+      const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3051'; // Cambiar a la IP de desarrollo local de tu máquina para pruebas físicas
       
       const response = await fetch(`${apiUrl}/api/v1/auth/register`, {
         method: 'POST',

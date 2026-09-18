@@ -188,7 +188,7 @@ export default function Pricing({ plans: initialPlans }: PricingProps) {
                       // al registro se le pasa el `id`, que es lo que la API de pagos pide.
                       selectedPlanStore.set(plan.nombre);
                       const adminPanelUrl =
-                        import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3001";
+                        import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3051";
                       window.location.href = `${adminPanelUrl}/registro?plan=${plan.id}`;
                     }}
                     className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-200 shadow-sm

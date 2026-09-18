@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Alert, Linking } from 'react-native';
 import { useAuthStore } from '../../../stores/authStore';
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3001';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3051';
 
 /**
  * Descarga la cuenta de cobro de un periodo.
