@@ -31,7 +31,8 @@
       [
         "onesignal-expo-plugin",
         {
-          "mode": "production"
+          "mode": "production",
+          "disableLocation": true
         }
       ],
       "expo-router",
