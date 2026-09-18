@@ -297,8 +297,10 @@ export default function DeleteAccountForm() {
                   />
                 </div>
 
-                {/* Nombre de Conjunto */}
-                <div className="space-y-1.5 col-span-2">
+                {/* Nombre de Conjunto. `md:col-span-2` y no `col-span-2`: en móvil la cuadrícula es
+                    de una columna, y pedirle dos obligaba al navegador a inventar una segunda que
+                    dejaba espichados los campos de arriba. */}
+                <div className="space-y-1.5 md:col-span-2">
                   <label className="text-xs font-bold text-zinc-700 dark:text-zinc-400">
                     Nombre del conjunto residencial <span className="text-[#8A1C14]">*</span>
                   </label>
