@@ -44,7 +44,7 @@ export default function DeleteAccountForm() {
     setIsSubmitting(true);
 
     try {
-      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3001";
+      const apiUrl = import.meta.env.PUBLIC_API_URL || "http://localhost:3051";
       const payload = {
         nombre: formData.nombre,
         apellido: formData.apellido,

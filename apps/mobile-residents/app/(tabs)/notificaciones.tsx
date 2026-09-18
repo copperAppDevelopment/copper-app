@@ -7,7 +7,7 @@ import { CircularNoticesCard } from '../../src/features/dashboard/components/Cir
 
 import { SkeletonLoader } from '../../src/components/common/SkeletonLoader';
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3001';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3051';
 
 const fetchNotifications = async (token?: string) => {
   if (!token) return [];

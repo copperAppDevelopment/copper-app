@@ -21,14 +21,14 @@ export default function Navbar() {
   };
 
   const handleOpenLogin = () => {
-    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3001";
+    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3051";
     window.location.href = `${adminPanelUrl}/login`;
   };
 
   // Antes solo hacía scroll al formulario de contacto: registrarse era, en la práctica,
   // escribirle a ventas. Ahora lleva al asistente de registro del panel.
   const handleOpenDemo = () => {
-    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3001";
+    const adminPanelUrl = import.meta.env.PUBLIC_ADMIN_PANEL_URL || "http://localhost:3051";
     window.location.href = `${adminPanelUrl}/registro`;
   };
 

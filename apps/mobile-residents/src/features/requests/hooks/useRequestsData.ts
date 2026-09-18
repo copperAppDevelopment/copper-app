@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../../../stores/authStore';
 
-const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3001';
+const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.50.5:3051';
 
 interface NewRequestPayload {
   titulo_solicitud: string;
