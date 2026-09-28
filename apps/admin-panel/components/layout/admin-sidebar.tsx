@@ -4,7 +4,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  Building2, Users, FileText, LayoutDashboard, Settings, LogOut,
+  Building2, Users, FileText, LayoutDashboard, LogOut,
   Bell, RefreshCw, DollarSign, MessageSquare, Landmark, Building, Receipt, DoorOpen
 } from "lucide-react";
 import { supabase } from "../../lib/supabaseClient";
@@ -27,7 +27,6 @@ export type AdminSection =
   | "chats"
   | "reportes"
   | "conjuntos"
-  | "configuracion"
   | "perfil";
 
 export interface AdminSidebarProps {
@@ -65,7 +64,6 @@ const navItems: NavItem[] = [
   // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
   { section: "reportes", label: "Solicitudes / PQRs", href: "/admin/solicitudes", icon: <FileText className="w-5 h-5" /> },
   { section: "conjuntos", label: "Mis conjuntos", href: "/admin/conjuntos", icon: <Landmark className="w-5 h-5" /> },
-  { section: "configuracion", label: "Configuración", href: null, icon: <Settings className="w-5 h-5" /> },
 ];
 
 const activeClasses =
