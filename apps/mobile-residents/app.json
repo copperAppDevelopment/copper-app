@@ -4,12 +4,12 @@
     "slug": "copper-residents",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/logo-copper.png",
+    "icon": "./assets/icon-app.png",
     "userInterfaceStyle": "dark",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.copper.residents",
-      "icon": "./assets/logo-copper.png",
+      "icon": "./assets/icon-app.png",
       "config": {
         "usesNonExemptEncryption": false
       }
@@ -17,7 +17,7 @@
     "android": {
       "package": "com.copper.residents",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo-copper.png",
+        "foregroundImage": "./assets/icon-adaptive.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
