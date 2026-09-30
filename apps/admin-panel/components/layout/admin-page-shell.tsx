@@ -40,7 +40,6 @@ export function AdminPageShell({
           active={active}
           userEmail={sesion.userEmail}
           conjuntoId={sesion.conjuntoId}
-          conjuntoNombre={sesion.conjuntoNombre}
           hasMultipleConjuntos={sesion.hasMultipleConjuntos}
         />
       }

@@ -14,6 +14,10 @@ export const okCon = (payload: Record<string, unknown>, status = 200) =>
 export const fail = (error: string, status: number) =>
   NextResponse.json({ error }, { status });
 
+/** Para validar ids del cuerpo antes de consultar: un texto cualquiera haría fallar a Postgres. */
+export const esUuid = (valor: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(valor);
+
 /** Error con estado propio: lo lanza el handler y el envoltorio lo traduce a respuesta. */
 export class ErrorHttp extends Error {
   constructor(message: string, readonly status: number) {

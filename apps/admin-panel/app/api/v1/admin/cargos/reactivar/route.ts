@@ -1,7 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { withAdminConjunto, ok, fail } from '@/lib/apiHandler';
-
-const PATRON_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { withAdminConjunto, ok, fail, esUuid } from '@/lib/apiHandler';
 
 /**
  * POST: deshace una condonación. El cargo vuelve a deber lo que se le había perdonado.
@@ -13,7 +11,7 @@ const PATRON_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{1
 export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
   const cargoId = String(body.cargo_id ?? '').trim();
 
-  if (!PATRON_UUID.test(cargoId)) {
+  if (!esUuid(cargoId)) {
     return fail('Falta el cargo', 400);
   }
 

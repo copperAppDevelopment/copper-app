@@ -6,8 +6,7 @@ import {
   MIMES_PERMITIDOS,
   MAX_BYTES_ADJUNTO,
 } from '@/features/comunicados/types';
-
-const BUCKET = 'comunicados';
+import { BUCKET_COMUNICADOS as BUCKET } from '@/lib/comunicadosServidor';
 
 /** Deja el nombre en algo seguro para una ruta de storage, conservando la extensión. */
 function sanearNombre(nombre: string): string {

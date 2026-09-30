@@ -23,6 +23,26 @@ export const MIMES_PERMITIDOS = ["image/jpeg", "image/png", "image/webp", "appli
 export const ACCEPT_ADJUNTO = ".jpg,.jpeg,.png,.webp,.pdf";
 export const MAX_BYTES_ADJUNTO = 10 * 1024 * 1024;
 
+/** Un comunicado ya publicado, como lo muestra el historial. */
+export interface Comunicado {
+  id: string;
+  titulo: string;
+  descripcion: string | null;
+  tipo: TipoComunicado;
+  tipo_novedad: TipoNovedad;
+  fecha_publicacion: string | null;
+  /** Ruta dentro del bucket privado; se abre con una URL firmada. */
+  adjunto: string | null;
+  apartamento_id: string | null;
+  numero_apartamento: string | null;
+  autor_nombre: string | null;
+  /** A cuántos residentes les llegó la notificación. */
+  destinatarios: number;
+}
+
+export const dirigidoA = (c: Comunicado) =>
+  c.apartamento_id ? `Apto ${c.numero_apartamento ?? "—"}` : "Todo el conjunto";
+
 export interface NuevoComunicado {
   tipo: TipoComunicado;
   tipo_novedad: TipoNovedad;

@@ -1,7 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
-import { withAdminConjunto, ok, fail } from '@/lib/apiHandler';
-
-const PATRON_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { withAdminConjunto, ok, fail, esUuid } from '@/lib/apiHandler';
 
 /** Que el motivo sea un motivo: «ok» o «acuerdo» no le explican nada a quien lo lea en un año. */
 const MINIMO_MOTIVO = 10;
@@ -19,7 +17,7 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body, user }) => {
   const cargoId = String(body.cargo_id ?? '').trim();
   const motivo = String(body.motivo ?? '').trim();
 
-  if (!PATRON_UUID.test(cargoId)) {
+  if (!esUuid(cargoId)) {
     return fail('Falta el cargo', 400);
   }
 
