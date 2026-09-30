@@ -74,7 +74,9 @@ identificador en las dos tiendas: `com.copper.residents`.
   --environment` **reemplaza** la lista de entornos: pasa todos los que deba conservar.
 
 ### App Store (iOS)
-- Se compila con **Codemagic** (`codemagic.yaml`) en cada push a `main` y se sube a TestFlight.
+- Se compila **solo con Codemagic** (`codemagic.yaml`), no con EAS, en cada push a `main` o
+  lanzando el build a mano, y se sube a TestFlight. La versión se publica después desde App
+  Store Connect.
   Las `EXPO_PUBLIC_*` salen del grupo `copper_mobile_env` y el build falla si falta alguna.
 - Cuando Apple aprueba una versión, ese número de versión se cierra: el siguiente envío exige
   subir `version` en `app.json`. Solo puede haber un build en revisión a la vez.
@@ -104,15 +106,16 @@ app consume se ven sin publicar nada, **siempre que no rompan la forma de la API
 4. **Android** (desde `apps/mobile-residents`, con el árbol de trabajo ya en la versión nueva):
    `npx eas build -p android --profile production`, y después
    `npx eas submit -p android --latest`.
-5. **iOS**: lo compila Codemagic en el paso 3. Si hace falta compilar en EAS en su lugar:
-   `npx eas build -p ios --profile production --auto-submit`. Se usa **uno de los dos, no
-   ambos**: cada uno lleva su propio contador de build, y Apple rechaza un número de build
-   repetido. La primera vez en EAS hay que ponerlo por encima del último de Codemagic con
-   `npx eas build:version:set -p ios`.
-6. **Enviar a revisión** en App Store Connect y Play Console, con el texto de **Novedades en esta
-   versión**: pocas viñetas, en español, escritas para el residente (qué puede hacer ahora), sin
-   jerga técnica y sin anunciar nada que no esté en el build. Solo puede haber un build de iOS en
-   revisión a la vez.
+5. **iOS, siempre con Codemagic** (nunca con EAS: llevaría otro contador de build y Apple
+   rechaza números repetidos):
+   1. En Codemagic se lanza el build del workflow de iOS sobre `main` (también arranca solo con
+      el merge del paso 3). Codemagic lo firma y lo sube a **TestFlight**.
+   2. En **App Store Connect** se crea la versión nueva con el mismo número de `app.json`, se le
+      asigna el build que llegó de TestFlight y se llena **Novedades en esta versión**.
+   3. Se envía a revisión. Solo puede haber un build de iOS en revisión a la vez.
+6. **Novedades en esta versión** (App Store Connect y Play Console): pocas viñetas, en español,
+   escritas para el residente (qué puede hacer ahora), sin jerga técnica y sin anunciar nada que
+   no esté en el build.
 7. Si la versión incluye una migración de base de datos o un cambio de API, **desplegar el panel
    primero** (paso 3) y comprobar que la versión anterior de la app sigue funcionando: los
    residentes tardan días en actualizar.
