@@ -2487,75 +2487,137 @@ export type Database = {
       }
       convivientes: {
         Row: {
+          apartamento_id: string
           apellidos: string
+          archivado_en: string | null
           fecha_nacimiento: string | null
           id: number
           nombres: string
           parentesco: string
-          residente_id: string
+          registrado_por: string | null
         }
         Insert: {
+          apartamento_id: string
           apellidos: string
+          archivado_en?: string | null
           fecha_nacimiento?: string | null
           id?: number
           nombres: string
           parentesco: string
-          residente_id: string
+          registrado_por?: string | null
         }
         Update: {
+          apartamento_id?: string
           apellidos?: string
+          archivado_en?: string | null
           fecha_nacimiento?: string | null
           id?: number
           nombres?: string
           parentesco?: string
-          residente_id?: string
+          registrado_por?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "residentes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_gestion_solicitudes"
             referencedColumns: ["id_residente"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_balances_indicadores"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_residentes"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residente_completo"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "conviviente_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "convivientes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]
@@ -2564,78 +2626,140 @@ export type Database = {
       }
       empleados_servicio: {
         Row: {
+          apartamento_id: string
           apellidos: string | null
+          archivado_en: string | null
           cargo: string | null
           documento_ident: string
           id: number
           nombres: string
-          residente_id: string
+          registrado_por: string | null
           tipo_documento: string
         }
         Insert: {
+          apartamento_id: string
           apellidos?: string | null
+          archivado_en?: string | null
           cargo?: string | null
           documento_ident: string
           id?: number
           nombres: string
-          residente_id: string
+          registrado_por?: string | null
           tipo_documento: string
         }
         Update: {
+          apartamento_id?: string
           apellidos?: string | null
+          archivado_en?: string | null
           cargo?: string | null
           documento_ident?: string
           id?: number
           nombres?: string
-          residente_id?: string
+          registrado_por?: string | null
           tipo_documento?: string
         }
         Relationships: [
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "residentes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_gestion_solicitudes"
             referencedColumns: ["id_residente"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_balances_indicadores"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_residentes"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residente_completo"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "empleado_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "empleados_servicio_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]
@@ -3117,75 +3241,137 @@ export type Database = {
       }
       mascotas: {
         Row: {
+          apartamento_id: string
+          archivado_en: string | null
           especie: string | null
           id: number
           nombre: string
           raza: string | null
-          residente_id: string
+          registrado_por: string | null
           tamano: string | null
         }
         Insert: {
+          apartamento_id: string
+          archivado_en?: string | null
           especie?: string | null
           id?: number
           nombre: string
           raza?: string | null
-          residente_id: string
+          registrado_por?: string | null
           tamano?: string | null
         }
         Update: {
+          apartamento_id?: string
+          archivado_en?: string | null
           especie?: string | null
           id?: number
           nombre?: string
           raza?: string | null
-          residente_id?: string
+          registrado_por?: string | null
           tamano?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "residentes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_gestion_solicitudes"
             referencedColumns: ["id_residente"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_balances_indicadores"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_residentes"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residente_completo"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "mascota_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "mascotas_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]
@@ -5585,78 +5771,140 @@ export type Database = {
       }
       vehiculos: {
         Row: {
+          apartamento_id: string
+          archivado_en: string | null
           color: string | null
           id: number
           marca: string
           modelo: string | null
           placa: string | null
-          residente_id: string
+          registrado_por: string | null
           tipo_vehiculo: string | null
         }
         Insert: {
+          apartamento_id: string
+          archivado_en?: string | null
           color?: string | null
           id?: number
           marca: string
           modelo?: string | null
           placa?: string | null
-          residente_id: string
+          registrado_por?: string | null
           tipo_vehiculo?: string | null
         }
         Update: {
+          apartamento_id?: string
+          archivado_en?: string | null
           color?: string | null
           id?: number
           marca?: string
           modelo?: string | null
           placa?: string | null
-          residente_id?: string
+          registrado_por?: string | null
           tipo_vehiculo?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "residentes"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_gestion_solicitudes"
             referencedColumns: ["id_residente"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_balances_indicadores"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_mis_residentes"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residente_completo"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_residentes_por_apartamento"
             referencedColumns: ["residente_id"]
           },
           {
-            foreignKeyName: "vehiculo_res_fk"
-            columns: ["residente_id"]
+            foreignKeyName: "vehiculos_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
             referencedRelation: "vista_saldos_por_concepto_residente"
             referencedColumns: ["residente_id"]

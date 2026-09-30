@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomCard } from '../../../components/common/CustomCard';
 import { CustomInput } from '../../../components/common/CustomInput';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 import { CustomButton } from '../../../components/common/CustomButton';
+import { AvisoHogar, RegistradoPor } from './HogarCompartido';
+import { estilosSeccion as styles } from './seccionHogarStyles';
 
 interface Conviviente {
   id: number;
@@ -12,6 +14,7 @@ interface Conviviente {
   apellidos: string;
   parentesco: string;
   fecha_nacimiento: string | null;
+  registrado_por_nombre?: string | null;
 }
 
 interface ConvivientesSectionProps {
@@ -105,7 +108,7 @@ export function ConvivientesSection({ convivientes = [], onMutate }: Conviviente
   const handleDelete = (item: Conviviente) => {
     Alert.alert(
       'Eliminar Familiar',
-      `¿Estás seguro de que deseas eliminar a ${item.nombres} ${item.apellidos} de la lista de convivientes?`,
+      `¿Seguro que deseas eliminar a ${item.nombres} ${item.apellidos} de los convivientes del apartamento? Se quita para todos sus residentes.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -136,19 +139,21 @@ export function ConvivientesSection({ convivientes = [], onMutate }: Conviviente
           <Text style={styles.addBtnText}>Agregar</Text>
         </TouchableOpacity>
       </View>
+      <AvisoHogar />
 
       {convivientes.length > 0 ? (
         convivientes.map((item) => (
           <CustomCard key={item.id} style={styles.itemCard}>
             <View style={styles.itemHeader}>
               <View>
-                <Text style={styles.itemName}>
+                <Text style={styles.itemTitulo}>
                   {item.nombres} {item.apellidos}
                 </Text>
                 <Text style={styles.itemDetails}>
                   Parentesco: {item.parentesco}
                   {item.fecha_nacimiento ? ` • Nacimiento: ${item.fecha_nacimiento.split('T')[0]}` : ''}
                 </Text>
+                <RegistradoPor nombre={item.registrado_por_nombre} />
               </View>
 
               <View style={styles.actions}>
@@ -163,7 +168,7 @@ export function ConvivientesSection({ convivientes = [], onMutate }: Conviviente
           </CustomCard>
         ))
       ) : (
-        <Text style={styles.emptyText}>No has registrado familiares convivientes.</Text>
+        <Text style={styles.emptyText}>Tu apartamento no tiene familiares convivientes registrados.</Text>
       )}
 
       {/* Modal de Crear / Editar */}
@@ -219,99 +224,3 @@ export function ConvivientesSection({ convivientes = [], onMutate }: Conviviente
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  addBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  addBtnText: {
-    fontSize: 12,
-    color: '#8A1C14',
-    fontWeight: 'bold',
-  },
-  itemCard: {
-    padding: 14,
-    marginBottom: 10,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  itemName: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#1e293b',
-  },
-  itemDetails: {
-    fontSize: 11,
-    color: '#64748b',
-    marginTop: 4,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionBtn: {
-    padding: 4,
-  },
-  emptyText: {
-    color: '#94a3b8',
-    fontSize: 12,
-    textAlign: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.4)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  modalForm: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    paddingBottom: 40,
-  },
-  submitBtn: {
-    marginTop: 10,
-  },
-});

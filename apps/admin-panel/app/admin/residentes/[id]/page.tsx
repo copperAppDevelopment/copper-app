@@ -14,7 +14,7 @@ import {
 } from "@/components/balances/estado-de-cuenta";
 import { useDetalleResidente } from "@/features/residentes/hooks/useDetalleResidente";
 import { InformacionResidente } from "@/features/residentes/components/InformacionResidente";
-import { SubColecciones } from "@/features/residentes/components/SubColecciones";
+import { HogarApartamento } from "@/components/vivienda/HogarApartamento";
 
 export default function DetalleResidentePage() {
   const router = useRouter();
@@ -73,8 +73,12 @@ export default function DetalleResidentePage() {
       ) : (
         <>
           <IndicadoresBalanceCards indicadores={d.indicadores} />
-          <InformacionResidente residente={d.residente} />
-          <SubColecciones residente={d.residente} />
+          <InformacionResidente residente={d.residente} activo={d.activo} />
+          {/* Un residente que ya se fue no muestra el hogar actual de su antiguo apartamento:
+              la tarjeta de vivienda lleva al apartamento. */}
+          {d.activo !== false && d.residente?.apartamento_id && (
+            <HogarApartamento hogar={d.residente} />
+          )}
           <MovimientosTabla
             movimientos={d.movimientos}
             emptyMessage={

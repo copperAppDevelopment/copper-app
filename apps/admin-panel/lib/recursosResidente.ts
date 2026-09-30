@@ -9,8 +9,11 @@ import { withResidente } from './residenteAuth';
  *
  * El sobre de las respuestas se conserva tal cual, incluido el `{ success, message }` del DELETE,
  * porque lo consume la app publicada.
+ *
+ * Los registros son del apartamento, no del residente: cualquier residente activo del
+ * apartamento los ve, edita y borra. `registrado_por` solo dice quién los creó.
  */
-/** Las cuatro tablas que cuelgan de un residente. Acotado para que el cliente las tipe. */
+/** Las cuatro tablas del hogar. Acotado para que el cliente las tipe. */
 type TablaRecurso = 'convivientes' | 'mascotas' | 'vehiculos' | 'empleados_servicio';
 
 export interface RecursoResidente<T extends Record<string, unknown>> {
@@ -37,13 +40,17 @@ const completo = (body: any, campos: string[]) => campos.every(campo => Boolean(
 export function rutasRecursoResidente<T extends Record<string, unknown>>(
   recurso: RecursoResidente<T>
 ) {
-  const POST = withResidente(async ({ residenteId }, req) => {
+  const POST = withResidente(async ({ residenteId, apartamentoId }, req) => {
     const body = await req.json();
     if (!completo(body, recurso.obligatorios)) return faltan(recurso.obligatorios);
 
     const { data, error } = await supabaseAdmin
       .from(recurso.tabla)
-      .insert({ ...recurso.aFila(body), residente_id: residenteId } as any)
+      .insert({
+        ...recurso.aFila(body),
+        apartamento_id: apartamentoId,
+        registrado_por: residenteId,
+      } as any)
       .select()
       .single();
 
@@ -55,31 +62,36 @@ export function rutasRecursoResidente<T extends Record<string, unknown>>(
     return NextResponse.json({ data }, { status: 201 });
   });
 
-  const PATCH = withResidente(async ({ residenteId }, req) => {
+  const PATCH = withResidente(async ({ apartamentoId }, req) => {
     const body = await req.json();
     if (!body?.id || !completo(body, recurso.obligatorios)) {
       return NextResponse.json({ error: 'Faltan campos requeridos para la edición' }, { status: 400 });
     }
 
-    // El `.eq('residente_id', …)` es lo que impide editar el registro de otro residente: sin RLS
-    // en la base, esta condición es la única frontera.
+    // El filtro por apartamento es lo que impide editar el registro de otro hogar: sin RLS en la
+    // base, esta condición es la única frontera. Lo archivado ya no es de nadie que viva ahí.
     const { data, error } = await supabaseAdmin
       .from(recurso.tabla)
       .update(recurso.aFila(body) as any)
       .eq('id', body.id)
-      .eq('residente_id', residenteId)
+      .eq('apartamento_id', apartamentoId)
+      .is('archivado_en', null)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error(`Error al editar en ${recurso.tabla}:`, error);
       return NextResponse.json({ error: `Error interno al actualizar ${recurso.articulo}` }, { status: 500 });
     }
 
+    if (!data) {
+      return NextResponse.json({ error: `No se encontró ${recurso.articulo} en tu apartamento` }, { status: 404 });
+    }
+
     return NextResponse.json({ data });
   });
 
-  const DELETE = withResidente(async ({ residenteId }, req) => {
+  const DELETE = withResidente(async ({ apartamentoId }, req) => {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -91,7 +103,8 @@ export function rutasRecursoResidente<T extends Record<string, unknown>>(
       .from(recurso.tabla)
       .delete()
       .eq('id', parseInt(id, 10))
-      .eq('residente_id', residenteId);
+      .eq('apartamento_id', apartamentoId)
+      .is('archivado_en', null);
 
     if (error) {
       console.error(`Error al eliminar de ${recurso.tabla}:`, error);

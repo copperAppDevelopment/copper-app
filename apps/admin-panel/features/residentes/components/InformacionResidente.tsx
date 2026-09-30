@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { User, Home } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +16,12 @@ function Dato({ label, valor }: { label: string; valor: React.ReactNode }) {
   );
 }
 
-export function InformacionResidente({ residente }: { residente: ResidenteCompleto | null }) {
+export function InformacionResidente({
+  residente, activo,
+}: {
+  residente: ResidenteCompleto | null;
+  activo: boolean | null;
+}) {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card
@@ -58,6 +64,20 @@ export function InformacionResidente({ residente }: { residente: ResidenteComple
         <Dato label="Dirección de la unidad" valor={residente?.direccion_unidad} />
         <Dato label="Estrato" valor={residente?.estrato} />
         <Dato label="Año de ingreso" valor={residente?.ano_ingreso} />
+
+        {residente?.apartamento_id && (
+          <p className="pt-3 text-[11px] text-zinc-500 dark:text-zinc-400">
+            {activo === false
+              ? "Ya no vive en este apartamento, así que no se muestra su hogar. "
+              : "Vehículos, convivientes, mascotas y empleados son del apartamento: los comparten todos sus residentes. "}
+            <Link
+              href={`/admin/apartamentos/${residente.apartamento_id}`}
+              className="font-semibold text-brand hover:underline"
+            >
+              Ver apartamento
+            </Link>
+          </p>
+        )}
       </Card>
     </section>
   );

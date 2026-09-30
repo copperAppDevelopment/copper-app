@@ -1,3 +1,5 @@
+import type { Hogar } from "@/components/vivienda/types";
+
 export type FiltroEstado = "todos" | "activos" | "pendientes" | "inactivos";
 
 export interface Residente {
@@ -23,41 +25,11 @@ export interface UsuarioExistente {
   rol: string | null;
 }
 
-export interface Vehiculo {
-  id: number;
-  marca: string | null;
-  modelo: string | null;
-  placa: string | null;
-  color: string | null;
-  tipo_vehiculo: string | null;
-}
-
-export interface Conviviente {
-  id: number;
-  nombres: string | null;
-  apellidos: string | null;
-  parentesco: string | null;
-  fecha_nacimiento: string | null;
-}
-
-export interface Mascota {
-  id: number;
-  nombre: string | null;
-  especie: string | null;
-  raza: string | null;
-  tamano: string | null;
-}
-
-export interface Empleado {
-  id: number;
-  nombres: string | null;
-  apellidos: string | null;
-  cargo: string | null;
-  documento_ident: string | null;
-  tipo_documento: string | null;
-}
-
-export interface ResidenteCompleto {
+/**
+ * La vista trae el hogar del apartamento —solo lo vigente, y vacío si el residente ya no está
+ * activo—, no algo propio del residente.
+ */
+export interface ResidenteCompleto extends Hogar {
   residente_id: string;
   user_id: string;
   nombres: string | null;
@@ -77,8 +49,4 @@ export interface ResidenteCompleto {
   ano_ingreso: number | null;
   apartamento_id: string | null;
   numero_apartamento: string | null;
-  vehiculos: Vehiculo[] | null;
-  mascotas: Mascota[] | null;
-  convivientes: Conviviente[] | null;
-  empleados_servicio: Empleado[] | null;
 }

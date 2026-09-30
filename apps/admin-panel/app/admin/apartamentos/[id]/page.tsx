@@ -13,6 +13,7 @@ import {
 } from "@/components/balances/estado-de-cuenta";
 import { useDetalleApartamento } from "@/features/apartamentos/hooks/useDetalleApartamento";
 import { ResidentesDelApartamento } from "@/features/apartamentos/components/ResidentesDelApartamento";
+import { HogarApartamento } from "@/components/vivienda/HogarApartamento";
 
 export default function DetalleApartamentoPage() {
   const router = useRouter();
@@ -58,6 +59,7 @@ export default function DetalleApartamentoPage() {
         <>
           <IndicadoresBalanceCards indicadores={d.indicadores} />
           <ResidentesDelApartamento residentes={d.residentes} />
+          <HogarApartamento hogar={d.hogar} />
           <MovimientosTabla
             movimientos={d.movimientos}
             emptyMessage="Este apartamento no tiene movimientos registrados."

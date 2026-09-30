@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import * as api from "../api";
 import type { DetalleApt, ResidenteApt, Indicadores, Movimiento } from "../types";
+import { listarHogar } from "@/components/vivienda/api";
+import type { Hogar } from "@/components/vivienda/types";
 
 export function useDetalleApartamento(apartamentoId: string, sesionCargando: boolean) {
   const [loading, setLoading] = useState(true);
@@ -11,6 +13,7 @@ export function useDetalleApartamento(apartamentoId: string, sesionCargando: boo
   const [residentes, setResidentes] = useState<ResidenteApt[]>([]);
   const [indicadores, setIndicadores] = useState<Indicadores | null>(null);
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
+  const [hogar, setHogar] = useState<Hogar | null>(null);
 
   useEffect(() => {
     if (sesionCargando) return;
@@ -34,9 +37,13 @@ export function useDetalleApartamento(apartamentoId: string, sesionCargando: boo
         const lista = await api.listarResidentesDe(apartamentoId);
         setResidentes(lista);
 
-        const balances = await api.obtenerBalances(apartamentoId, lista);
+        const [balances, delHogar] = await Promise.all([
+          api.obtenerBalances(apartamentoId, lista),
+          listarHogar(apartamentoId),
+        ]);
         setIndicadores(balances.indicadores);
         setMovimientos(balances.movimientos);
+        setHogar(delHogar);
       } catch (e) {
         console.error("Error al cargar el detalle del apartamento:", e);
         setError("No se encontró el apartamento solicitado.");
@@ -46,5 +53,5 @@ export function useDetalleApartamento(apartamentoId: string, sesionCargando: boo
     })();
   }, [sesionCargando, apartamentoId]);
 
-  return { loading, error, detalle, residentes, indicadores, movimientos };
+  return { loading, error, detalle, residentes, indicadores, movimientos, hogar };
 }
