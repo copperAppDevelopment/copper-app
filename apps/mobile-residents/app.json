@@ -2,7 +2,7 @@
   "expo": {
     "name": "Copper App",
     "slug": "copper-residents",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon-app.png",
     "userInterfaceStyle": "dark",
