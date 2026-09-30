@@ -12,6 +12,7 @@ import { clearConjuntoSeleccionado } from "../../lib/conjunto";
 import { useNoLeidos } from "../../hooks/useNoLeidos";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
+import { BotonInstalarApp } from "../pwa/BotonInstalarApp";
 import { GenerarComunicadoModal } from "../../features/comunicados/components/GenerarComunicadoModal";
 
 export type AdminSection =
@@ -178,6 +179,7 @@ export function AdminSidebar({
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">ADMINISTRADOR</p>
             </div>
           </button>
+          <BotonInstalarApp />
           <Button
             variant="secondary"
             onClick={() => setIsLogoutOpen(true)}

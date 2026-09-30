@@ -7,6 +7,7 @@ import { LayoutDashboard, Landmark, CreditCard, ClipboardList, Users, Mail, LogO
 import { supabase } from "../../lib/supabaseClient";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
+import { BotonInstalarApp } from "../pwa/BotonInstalarApp";
 
 export type SuperAdminSection =
   | "dashboard"
@@ -105,6 +106,8 @@ export function SuperAdminSidebar({ active, userEmail }: SuperAdminSidebarProps)
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">SUPERADMIN</p>
             </div>
           </div>
+
+          <BotonInstalarApp />
 
           <Button
             variant="secondary"

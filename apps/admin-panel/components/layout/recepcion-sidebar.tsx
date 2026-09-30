@@ -8,6 +8,7 @@ import { supabase } from "../../lib/supabaseClient";
 import { clearConjuntoSeleccionado } from "../../lib/conjunto";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
+import { BotonInstalarApp } from "../pwa/BotonInstalarApp";
 
 export interface RecepcionSidebarProps {
   userEmail: string;
@@ -81,6 +82,8 @@ export function RecepcionSidebar({ userEmail, hasMultipleConjuntos = false }: Re
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">RECEPCIÓN</p>
             </div>
           </div>
+
+          <BotonInstalarApp />
 
           <Button
             variant="secondary"
