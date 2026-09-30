@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import { Smartphone, Download, ArrowLeft, LogOut } from "lucide-react";
 import { supabase } from "../../../lib/supabaseClient";
 
+const URL_PLAY_STORE = "https://play.google.com/store/apps/details?id=com.copper.residents";
+const URL_APP_STORE = "https://apps.apple.com/co/app/copper-app/id6800446218";
+
 export default function ResidenteNoAccessPage() {
   const router = useRouter();
 
@@ -62,16 +65,14 @@ export default function ResidenteNoAccessPage() {
           </p>
         </div>
 
-        {/* Download Badges (Mocks) */}
+        {/* Download Badges */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
           {/* Google Play */}
           <a
-            href="#"
+            href={URL_PLAY_STORE}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-3 bg-black hover:bg-zinc-950 active:scale-98 border border-zinc-800 rounded-xl px-5 py-3 w-52 text-left transition-all duration-200"
-            onClick={(e) => {
-              e.preventDefault();
-              alert("La aplicación de Android estará disponible próximamente en Google Play Store.");
-            }}
           >
             {/* Play Store custom icon */}
             <svg viewBox="0 0 512 512" className="w-6 h-6 text-emerald-400 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -85,12 +86,10 @@ export default function ResidenteNoAccessPage() {
 
           {/* App Store */}
           <a
-            href="#"
+            href={URL_APP_STORE}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-3 bg-black hover:bg-zinc-950 active:scale-98 border border-zinc-800 rounded-xl px-5 py-3 w-52 text-left transition-all duration-200"
-            onClick={(e) => {
-              e.preventDefault();
-              alert("La aplicación de iOS estará disponible próximamente en el Apple App Store.");
-            }}
           >
             {/* Apple custom icon */}
             <svg viewBox="0 0 384 512" className="w-6 h-6 text-white fill-current" xmlns="http://www.w3.org/2000/svg">
