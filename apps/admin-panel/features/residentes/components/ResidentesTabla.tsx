@@ -136,7 +136,7 @@ export function ResidentesTabla({
         <div className="flex-1 max-w-xs">
           <Input
             id="filtro-residente"
-            placeholder="Buscar por nombre, correo o documento…"
+            placeholder="Buscar por nombre, correo, documento o apartamento…"
             value={filtro}
             onChange={(e) => onFiltroChange(e.target.value)}
             leftIcon={<Search className="w-4 h-4" />}
