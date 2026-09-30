@@ -25,9 +25,16 @@ export function MovementHistoryCard({ history = [] }: MovementHistoryCardProps) 
       {history.length > 0 ? (
         history.map((item, idx) => {
           const isPago = item.movimiento_tipo === 'PAGO';
-          const title = isPago
-            ? `Abono de Administración (${item.origen_pago || 'PSE'})`
-            : item.concepto_cargo || 'Cargo de Administración';
+          // El historial trae como PAGO dos cosas que no son dinero que entró: el descuento por
+          // pronto pago y la condonación de un cargo. Su `origen_pago` ya dice lo que son, así
+          // que se muestra tal cual en vez de envolverlo en «Abono de Administración (…)».
+          const esAjuste =
+            isPago && /^(Cargo condonado|Descuento por pronto pago)/.test(item.origen_pago || '');
+          const title = esAjuste
+            ? item.origen_pago!
+            : isPago
+              ? `Abono de Administración (${item.origen_pago || 'PSE'})`
+              : item.concepto_cargo || 'Cargo de Administración';
             
           const amount = isPago
             ? `+ $ ${(item.credito || 0).toLocaleString('es-CO')}`

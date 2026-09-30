@@ -54,7 +54,7 @@ export function CodigoInput({ valor, onChange, disabled = false }: CodigoInputPr
   };
 
   return (
-    <div className="flex gap-2 justify-center" onPaste={pegar}>
+    <div className="flex gap-1.5 sm:gap-2 justify-center" onPaste={pegar}>
       {Array.from({ length: LARGO }).map((_, i) => (
         <input
           key={i}
@@ -68,7 +68,7 @@ export function CodigoInput({ valor, onChange, disabled = false }: CodigoInputPr
           onKeyDown={(e) => teclear(i, e)}
           disabled={disabled}
           aria-label={`Dígito ${i + 1} de ${LARGO}`}
-          className="w-11 h-13 text-center text-lg font-bold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand disabled:opacity-50"
+          className="flex-1 min-w-0 max-w-11 h-13 text-center text-lg font-bold rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand disabled:opacity-50"
         />
       ))}
     </div>

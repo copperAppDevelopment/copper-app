@@ -12,8 +12,7 @@ import { clearConjuntoSeleccionado } from "../../lib/conjunto";
 import { useNoLeidos } from "../../hooks/useNoLeidos";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
-import { GenerarComunicadoModal } from "../../features/comunicados/components/GenerarComunicadoModal";
-import { GenerarCobroModal } from "../../features/cobros/components/GenerarCobroModal";
+import { BotonInstalarApp } from "../pwa/BotonInstalarApp";
 
 export type AdminSection =
   | "dashboard"
@@ -22,7 +21,7 @@ export type AdminSection =
   | "residentes"
   | "recepcion"
   | "recaudos"
-  | "cobros"
+  | "cargos"
   | "comunicados"
   | "chats"
   | "reportes"
@@ -33,20 +32,14 @@ export interface AdminSidebarProps {
   active: AdminSection;
   userEmail: string;
   conjuntoId: string;
-  conjuntoNombre?: string;
   hasMultipleConjuntos?: boolean;
 }
-
-/** Modales que el sidebar abre por su cuenta, sin navegar a ninguna ruta. */
-type ModalSidebar = "comunicado" | "cobro";
 
 interface NavItem {
   section: AdminSection;
   label: string;
-  href: string | null;
+  href: string;
   icon: React.ReactNode;
-  /** No navega: abre este modal desde el propio sidebar. */
-  modal?: ModalSidebar;
   /** Muestra el globo de mensajes sin leer. */
   llevaNoLeidos?: boolean;
 }
@@ -58,8 +51,11 @@ const navItems: NavItem[] = [
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
   { section: "recepcion", label: "Recepción", href: "/admin/recepcion", icon: <DoorOpen className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
-  { section: "cobros", label: "Cobros extras", href: null, modal: "cobro", icon: <Receipt className="w-5 h-5" /> },
-  { section: "comunicados", label: "Comunicados", href: null, modal: "comunicado", icon: <Bell className="w-5 h-5" /> },
+  // Antes «Cobros extras» abría aquí mismo el modal. Ahora el módulo tiene página propia, y
+  // el modal se abre desde ella con «Nuevo cobro».
+  { section: "cargos", label: "Cargos", href: "/admin/cargos", icon: <Receipt className="w-5 h-5" /> },
+  // Igual que Cargos: la página muestra el historial y desde ella se publica uno nuevo.
+  { section: "comunicados", label: "Comunicados", href: "/admin/comunicados", icon: <Bell className="w-5 h-5" /> },
   { section: "chats", label: "Chats", href: "/admin/chats", llevaNoLeidos: true, icon: <MessageSquare className="w-5 h-5" /> },
   // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
   { section: "reportes", label: "Solicitudes / PQRs", href: "/admin/solicitudes", icon: <FileText className="w-5 h-5" /> },
@@ -75,15 +71,11 @@ export function AdminSidebar({
   active,
   userEmail,
   conjuntoId,
-  conjuntoNombre,
   hasMultipleConjuntos = false,
 }: AdminSidebarProps) {
   const router = useRouter();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
-  // Un único valor y no un booleano por modal: así no pueden abrirse dos a la vez, que con
-  // este `Modal` (dos capas compitiendo por el overflow del body y por Escape) es un lío.
-  const [modalAbierto, setModalAbierto] = useState<ModalSidebar | null>(null);
   const noLeidos = useNoLeidos(conjuntoId);
 
   const handleLogoutConfirm = async () => {
@@ -102,7 +94,7 @@ export function AdminSidebar({
 
   return (
     <>
-      <aside className="w-full md:w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between shrink-0">
+      <aside className="w-full h-full overflow-y-auto bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
         <div>
           {/* Brand Header */}
           <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
@@ -117,17 +109,12 @@ export function AdminSidebar({
               return (
                 <a
                   key={item.section}
-                  href={item.href ?? "#"}
+                  href={item.href}
                   aria-current={isActive ? "page" : undefined}
                   className={isActive ? activeClasses : inactiveClasses}
                   onClick={(e) => {
                     e.preventDefault();
-                    if (item.modal) {
-                      setModalAbierto(item.modal);
-                      return;
-                    }
-                    // Las secciones sin href todavía no tienen ruta: quedan inertes.
-                    if (!item.href || isActive) return;
+                    if (isActive) return;
                     router.push(item.href);
                   }}
                 >
@@ -177,6 +164,7 @@ export function AdminSidebar({
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">ADMINISTRADOR</p>
             </div>
           </button>
+          <BotonInstalarApp />
           <Button
             variant="secondary"
             onClick={() => setIsLogoutOpen(true)}
@@ -187,20 +175,6 @@ export function AdminSidebar({
           </Button>
         </div>
       </aside>
-
-      <GenerarComunicadoModal
-        isOpen={modalAbierto === "comunicado"}
-        onClose={() => setModalAbierto(null)}
-        conjuntoId={conjuntoId}
-        conjuntoNombre={conjuntoNombre}
-      />
-
-      <GenerarCobroModal
-        isOpen={modalAbierto === "cobro"}
-        onClose={() => setModalAbierto(null)}
-        conjuntoId={conjuntoId}
-        conjuntoNombre={conjuntoNombre}
-      />
 
       <ConfirmDialog
         isOpen={isLogoutOpen}

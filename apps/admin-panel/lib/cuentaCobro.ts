@@ -47,6 +47,8 @@ export interface ConceptoCuenta {
   descripcion: string | null;
   valor: number;
   descuento: number;
+  /** Lo que la administración perdonó de este cargo. El valor se imprime íntegro y esto aparte. */
+  condonado: number;
   /** `cron` o `manual`: se imprime para distinguir la facturación automática de un cobro puntual. */
   origen: string;
 }
@@ -68,6 +70,8 @@ export interface CuentaCobro {
   conceptos: ConceptoCuenta[];
   cargosDelMes: number;
   pagosDelMes: number;
+  /** Aparte de los pagos: no es dinero que entró, es deuda que se perdonó. */
+  condonadoDelMes: number;
   saldoAnterior: number;
   totalAPagar: number;
   prontoPago: ProntoPagoCuenta | null;
@@ -87,6 +91,16 @@ export function identificadorCuenta(periodo: string, numeroApartamento: string):
   const sufijo = /^\d+$/.test(apto) ? apto.padStart(4, "0") : apto;
   return `CC-${mes}-${sufijo || "SN"}`;
 }
+
+/**
+ * Tipada como `string` a propósito. Con el literal, supabase-js intenta deducir el tipo de la
+ * fila analizando el texto, y esta lista —con dos relaciones embebidas— rebasa su límite de
+ * profundidad (TS2589). Las filas ya se tratan como genéricas más abajo, así que no se pierde nada.
+ */
+const COLUMNAS_CARGO: string =
+  "periodo, valor_base, valor_descuento, descuento_aplicado, valor_condonado, valor_final, origen, " +
+  "fecha_generado, fecha_vencimiento, link_pago, " +
+  "conceptos_cobro(codigo, nombre, descripcion, aplica_descuento), cargos_recaudos(valor_aplicado)";
 
 const suma = (valores: (number | string | null)[]) =>
   valores.reduce<number>((total, v) => total + Number(v ?? 0), 0);
@@ -121,9 +135,7 @@ export async function construirCuentaCobro(opciones: {
     // con los de periodos previos y su parte ya aplicada.
     supabaseAdmin
       .from("cargos_mensuales")
-      .select(
-        "periodo, valor_base, valor_descuento, descuento_aplicado, valor_final, origen, fecha_generado, fecha_vencimiento, link_pago, conceptos_cobro(codigo, nombre, descripcion, aplica_descuento), cargos_recaudos(valor_aplicado)"
-      )
+      .select(COLUMNAS_CARGO)
       .eq("apartamento_id", apartamentoId),
 
     supabaseAdmin
@@ -158,6 +170,7 @@ export async function construirCuentaCobro(opciones: {
     // Solo cuenta como descuento si el concepto admite pronto pago: el cron escribe la columna
     // igualmente, pero el beneficio no aplica a los que no lo permiten.
     descuento: fila.conceptos_cobro?.aplica_descuento ? Number(fila.valor_descuento ?? 0) : 0,
+    condonado: Number(fila.valor_condonado ?? 0),
     origen: fila.origen ?? "cron",
   }));
 
@@ -169,17 +182,20 @@ export async function construirCuentaCobro(opciones: {
     filasCargo.map(f => aplicadoDe(f) + Number(f.descuento_aplicado ?? 0))
   );
 
+  const condonadoDelMes = suma(filasCargo.map(f => f.valor_condonado));
+
   // Lo que quedaba debiendo de los meses anteriores. Los recaudos que nadie aplicó no bajan el
   // saldo, igual que en la vista.
   const saldoAnterior = todosLosCargos
     .filter(f => (f.periodo ?? "") < periodo)
     .reduce(
       (total, f) =>
-        total + Number(f.valor_final ?? 0) - aplicadoDe(f) - Number(f.descuento_aplicado ?? 0),
+        total + Number(f.valor_final ?? 0) - aplicadoDe(f)
+          - Number(f.descuento_aplicado ?? 0) - Number(f.valor_condonado ?? 0),
       0
     );
 
-  const totalAPagar = saldoAnterior + cargosDelMes - pagosDelMes;
+  const totalAPagar = saldoAnterior + cargosDelMes - pagosDelMes - condonadoDelMes;
 
   const fechasGenerado = filasCargo.map(f => f.fecha_generado).filter(Boolean).sort();
   const fechasVence = filasCargo.map(f => f.fecha_vencimiento).filter(Boolean).sort();
@@ -198,7 +214,8 @@ export async function construirCuentaCobro(opciones: {
         f =>
           f.conceptos_cobro?.aplica_descuento &&
           Number(f.descuento_aplicado ?? 0) === 0 &&
-          Number(f.valor_final ?? 0) - aplicadoDe(f) > 0
+          // Un cargo condonado ya no debe nada: tampoco tiene descuento que ganar.
+          Number(f.valor_final ?? 0) - aplicadoDe(f) - Number(f.valor_condonado ?? 0) > 0
       )
       .map(f => f.valor_descuento)
   );
@@ -244,6 +261,7 @@ export async function construirCuentaCobro(opciones: {
     conceptos,
     cargosDelMes,
     pagosDelMes,
+    condonadoDelMes,
     saldoAnterior,
     totalAPagar,
     prontoPago,

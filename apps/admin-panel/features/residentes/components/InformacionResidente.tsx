@@ -1,4 +1,5 @@
 import * as React from "react";
+import Link from "next/link";
 import { User, Home } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,15 +8,20 @@ import type { ResidenteCompleto } from "../types";
 function Dato({ label, valor }: { label: string; valor: React.ReactNode }) {
   return (
     <div className="flex justify-between gap-4 py-2 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="text-xs font-semibold text-zinc-900 dark:text-white text-right">
+      <span className="shrink-0 text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
+      <span className="min-w-0 text-xs font-semibold text-zinc-900 dark:text-white text-right wrap-anywhere">
         {valor || "—"}
       </span>
     </div>
   );
 }
 
-export function InformacionResidente({ residente }: { residente: ResidenteCompleto | null }) {
+export function InformacionResidente({
+  residente, activo,
+}: {
+  residente: ResidenteCompleto | null;
+  activo: boolean | null;
+}) {
   return (
     <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card
@@ -58,6 +64,20 @@ export function InformacionResidente({ residente }: { residente: ResidenteComple
         <Dato label="Dirección de la unidad" valor={residente?.direccion_unidad} />
         <Dato label="Estrato" valor={residente?.estrato} />
         <Dato label="Año de ingreso" valor={residente?.ano_ingreso} />
+
+        {residente?.apartamento_id && (
+          <p className="pt-3 text-[11px] text-zinc-500 dark:text-zinc-400">
+            {activo === false
+              ? "Ya no vive en este apartamento, así que no se muestra su hogar. "
+              : "Vehículos, convivientes, mascotas y empleados son del apartamento: los comparten todos sus residentes. "}
+            <Link
+              href={`/admin/apartamentos/${residente.apartamento_id}`}
+              className="font-semibold text-brand hover:underline"
+            >
+              Ver apartamento
+            </Link>
+          </p>
+        )}
       </Card>
     </section>
   );

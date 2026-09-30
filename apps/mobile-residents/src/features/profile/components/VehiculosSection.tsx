@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
+import { Text, View, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { CustomCard } from '../../../components/common/CustomCard';
 import { CustomInput } from '../../../components/common/CustomInput';
 import { CustomSelect } from '../../../components/common/CustomSelect';
 import { CustomButton } from '../../../components/common/CustomButton';
+import { AvisoHogar, RegistradoPor } from './HogarCompartido';
+import { estilosSeccion as styles } from './seccionHogarStyles';
 
 interface Vehicle {
   id: number;
@@ -13,6 +15,7 @@ interface Vehicle {
   placa: string | null;
   color: string | null;
   tipo_vehiculo: string | null;
+  registrado_por_nombre?: string | null;
 }
 
 interface VehiculosSectionProps {
@@ -109,7 +112,7 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
   const handleDelete = (item: Vehicle) => {
     Alert.alert(
       'Eliminar Vehículo',
-      `¿Estás seguro de que deseas eliminar el vehículo con placa ${item.placa}?`,
+      `¿Seguro que deseas eliminar el vehículo con placa ${item.placa}? Se quita para todos los residentes del apartamento.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -140,18 +143,20 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
           <Text style={styles.addBtnText}>Agregar</Text>
         </TouchableOpacity>
       </View>
+      <AvisoHogar />
 
       {vehicles.length > 0 ? (
         vehicles.map((item) => (
           <CustomCard key={item.id} style={styles.itemCard}>
             <View style={styles.itemHeader}>
               <View>
-                <Text style={styles.itemPlaca}>{item.placa}</Text>
+                <Text style={styles.itemTitulo}>{item.placa}</Text>
                 <Text style={styles.itemDetails}>
                   {item.tipo_vehiculo} • {item.marca}
                   {item.modelo ? ` (${item.modelo})` : ''}
                   {item.color ? ` • Color: ${item.color}` : ''}
                 </Text>
+                <RegistradoPor nombre={item.registrado_por_nombre} />
               </View>
 
               <View style={styles.actions}>
@@ -166,7 +171,7 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
           </CustomCard>
         ))
       ) : (
-        <Text style={styles.emptyText}>No has registrado vehículos.</Text>
+        <Text style={styles.emptyText}>Tu apartamento no tiene vehículos registrados.</Text>
       )}
 
       {/* Modal Crear / Editar */}
@@ -229,99 +234,3 @@ export function VehiculosSection({ vehicles = [], onMutate }: VehiculosSectionPr
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  addBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  addBtnText: {
-    fontSize: 12,
-    color: '#8A1C14',
-    fontWeight: 'bold',
-  },
-  itemCard: {
-    padding: 14,
-    marginBottom: 10,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  itemPlaca: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    color: '#1e293b',
-  },
-  itemDetails: {
-    fontSize: 11,
-    color: '#64748b',
-    marginTop: 4,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionBtn: {
-    padding: 4,
-  },
-  emptyText: {
-    color: '#94a3b8',
-    fontSize: 12,
-    textAlign: 'center',
-    paddingVertical: 20,
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(15, 23, 42, 0.4)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
-  },
-  modalTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0f172a',
-  },
-  modalForm: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    paddingBottom: 40,
-  },
-  submitBtn: {
-    marginTop: 10,
-  },
-});

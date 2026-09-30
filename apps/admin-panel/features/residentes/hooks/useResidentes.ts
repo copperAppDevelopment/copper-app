@@ -61,7 +61,8 @@ export function useResidentes(conjuntoId: string, sesionCargando: boolean) {
       return (
         (r.nombre_completo || "").toLowerCase().includes(termino) ||
         (r.email || "").toLowerCase().includes(termino) ||
-        (r.documento || "").toLowerCase().includes(termino)
+        (r.documento || "").toLowerCase().includes(termino) ||
+        (r.apartamento_numero || "").toLowerCase().includes(termino)
       );
     });
   }, [residentes, filtro, filtroEstado]);

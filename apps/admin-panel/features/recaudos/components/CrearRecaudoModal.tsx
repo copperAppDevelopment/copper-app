@@ -81,7 +81,7 @@ export function CrearRecaudoModal({
         options={opcionesApartamento}
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Input
           id="nueva-fecha"
           label="Fecha del pago"
@@ -109,7 +109,7 @@ export function CrearRecaudoModal({
         onChange={(e) => setValor(e.target.value)}
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <Input
           id="nuevo-origen"
           label="Origen (opcional)"

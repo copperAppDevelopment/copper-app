@@ -21,11 +21,12 @@ import { PlanModal } from "@/features/conjuntos/components/PlanModal";
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
         {etiqueta}
       </p>
-      <p className="text-sm text-zinc-800 dark:text-zinc-100 break-words">{valor || "—"}</p>
+      {/* `wrap-anywhere` y no `break-words`: este sí deja encoger la columna ante un correo largo. */}
+      <p className="text-sm text-zinc-800 dark:text-zinc-100 wrap-anywhere">{valor || "—"}</p>
     </div>
   );
 }

@@ -2,24 +2,23 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { withResidente } from '@/lib/residenteAuth';
 
-// 1. GET: Retorna los datos de perfil y todas las subtablas vinculadas
+// 1. GET: Retorna los datos de perfil y el hogar del apartamento
 export const GET = withResidente(async ({ user, residenteId }) => {
   const [
     { data: residente },
     { data: profileUser, error: userError },
     { data: dashboard },
-    { data: convivientes },
-    { data: vehiculos },
-    { data: mascotas },
-    { data: empleados },
+    { data: hogar },
   ] = await Promise.all([
     supabaseAdmin.from('residentes').select('*').eq('id', residenteId).maybeSingle(),
     supabaseAdmin.from('users').select('*').eq('id', user.id).maybeSingle(),
     supabaseAdmin.from('vista_dashboard_residente').select('*').eq('user_id', user.id).maybeSingle(),
-    supabaseAdmin.from('convivientes').select('*').eq('residente_id', residenteId),
-    supabaseAdmin.from('vehiculos').select('*').eq('residente_id', residenteId),
-    supabaseAdmin.from('mascotas').select('*').eq('residente_id', residenteId),
-    supabaseAdmin.from('empleados_servicio').select('*').eq('residente_id', residenteId),
+    // La vista ya junta lo vigente de todo el apartamento, con quién registró cada cosa.
+    supabaseAdmin
+      .from('vista_residente_completo')
+      .select('convivientes, vehiculos, mascotas, empleados_servicio')
+      .eq('residente_id', residenteId)
+      .maybeSingle(),
   ]);
 
   if (userError) {
@@ -32,10 +31,11 @@ export const GET = withResidente(async ({ user, residenteId }) => {
       user: profileUser || null,
       residente,
       dashboard: dashboard || null,
-      convivientes: convivientes || [],
-      vehiculos: vehiculos || [],
-      mascotas: mascotas || [],
-      empleados: empleados || [],
+      // Las claves no cambian: la app publicada las lee así.
+      convivientes: hogar?.convivientes || [],
+      vehiculos: hogar?.vehiculos || [],
+      mascotas: hogar?.mascotas || [],
+      empleados: hogar?.empleados_servicio || [],
     },
   });
 });

@@ -123,15 +123,25 @@ desfase de zona horaria, y la misma fecha se mostraba distinta según dónde la 
 
 ### 1. Máximo ~300 líneas por archivo
 
-Superarlo casi siempre significa que hay un componente o un hook esperando salir. En
-`apps/admin-panel` la regla está activa en ESLint como **aviso**:
+Superarlo casi siempre significa que hay un componente o un hook esperando salir. La regla está
+activa como **error** en las tres apps, así que `pnpm lint` falla si un archivo la rompe:
 
 ```json
-"max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }]
+"max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }]
 ```
 
-Dos páginas heredadas (`login`, `contador`) están exceptuadas en `overrides` mientras se migran.
-**No añadas archivos nuevos a esa lista**: si uno nuevo supera el límite, divídelo. Y cuando
+| App | Configuración | Qué revisa |
+|---|---|---|
+| `admin-panel` | `.eslintrc.json` (`next lint`) | `.ts`, `.tsx` |
+| `landing` | `eslint.config.mjs` | `.ts`, `.tsx`, `.astro` |
+| `mobile-residents` | `eslint.config.mjs` | `.ts`, `.tsx` |
+
+En landing y móvil ESLint solo vigila esto: se cargan los parsers, no las reglas recomendadas.
+
+Los archivos que ya lo superaban cuando se activó la regla están exceptuados en cada
+configuración (`login` en el panel; `Benefits`, `ContactForm` y `DeleteAccountForm`
+en la landing; `miPerfil`, `chatRoom` y `register` en móvil).
+**No añadas archivos nuevos a esas listas**: si uno nuevo supera el límite, divídelo. Y cuando
 migres una de las que quedan, quita también su excepción: si sobrevive al archivo que la
 justificaba, tapa el próximo desmadre.
 
@@ -323,7 +333,7 @@ el descuento por pronto pago se calcula pero no se aplica al total del cargo.
 
 ### Cobros extras
 
-El modal del sidebar genera cargos sueltos —una multa, una cuota extraordinaria— con la RPC
+El modal «Nuevo cobro» de la página de Cargos genera cargos sueltos —una multa, una cuota extraordinaria— con la RPC
 `crear_cobro_manual`, a un apartamento o a todo el conjunto, y permite deshacerlos con
 `revertir_cobro_manual`. Ambas están restringidas a `service_role`: con RLS desactivada y la anon
 key viajando en el bundle, dejarlas abiertas permitía a cualquiera generar cargos en el conjunto que
@@ -352,6 +362,39 @@ Otras cosas que no son obvias:
   desaparecería del estado de cuenta. Esos se cuentan aparte y se informan.
 - **Los residentes no se enteran**: `cargos_mensuales` no tiene ningún trigger de notificación. Si
   el cobro hay que anunciarlo, va un comunicado aparte; el modal lo recuerda al terminar.
+
+### Cargos y condonación
+
+`/admin/cargos` lista los cargos de un periodo —o los condonados de cualquiera— y permite
+**condonar** uno: la administración impone una multa, acuerda con el apartamento saldarla de otra
+forma, y el cargo deja de contar sin borrarse.
+
+Se guarda **cuánto** se perdonó y no un sí/no. `cargos_mensuales.valor_condonado` es gemelo de
+`descuento_aplicado` y entra en la misma fórmula, que es la única que hay que recordar:
+
+```
+saldo = valor_final − pagado − descuento_aplicado − valor_condonado
+```
+
+- **Se condona solo lo pendiente.** Lo ya abonado sigue siendo un pago; un cargo que no debe nada
+  no se puede condonar. `condonar_cargo` calcula el saldo y lo pasa a `valor_condonado`, con
+  motivo obligatorio, quién y cuándo. `reactivar_cargo` lo deshace y **borra ese rastro**.
+- **Todo lo demás se corrige solo**, porque un cargo condonado queda en saldo cero:
+  `aplicar_recaudo` no le abona, la mora no lo cuenta y `notificar_cobros_diario` no lo cobra.
+- **El cargo sigue ocupando su sitio.** El `not exists` de `generar_cargos_mensuales` no mira la
+  condonación a propósito: si lo hiciera, condonar una administración haría que el cron la
+  volviera a generar.
+- **El residente ve el cargo y su anulación.** `vista_mis_balances_historial2` emite un movimiento
+  a favor «Cargo condonado: <concepto>», como ya hacía con el descuento por pronto pago. Va como
+  `PAGO` porque las apps publicadas solo conocen `CARGO` y `PAGO`; el panel y la app nueva lo
+  distinguen por el texto de `origen_pago`.
+- **La mora ya generada no se recalcula.** Una multa de agosto que generó intereses en septiembre
+  y se condona en octubre deja ese cargo de mora vivo: hay que condonarlo aparte. El modal lo avisa.
+- **`revertir_cobro_manual` no borra cargos condonados**: los cuenta como bloqueados, igual que
+  los que tienen pagos.
+
+Las dos RPC están restringidas a `service_role`. La migración está en
+`supabase/migrations/` — es la primera versionada; las anteriores viven solo en producción.
 
 ### Suscripciones
 

@@ -2,16 +2,13 @@
   "extends": "next/core-web-vitals",
   "rules": {
     "max-lines": [
-      "warn",
+      "error",
       { "max": 300, "skipBlankLines": true, "skipComments": true }
     ]
   },
   "overrides": [
     {
-      "files": [
-        "app/login/page.tsx",
-        "app/contador/dashboard/page.tsx"
-      ],
+      "files": ["app/login/page.tsx"],
       "rules": { "max-lines": "off" }
     }
   ]

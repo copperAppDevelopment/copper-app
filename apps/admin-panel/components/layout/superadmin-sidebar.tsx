@@ -7,6 +7,7 @@ import { LayoutDashboard, Landmark, CreditCard, ClipboardList, Users, Mail, LogO
 import { supabase } from "../../lib/supabaseClient";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
+import { BotonInstalarApp } from "../pwa/BotonInstalarApp";
 
 export type SuperAdminSection =
   | "dashboard"
@@ -65,7 +66,7 @@ export function SuperAdminSidebar({ active, userEmail }: SuperAdminSidebarProps)
 
   return (
     <>
-      <aside className="w-full md:w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between shrink-0">
+      <aside className="w-full h-full overflow-y-auto bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
         <div>
           <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -105,6 +106,8 @@ export function SuperAdminSidebar({ active, userEmail }: SuperAdminSidebarProps)
               <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-mono">SUPERADMIN</p>
             </div>
           </div>
+
+          <BotonInstalarApp />
 
           <Button
             variant="secondary"

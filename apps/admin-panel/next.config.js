@@ -22,6 +22,19 @@ const nextConfig = {
     ],
   },
   devIndicators: false,
+  // El navegador revisa si hay un service worker nuevo en cada visita; sin esto la CDN podría
+  // servirle uno viejo y dejarlo pegado.
+  async headers() {
+    return [
+      {
+        source: '/sw.js',
+        headers: [
+          { key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' },
+          { key: 'Service-Worker-Allowed', value: '/' },
+        ],
+      },
+    ];
+  },
   webpack: (config, { dev }) => {
     if (dev) {
       config.cache = false;

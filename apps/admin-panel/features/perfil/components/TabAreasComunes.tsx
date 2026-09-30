@@ -165,9 +165,9 @@ export function TabAreasComunes({ conjuntoId }: { conjuntoId: string }) {
         ) : (
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {a.areas.map((area) => (
-              <div key={area.id} className="flex items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
+              <div key={area.id} className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-3 py-3 first:pt-0 last:pb-0">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
                       {area.nombre}
                     </p>
@@ -180,7 +180,7 @@ export function TabAreasComunes({ conjuntoId }: { conjuntoId: string }) {
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex flex-wrap items-center gap-1 sm:shrink-0">
                   <Button variant="ghost" size="sm" onClick={() => abrir(area)}>Editar</Button>
                   <Button variant="ghost" size="sm" onClick={() => a.alternar(area)}>
                     {area.activa ? "Ocultar" : "Mostrar"}

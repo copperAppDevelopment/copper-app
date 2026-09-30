@@ -24,8 +24,8 @@ export const Card: React.FC<CardProps> = ({
       {...props}
     >
       {(title || subtitle || headerActions) && (
-        <div className="px-6 py-4 border-b border-zinc-150 dark:border-zinc-800/80 flex items-center justify-between gap-4">
-          <div className="space-y-0.5 text-left">
+        <div className="px-4 sm:px-6 py-4 border-b border-zinc-150 dark:border-zinc-800/80 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+          <div className="space-y-0.5 text-left min-w-0">
             {title && (
               <h3 className="text-base font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                 {title}
@@ -37,14 +37,14 @@ export const Card: React.FC<CardProps> = ({
               </p>
             )}
           </div>
-          {headerActions && <div className="flex items-center gap-2 shrink-0">{headerActions}</div>}
+          {headerActions && <div className="flex flex-wrap items-center gap-2">{headerActions}</div>}
         </div>
       )}
-      <div className={`flex-1 text-left ${noPadding ? "" : "p-6"}`}>
+      <div className={`flex-1 text-left ${noPadding ? "" : "p-4 sm:p-6"}`}>
         {children}
       </div>
       {footer && (
-        <div className="px-6 py-3.5 bg-zinc-50/50 dark:bg-zinc-950/20 border-t border-zinc-150 dark:border-zinc-800/80 flex items-center justify-end gap-2 text-xs">
+        <div className="px-4 sm:px-6 py-3.5 bg-zinc-50/50 dark:bg-zinc-950/20 border-t border-zinc-150 dark:border-zinc-800/80 flex items-center justify-end gap-2 text-xs">
           {footer}
         </div>
       )}
