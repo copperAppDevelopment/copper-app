@@ -84,6 +84,38 @@ identificador en las dos tiendas: `com.copper.residents`.
   etiquetas de privacidad; el ícono no puede tener canal alfa; la eliminación de cuenta debe
   ser accesible desde la app (Perfil → Zona de peligro → `/eliminar-cuenta` de la landing).
 - Notificaciones push por OneSignal, con clave APNs para iOS.
+- Enlaces públicos: [App Store](https://apps.apple.com/co/app/copper-app/id6800446218) (id
+  `6800446218`) y [Google Play](https://play.google.com/store/apps/details?id=com.copper.residents).
+
+### Publicar una versión nueva (cada vez que cambia la app)
+
+Cualquier cambio en `apps/mobile-residents` —código, textos, íconos, permisos— solo llega a los
+residentes con una versión nueva en las dos tiendas. Los cambios del panel o de la base que la
+app consume se ven sin publicar nada, **siempre que no rompan la forma de la API** (regla 7).
+
+1. **Commits** en `development`, uno por cambio, con mensaje en español.
+2. **Subir `version`** en `apps/mobile-residents/app.json` (1.0.1 → 1.0.2…) en su propio commit.
+   Si Apple ya aprobó la versión actual, el build se rechaza sin esto. El número de build
+   (`buildNumber`/`versionCode`) no se toca a mano: lo incrementan EAS y Codemagic.
+3. **Subir el código y abrir el PR a `main`**:
+   `git push origin development` y `gh pr create --base main --head development …`.
+   El merge a `main` despliega el panel y la landing en Vercel **y dispara el build de iOS en
+   Codemagic**, que lo sube a TestFlight.
+4. **Android** (desde `apps/mobile-residents`, con el árbol de trabajo ya en la versión nueva):
+   `npx eas build -p android --profile production`, y después
+   `npx eas submit -p android --latest`.
+5. **iOS**: lo compila Codemagic en el paso 3. Si hace falta compilar en EAS en su lugar:
+   `npx eas build -p ios --profile production --auto-submit`. Se usa **uno de los dos, no
+   ambos**: cada uno lleva su propio contador de build, y Apple rechaza un número de build
+   repetido. La primera vez en EAS hay que ponerlo por encima del último de Codemagic con
+   `npx eas build:version:set -p ios`.
+6. **Enviar a revisión** en App Store Connect y Play Console, con el texto de **Novedades en esta
+   versión**: pocas viñetas, en español, escritas para el residente (qué puede hacer ahora), sin
+   jerga técnica y sin anunciar nada que no esté en el build. Solo puede haber un build de iOS en
+   revisión a la vez.
+7. Si la versión incluye una migración de base de datos o un cambio de API, **desplegar el panel
+   primero** (paso 3) y comprobar que la versión anterior de la app sigue funcionando: los
+   residentes tardan días en actualizar.
 
 ---
 
