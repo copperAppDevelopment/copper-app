@@ -1,4 +1,25 @@
-import type { Recaudo, FiltroEstado, BasePeriodo } from "./types";
+import type { Recaudo, FiltroEstado, BasePeriodo, DetalleCarga } from "./types";
+
+// ------------------------------------------------------------------ cargas
+
+/**
+ * Las dos líneas de cabecera del informe del banco que el parser de la edge function no sabe
+ * descartar, y que aparecen en todos los archivos:
+ * - la de parámetros («Cuenta Corriente… Fecha Transacción, 2026/06/30…»): casa con el regex de
+ *   fecha y sale como «Apartamento 2026/06/30 no encontrado»;
+ * - la de «Fecha actual: … | Hora: … | IP: …»: sale como fila incompleta.
+ */
+export const esRuidoDeCabecera = (d: DetalleCarga) =>
+  (d.tipo === "apartamento" && /Cuenta Corriente|Tipo de Fecha|Fecha Inicial/i.test(d.linea)) ||
+  (d.tipo === "validacion" && /Fecha actual:.*Hora:.*IP:/i.test(d.linea));
+
+/**
+ * Los problemas de verdad de una carga. `errores` lo calcula la edge function y cuenta el ruido
+ * de cabecera: sin descontarlo, cada archivo marcaba al menos dos problemas que no lo eran.
+ */
+export function erroresReales(errores: number, detalles: DetalleCarga[]): number {
+  return Math.max(0, errores - detalles.filter(esRuidoDeCabecera).length);
+}
 
 /** `recaudos` no tiene columna de estado: se deriva de `cargos_recaudos`. */
 export function totalAplicado(r: Recaudo): number {

@@ -5,14 +5,7 @@ import { CheckCircle2, AlertTriangle, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { DetalleCarga, ResultadoCarga } from "../types";
-
-/**
- * El parser de la edge function selecciona filas por regex de fecha, así que la fila de
- * parámetros de la cabecera del informe (con el rango de fechas consultado) también casa
- * y produce un error espurio de "apartamento no encontrado" en cada archivo.
- */
-const esRuidoDeCabecera = (d: DetalleCarga) =>
-  d.tipo === "apartamento" && /Cuenta Corriente|Tipo de Fecha|Fecha Inicial/i.test(d.linea);
+import { esRuidoDeCabecera, erroresReales } from "../utils";
 
 const grupos: {
   tipo: DetalleCarga["tipo"];
@@ -76,7 +69,7 @@ export function ResultadoCargaPanel({
           { label: "Filas leídas", valor: resultado.procesadas, color: "text-zinc-900 dark:text-white" },
           { label: "Cargadas", valor: resultado.insertados, color: "text-emerald-600 dark:text-emerald-400" },
           { label: "Ya existían", valor: duplicados, color: "text-blue-600 dark:text-blue-400" },
-          { label: "Con problema", valor: resultado.errores, color: "text-amber-600 dark:text-amber-400" },
+          { label: "Con problema", valor: erroresReales(resultado.errores, resultado.detalles), color: "text-amber-600 dark:text-amber-400" },
         ].map(item => (
           <div
             key={item.label}
