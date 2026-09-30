@@ -74,7 +74,9 @@ identificador en las dos tiendas: `com.copper.residents`.
   --environment` **reemplaza** la lista de entornos: pasa todos los que deba conservar.
 
 ### App Store (iOS)
-- Se compila con **Codemagic** (`codemagic.yaml`) en cada push a `main` y se sube a TestFlight.
+- Se compila **solo con Codemagic** (`codemagic.yaml`), no con EAS, en cada push a `main` o
+  lanzando el build a mano, y se sube a TestFlight. La versión se publica después desde App
+  Store Connect.
   Las `EXPO_PUBLIC_*` salen del grupo `copper_mobile_env` y el build falla si falta alguna.
 - Cuando Apple aprueba una versión, ese número de versión se cierra: el siguiente envío exige
   subir `version` en `app.json`. Solo puede haber un build en revisión a la vez.
@@ -84,6 +86,39 @@ identificador en las dos tiendas: `com.copper.residents`.
   etiquetas de privacidad; el ícono no puede tener canal alfa; la eliminación de cuenta debe
   ser accesible desde la app (Perfil → Zona de peligro → `/eliminar-cuenta` de la landing).
 - Notificaciones push por OneSignal, con clave APNs para iOS.
+- Enlaces públicos: [App Store](https://apps.apple.com/co/app/copper-app/id6800446218) (id
+  `6800446218`) y [Google Play](https://play.google.com/store/apps/details?id=com.copper.residents).
+
+### Publicar una versión nueva (cada vez que cambia la app)
+
+Cualquier cambio en `apps/mobile-residents` —código, textos, íconos, permisos— solo llega a los
+residentes con una versión nueva en las dos tiendas. Los cambios del panel o de la base que la
+app consume se ven sin publicar nada, **siempre que no rompan la forma de la API** (regla 7).
+
+1. **Commits** en `development`, uno por cambio, con mensaje en español.
+2. **Subir `version`** en `apps/mobile-residents/app.json` (1.0.1 → 1.0.2…) en su propio commit.
+   Si Apple ya aprobó la versión actual, el build se rechaza sin esto. El número de build
+   (`buildNumber`/`versionCode`) no se toca a mano: lo incrementan EAS y Codemagic.
+3. **Subir el código y abrir el PR a `main`**:
+   `git push origin development` y `gh pr create --base main --head development …`.
+   El merge a `main` despliega el panel y la landing en Vercel **y dispara el build de iOS en
+   Codemagic**, que lo sube a TestFlight.
+4. **Android** (desde `apps/mobile-residents`, con el árbol de trabajo ya en la versión nueva):
+   `npx eas build -p android --profile production`, y después
+   `npx eas submit -p android --latest`.
+5. **iOS, siempre con Codemagic** (nunca con EAS: llevaría otro contador de build y Apple
+   rechaza números repetidos):
+   1. En Codemagic se lanza el build del workflow de iOS sobre `main` (también arranca solo con
+      el merge del paso 3). Codemagic lo firma y lo sube a **TestFlight**.
+   2. En **App Store Connect** se crea la versión nueva con el mismo número de `app.json`, se le
+      asigna el build que llegó de TestFlight y se llena **Novedades en esta versión**.
+   3. Se envía a revisión. Solo puede haber un build de iOS en revisión a la vez.
+6. **Novedades en esta versión** (App Store Connect y Play Console): pocas viñetas, en español,
+   escritas para el residente (qué puede hacer ahora), sin jerga técnica y sin anunciar nada que
+   no esté en el build.
+7. Si la versión incluye una migración de base de datos o un cambio de API, **desplegar el panel
+   primero** (paso 3) y comprobar que la versión anterior de la app sigue funcionando: los
+   residentes tardan días en actualizar.
 
 ---
 
