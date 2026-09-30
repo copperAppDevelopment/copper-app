@@ -123,15 +123,25 @@ desfase de zona horaria, y la misma fecha se mostraba distinta según dónde la 
 
 ### 1. Máximo ~300 líneas por archivo
 
-Superarlo casi siempre significa que hay un componente o un hook esperando salir. En
-`apps/admin-panel` la regla está activa en ESLint como **aviso**:
+Superarlo casi siempre significa que hay un componente o un hook esperando salir. La regla está
+activa como **error** en las tres apps, así que `pnpm lint` falla si un archivo la rompe:
 
 ```json
-"max-lines": ["warn", { "max": 300, "skipBlankLines": true, "skipComments": true }]
+"max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }]
 ```
 
-Dos páginas heredadas (`login`, `contador`) están exceptuadas en `overrides` mientras se migran.
-**No añadas archivos nuevos a esa lista**: si uno nuevo supera el límite, divídelo. Y cuando
+| App | Configuración | Qué revisa |
+|---|---|---|
+| `admin-panel` | `.eslintrc.json` (`next lint`) | `.ts`, `.tsx` |
+| `landing` | `eslint.config.mjs` | `.ts`, `.tsx`, `.astro` |
+| `mobile-residents` | `eslint.config.mjs` | `.ts`, `.tsx` |
+
+En landing y móvil ESLint solo vigila esto: se cargan los parsers, no las reglas recomendadas.
+
+Los archivos que ya lo superaban cuando se activó la regla están exceptuados en cada
+configuración (`login` y `contador` en el panel; `Benefits`, `ContactForm` y `DeleteAccountForm`
+en la landing; `miPerfil`, `chatRoom` y `register` en móvil).
+**No añadas archivos nuevos a esas listas**: si uno nuevo supera el límite, divídelo. Y cuando
 migres una de las que quedan, quita también su excepción: si sobrevive al archivo que la
 justificaba, tapa el próximo desmadre.
 

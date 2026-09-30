@@ -12,7 +12,82 @@ Este archivo contiene la documentación general y el contexto técnico del proye
 
 ---
 
-## 2. Stack Tecnológico (Planificado para la Migración)
+## 2. Reglas de Trabajo (las tres apps)
+
+Aplican a `landing`, `admin-panel` y `mobile-residents`. El detalle de estructura de carpetas y
+contratos de API está en «Convenciones de Código» del [README.md](README.md).
+
+1. **Ante una duda de lógica de negocio, pregunta antes de inventar.** Cómo se cobra, a quién
+   pertenece un dato, qué pasa cuando un residente se va, qué ve el administrador frente al
+   residente: eso lo decide el dueño del producto, no el código. Si la respuesta no está en el
+   código, en el README o en la conversación, pregunta. Un supuesto razonable pero equivocado
+   termina en datos mal migrados o en una app publicada que no se puede corregir al instante.
+2. **Nada de boilerplate.** Antes de escribir, busca si ya existe: helpers en `lib/`, componentes
+   compartidos en `components/`, hooks en `hooks/`. Si vas a copiar un bloque por segunda vez,
+   extráelo. Hubo un CRUD idéntico copiado cuatro veces y una función de fechas copiada en tres
+   páginas, y solo una de las copias tenía el arreglo.
+3. **Responsabilidad única.** Un archivo, una razón para cambiar: las páginas solo componen, los
+   hooks orquestan estado y E/S, los componentes presentan lo que reciben por props, `api.ts`
+   habla con Supabase o con `/api/v1`. Una feature no importa de otra; lo compartido sube a
+   `components/`, `lib/` o `hooks/`.
+4. **Nada de archivos monolito.** Máximo 300 líneas por archivo (sin contar líneas en blanco ni
+   comentarios). ESLint lo exige como **error** en las tres apps y `pnpm lint` falla. Si un
+   archivo no cabe, divídelo; no lo agregues a la lista de excepciones, que es solo para la
+   deuda que ya existía.
+5. **Evita la sobreingeniería.** Resuelve el problema que hay, no el que podría haber. Sin
+   capas, abstracciones, configuraciones ni dependencias «por si acaso»; tres líneas repetidas
+   dos veces son más claras que una abstracción prematura. Si una solución más grande parece
+   necesaria, proponla y deja que el usuario decida.
+6. **Normaliza la base de datos.**
+   - Cada dato vive una sola vez, en la tabla de la entidad a la que pertenece. Ejemplo real:
+     vehículos, mascotas, convivientes y empleados son del **apartamento** (`apartamento_id`), no
+     del residente que los registró, porque un apartamento tiene varios residentes.
+   - No guardes lo que se puede derivar (saldos, totales, nombres de otra tabla): calcúlalo en
+     una vista o en la consulta.
+   - Relaciones con FK explícitas y un `on delete` pensado: `cascade` solo si el hijo no tiene
+     sentido sin el padre; si no, `set null` o `restrict`.
+   - Cambios de esquema en `supabase/migrations/` (versionados), probados antes en una
+     transacción que se revierte. Tras cambiar el esquema, regenera los tipos de
+     `packages/database` y recompila el paquete.
+   - La escritura va por la API con `service_role`; no concedas `insert/update/delete` a `anon`
+     ni a `authenticated`.
+7. **Compatibilidad con la app publicada.** Hay versiones de la app en teléfonos que no se
+   actualizan solas: una ruta de `/api/v1` que consume la app no cambia la forma de su respuesta
+   ni sus claves. Se agrega, no se renombra ni se quita.
+8. **Idioma.** Código, comentarios, commits y textos de interfaz en español.
+
+---
+
+## 3. Tiendas Móviles (`apps/mobile-residents`)
+
+App Expo (SDK 57, React Native, New Architecture) publicada como **Copper App**, con el mismo
+identificador en las dos tiendas: `com.copper.residents`.
+
+### Google Play (Android)
+- Se compila con **EAS** desde el árbol de trabajo local (no desde git):
+  `eas build -p android --profile production` y se sube con `eas submit -p android`.
+- `eas.json`: `appVersionSource: "remote"` y `autoIncrement` en `production`, así que el
+  `versionCode` lo lleva EAS. pnpm está fijado en el perfil `base`.
+- La cuenta de servicio de Google Play vive **fuera del repositorio** (`~/.secrets/`). Nunca se
+  versiona ni se lee su contenido.
+- Las variables `EXPO_PUBLIC_*` de los builds viven en EAS por entorno. `eas env:update
+  --environment` **reemplaza** la lista de entornos: pasa todos los que deba conservar.
+
+### App Store (iOS)
+- Se compila con **Codemagic** (`codemagic.yaml`) en cada push a `main` y se sube a TestFlight.
+  Las `EXPO_PUBLIC_*` salen del grupo `copper_mobile_env` y el build falla si falta alguna.
+- Cuando Apple aprueba una versión, ese número de versión se cierra: el siguiente envío exige
+  subir `version` en `app.json`. Solo puede haber un build en revisión a la vez.
+- Requisitos de revisión que ya nos rechazaron: textos de propósito claros para cámara y fotos;
+  sin permisos que la app no usa (micrófono, ubicación — OneSignal va con
+  `disableLocation: true`); la app **no rastrea** (sin ATT) y así debe declararse en las
+  etiquetas de privacidad; el ícono no puede tener canal alfa; la eliminación de cuenta debe
+  ser accesible desde la app (Perfil → Zona de peligro → `/eliminar-cuenta` de la landing).
+- Notificaciones push por OneSignal, con clave APNs para iOS.
+
+---
+
+## 4. Stack Tecnológico (Planificado para la Migración)
 La aplicación se migrará a **Astro** para maximizar el rendimiento y optimizar el SEO, manteniendo componentes interactivos en **React** y utilizando la arquitectura de islas.
 
 - **Framework Principal:** [Astro](https://astro.build/) (v5.x / v4.x)
@@ -24,7 +99,7 @@ La aplicación se migrará a **Astro** para maximizar el rendimiento y optimizar
 
 ---
 
-## 3. Arquitectura del Software (Feature-based)
+## 5. Arquitectura del Software (Feature-based)
 El proyecto utiliza una arquitectura **Feature-based** (orientada a características). En lugar de agrupar todo por tipo técnico (todos los componentes en una sola carpeta `components`), cada característica del negocio reside en su propio directorio dentro de `src/features/`.
 
 > ⚠️ **Esta sección describe únicamente la app `landing`.** Las convenciones que aplican a **las
@@ -52,7 +127,7 @@ El proyecto utiliza una arquitectura **Feature-based** (orientada a característ
 
 ---
 
-## 4. Estrategia de Estados e Islas
+## 6. Estrategia de Estados e Islas
 Para evitar el envío de JavaScript innecesario al navegador, la mayoría de los componentes son estáticos (`.astro`). Solo los componentes con interacción de usuario real se hidratan en el cliente mediante directivas de Astro (`client:load` o `client:visible`).
 
 La comunicación entre estas islas independientes se realiza a través de **Nanostores** en `src/stores/appStore.ts`:
@@ -63,7 +138,7 @@ La comunicación entre estas islas independientes se realiza a través de **Nano
 
 ---
 
-## 5. Instrucciones de Desarrollo
+## 7. Instrucciones de Desarrollo
 ### Comandos Útiles (Astro)
 - `pnpm dev`: Inicia el servidor de desarrollo local en `http://localhost:4321`.
 - `pnpm build`: Compila el sitio estático optimizado y empaqueta las islas React en la carpeta `dist/`.
