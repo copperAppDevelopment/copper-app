@@ -28,7 +28,7 @@ export default function ChatsPage() {
     >
       {c.error && <Alert variant="danger">{c.error}</Alert>}
 
-      <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm overflow-hidden flex h-[calc(100vh-14rem)] min-h-[28rem]">
+      <div className="border border-zinc-200 dark:border-zinc-800 rounded-2xl bg-white dark:bg-zinc-900 shadow-sm overflow-hidden flex h-[calc(100dvh-13rem)] lg:h-[calc(100dvh-14rem)] lg:min-h-[28rem]">
         {/* En pantalla estrecha se ve una de las dos: la lista, o la sala del chat abierto. */}
         <div
           className={`w-full md:w-80 md:border-r border-zinc-200 dark:border-zinc-800 shrink-0 ${

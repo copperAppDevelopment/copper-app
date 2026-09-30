@@ -104,7 +104,7 @@ export default function ResidenteNoAccessPage() {
         </div>
 
         {/* Buttons: Back to Login */}
-        <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-between items-center">
+        <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 flex flex-col-reverse sm:flex-row justify-between items-center gap-3">
           <button
             onClick={() => router.push("/login")}
             className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white text-sm font-semibold transition-colors cursor-pointer"

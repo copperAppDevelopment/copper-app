@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { SpinnerPagina } from "../ui/spinner";
+import { MarcoConCajon } from "./marco-con-cajon";
 
 export interface PageShellProps {
   /** El sidebar del rol: el del administrador o el de recepción. */
@@ -20,7 +21,8 @@ export interface PageShellProps {
 }
 
 /**
- * Armazón de las páginas del panel: fondo, sidebar, main y encabezado.
+ * Armazón de las páginas del panel: el sidebar (en cajón en pantallas angostas, ver
+ * `MarcoConCajon`) y el encabezado de la página.
  *
  * El sidebar entra por prop en vez de estar fijado porque recepción necesita el suyo:
  * `AdminSidebar` enlaza a rutas donde un recepcionista no puede entrar y monta los modales
@@ -41,30 +43,26 @@ export function PageShell({
   }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-slate-950 text-zinc-900 dark:text-white flex flex-col md:flex-row">
-      {sidebar}
+    <MarcoConCajon sidebar={sidebar}>
+      {encabezado}
 
-      <main className="flex-1 p-6 md:p-10 space-y-8 overflow-y-auto">
-        {encabezado}
-
-        <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-                {titulo}
-              </h1>
-              {tituloAdorno}
-            </div>
-            {subtitulo && (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{subtitulo}</p>
-            )}
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white wrap-break-word">
+              {titulo}
+            </h1>
+            {tituloAdorno}
           </div>
+          {subtitulo && (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">{subtitulo}</p>
+          )}
+        </div>
 
-          {acciones && <div className="flex flex-wrap gap-3">{acciones}</div>}
-        </header>
+        {acciones && <div className="flex flex-wrap gap-3">{acciones}</div>}
+      </header>
 
-        {children}
-      </main>
-    </div>
+      {children}
+    </MarcoConCajon>
   );
 }

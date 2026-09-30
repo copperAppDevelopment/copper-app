@@ -20,11 +20,12 @@ import type { ConjuntoSuper } from "@/features/superadmin/types";
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: React.ReactNode }) {
   return (
-    <div>
+    <div className="min-w-0">
       <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
         {etiqueta}
       </p>
-      <p className="text-sm text-zinc-800 dark:text-zinc-100 break-words">{valor || "—"}</p>
+      {/* `wrap-anywhere` y no `break-words`: este sí deja encoger la columna ante un correo largo. */}
+      <p className="text-sm text-zinc-800 dark:text-zinc-100 wrap-anywhere">{valor || "—"}</p>
     </div>
   );
 }
@@ -167,7 +168,7 @@ export default function DetalleConjuntoSuperPage() {
             </Card>
 
             <Card title="Datos del conjunto" className="shadow-sm">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Dato etiqueta="Administrador" valor={conjunto.propietario_nombre} />
                 <Dato etiqueta="Correo" valor={conjunto.propietario_email} />
                 <Dato etiqueta="Apartamentos" valor={conjunto.num_apartamentos} />

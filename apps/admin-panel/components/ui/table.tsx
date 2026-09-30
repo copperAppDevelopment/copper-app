@@ -24,6 +24,13 @@ export interface CommonTableProps<T> {
   emptyMessage?: React.ReactNode;
 }
 
+/** Hasta cinco páginas consecutivas, centradas en la actual cuando se puede. */
+function ventanaDePaginas(actual: number, total: number): number[] {
+  const tamano = Math.min(5, total);
+  const inicio = Math.min(Math.max(1, actual - 2), total - tamano + 1);
+  return Array.from({ length: tamano }, (_, i) => inicio + i);
+}
+
 export function CommonTable<T>({
   columns,
   data = [],
@@ -128,7 +135,7 @@ export function CommonTable<T>({
 
       {/* Pagination panel */}
       {currentPage && onPageChange && totalPages > 1 && (
-        <div className="flex justify-between items-center px-4 py-3.5 border-t border-zinc-150 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/10 text-xs text-zinc-500 dark:text-zinc-400 font-light select-none">
+        <div className="flex justify-between items-center gap-3 px-4 py-3.5 border-t border-zinc-150 dark:border-zinc-800/80 bg-zinc-50/30 dark:bg-zinc-950/10 text-xs text-zinc-500 dark:text-zinc-400 font-light select-none">
           <div>
             Mostrando pág. <b>{currentPage}</b> de <b>{totalPages}</b>
           </div>
@@ -141,16 +148,17 @@ export function CommonTable<T>({
               <ChevronLeft className="w-4 h-4" />
             </button>
             
-            {/* Page number buttons */}
-            {Array.from({ length: totalPages }).map((_, idx) => {
-              const p = idx + 1;
+            {/* Una ventana de páginas alrededor de la actual, no todas: con muchas páginas la
+                fila no cabía. En móvil basta con las flechas y el «pág. n de N». */}
+            {ventanaDePaginas(currentPage, totalPages).map((p) => {
               const isCurrent = p === currentPage;
               return (
                 <button
                   key={p}
                   onClick={() => onPageChange(p)}
                   disabled={loading}
-                  className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  aria-current={isCurrent ? "page" : undefined}
+                  className={`hidden sm:inline-block px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
                     isCurrent
                       ? "bg-brand text-white shadow-sm"
                       : "hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-650 dark:text-zinc-300"

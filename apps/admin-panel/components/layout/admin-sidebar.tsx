@@ -104,7 +104,7 @@ export function AdminSidebar({
 
   return (
     <>
-      <aside className="w-full md:w-64 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between shrink-0">
+      <aside className="w-full h-full overflow-y-auto bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 flex flex-col justify-between">
         <div>
           {/* Brand Header */}
           <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-3">

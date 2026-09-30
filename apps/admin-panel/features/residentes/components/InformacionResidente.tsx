@@ -8,8 +8,8 @@ import type { ResidenteCompleto } from "../types";
 function Dato({ label, valor }: { label: string; valor: React.ReactNode }) {
   return (
     <div className="flex justify-between gap-4 py-2 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-      <span className="text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
-      <span className="text-xs font-semibold text-zinc-900 dark:text-white text-right">
+      <span className="shrink-0 text-xs text-zinc-500 dark:text-zinc-400">{label}</span>
+      <span className="min-w-0 text-xs font-semibold text-zinc-900 dark:text-white text-right wrap-anywhere">
         {valor || "—"}
       </span>
     </div>

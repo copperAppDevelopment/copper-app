@@ -97,7 +97,7 @@ export function AsignarPlanModal({ isOpen, fila, onClose, onAsignado }: AsignarP
             <p className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
               Periodo
             </p>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {PERIODOS.map(p => (
                 <Button
                   key={p}

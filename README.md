@@ -139,7 +139,7 @@ activa como **error** en las tres apps, así que `pnpm lint` falla si un archivo
 En landing y móvil ESLint solo vigila esto: se cargan los parsers, no las reglas recomendadas.
 
 Los archivos que ya lo superaban cuando se activó la regla están exceptuados en cada
-configuración (`login` y `contador` en el panel; `Benefits`, `ContactForm` y `DeleteAccountForm`
+configuración (`login` en el panel; `Benefits`, `ContactForm` y `DeleteAccountForm`
 en la landing; `miPerfil`, `chatRoom` y `register` en móvil).
 **No añadas archivos nuevos a esas listas**: si uno nuevo supera el límite, divídelo. Y cuando
 migres una de las que quedan, quita también su excepción: si sobrevive al archivo que la

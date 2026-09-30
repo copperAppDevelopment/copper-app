@@ -1,5 +1,13 @@
 import * as React from "react";
 import { X } from "lucide-react";
+import { Portal } from "./portal";
+
+/**
+ * Pie de botones de los diálogos. En móvil se apilan, con la acción principal arriba; tres
+ * botones en fila no caben en un celular.
+ */
+export const PIE_BOTONES =
+  "flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end [&>*]:w-full sm:[&>*]:w-auto";
 
 export interface ModalProps {
   isOpen: boolean;
@@ -49,42 +57,44 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-        onClick={() => !busy && onClose()}
-      />
+    <Portal>
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        {/* Backdrop */}
+        <div
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          onClick={() => !busy && onClose()}
+        />
 
-      {/* Modal box */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        className={`bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full ${sizes[size]} p-6 relative shadow-2xl flex flex-col text-left space-y-5 max-h-[90vh] overflow-y-auto`}
-      >
-        <button
-          onClick={onClose}
-          disabled={busy}
-          className="absolute top-4 right-4 p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+        {/* Modal box */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          className={`bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full ${sizes[size]} p-6 relative shadow-2xl flex flex-col text-left space-y-5 max-h-[90dvh] overflow-y-auto`}
         >
-          <X className="w-4 h-4" />
-        </button>
+          <button
+            onClick={onClose}
+            disabled={busy}
+            className="absolute top-4 right-4 p-1.5 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <X className="w-4 h-4" />
+          </button>
 
-        <div className="space-y-1.5 pt-2 pr-8">
-          <h4 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">
-            {title}
-          </h4>
-          {description && (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
-              {description}
-            </p>
-          )}
+          <div className="space-y-1.5 pt-2 pr-8">
+            <h4 className="text-lg font-bold text-zinc-900 dark:text-white leading-tight">
+              {title}
+            </h4>
+            {description && (
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 font-light leading-relaxed">
+                {description}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-4">{children}</div>
+
+          {footer && <div className={PIE_BOTONES}>{footer}</div>}
         </div>
-
-        <div className="space-y-4">{children}</div>
-
-        {footer && <div className="flex gap-3 justify-end pt-1">{footer}</div>}
       </div>
-    </div>
+    </Portal>
   );
 };

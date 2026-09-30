@@ -56,7 +56,7 @@ function FilaPiso({
           aria-label={`Apartamentos del piso ${piso.piso}`}
           className="w-16 text-sm text-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-2 py-1 outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand disabled:opacity-50 text-zinc-800 dark:text-zinc-100"
         />
-        <span className="text-xs text-zinc-400 w-16">apartamentos</span>
+        <span className="hidden sm:inline text-xs text-zinc-400 w-16">apartamentos</span>
 
         <Button
           variant={cambiado ? "primary" : "ghost"}
@@ -102,7 +102,7 @@ export function TorreCard({ torre, onAgregarPisos, onEliminar, onAjustarPiso }: 
   return (
     <Card className="shadow-sm">
       <div className="space-y-4">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <button
             onClick={alternar}
             aria-expanded={abierta}
@@ -122,7 +122,7 @@ export function TorreCard({ torre, onAgregarPisos, onEliminar, onAjustarPiso }: 
             </div>
           </button>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
             {torre.prefijo && (
               <Badge variant="brand">
                 <span className="font-mono">{torre.prefijo}-101</span>

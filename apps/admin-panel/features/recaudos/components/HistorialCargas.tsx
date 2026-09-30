@@ -32,7 +32,7 @@ export function HistorialCargas({
         {cargas.map(c => (
           <div
             key={c.id}
-            className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between gap-4"
+            className="p-3 rounded-xl border border-zinc-200 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4"
           >
             <div className="min-w-0">
               <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">
@@ -46,7 +46,7 @@ export function HistorialCargas({
                 )}
               </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
               <Button
                 variant="ghost"
                 size="sm"
