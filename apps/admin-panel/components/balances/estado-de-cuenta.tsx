@@ -35,6 +35,13 @@ export interface MovimientoBalance {
 
 const PAGE_SIZE = 10;
 
+/**
+ * La condonación de un cargo llega del historial como un `PAGO`, porque las apps ya publicadas
+ * solo conocen CARGO y PAGO. Aquí se distingue para no rotularla como dinero que entró.
+ */
+const esCondonacion = (m: MovimientoBalance) =>
+  Boolean(m.origen_pago?.startsWith("Cargo condonado"));
+
 export function IndicadoresBalanceCards({ indicadores }: { indicadores: IndicadoresBalance | null }) {
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -98,11 +105,14 @@ export function MovimientosTabla({
     {
       key: "movimiento_tipo",
       label: "Tipo",
-      render: (m: MovimientoBalance) => (
-        <Badge variant={m.movimiento_tipo === "PAGO" ? "success" : "info"}>
-          {m.movimiento_tipo || "—"}
-        </Badge>
-      ),
+      render: (m: MovimientoBalance) =>
+        esCondonacion(m) ? (
+          <Badge variant="neutral">CONDONADO</Badge>
+        ) : (
+          <Badge variant={m.movimiento_tipo === "PAGO" ? "success" : "info"}>
+            {m.movimiento_tipo || "—"}
+          </Badge>
+        ),
     },
     {
       key: "concepto_cargo",

@@ -197,6 +197,11 @@ export function CuentaCobroDocumento({ cuenta }: { cuenta: CuentaCobro }) {
                 <Text style={s.conceptoNombre}>{c.nombre}</Text>
                 {c.descripcion ? <Text style={s.conceptoNota}>{c.descripcion}</Text> : null}
                 {c.origen === "manual" ? <Text style={s.conceptoNota}>Cobro puntual</Text> : null}
+                {c.condonado > 0 ? (
+                  <Text style={s.conceptoNota}>
+                    Condonado por la administración: {formatoMoneda(c.condonado)}
+                  </Text>
+                ) : null}
               </View>
               <Text style={s.colDescuento}>
                 {c.descuento > 0 ? `-${formatoMoneda(c.descuento)}` : VACIO}
@@ -221,6 +226,12 @@ export function CuentaCobroDocumento({ cuenta }: { cuenta: CuentaCobro }) {
             <View style={s.totalFila}>
               <Text style={s.totalEtiqueta}>Pagos aplicados a este periodo</Text>
               <Text style={s.totalValor}>-{formatoMoneda(cuenta.pagosDelMes)}</Text>
+            </View>
+          )}
+          {cuenta.condonadoDelMes > 0 && (
+            <View style={s.totalFila}>
+              <Text style={s.totalEtiqueta}>Cargos condonados</Text>
+              <Text style={s.totalValor}>-{formatoMoneda(cuenta.condonadoDelMes)}</Text>
             </View>
           )}
           <View style={s.totalPagarFila}>

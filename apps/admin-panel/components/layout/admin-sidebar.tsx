@@ -13,7 +13,6 @@ import { useNoLeidos } from "../../hooks/useNoLeidos";
 import { Button } from "../ui/button";
 import { ConfirmDialog } from "../ui/confirm-dialog";
 import { GenerarComunicadoModal } from "../../features/comunicados/components/GenerarComunicadoModal";
-import { GenerarCobroModal } from "../../features/cobros/components/GenerarCobroModal";
 
 export type AdminSection =
   | "dashboard"
@@ -22,7 +21,7 @@ export type AdminSection =
   | "residentes"
   | "recepcion"
   | "recaudos"
-  | "cobros"
+  | "cargos"
   | "comunicados"
   | "chats"
   | "reportes"
@@ -38,7 +37,7 @@ export interface AdminSidebarProps {
 }
 
 /** Modales que el sidebar abre por su cuenta, sin navegar a ninguna ruta. */
-type ModalSidebar = "comunicado" | "cobro";
+type ModalSidebar = "comunicado";
 
 interface NavItem {
   section: AdminSection;
@@ -58,7 +57,9 @@ const navItems: NavItem[] = [
   { section: "residentes", label: "Residentes", href: "/admin/residentes", icon: <Users className="w-5 h-5" /> },
   { section: "recepcion", label: "Recepción", href: "/admin/recepcion", icon: <DoorOpen className="w-5 h-5" /> },
   { section: "recaudos", label: "Recaudos", href: "/admin/recaudos", icon: <DollarSign className="w-5 h-5" /> },
-  { section: "cobros", label: "Cobros extras", href: null, modal: "cobro", icon: <Receipt className="w-5 h-5" /> },
+  // Antes «Cobros extras» abría aquí mismo el modal. Ahora el módulo tiene página propia, y
+  // el modal se abre desde ella con «Nuevo cobro».
+  { section: "cargos", label: "Cargos", href: "/admin/cargos", icon: <Receipt className="w-5 h-5" /> },
   { section: "comunicados", label: "Comunicados", href: null, modal: "comunicado", icon: <Bell className="w-5 h-5" /> },
   { section: "chats", label: "Chats", href: "/admin/chats", llevaNoLeidos: true, icon: <MessageSquare className="w-5 h-5" /> },
   // La sección se llama `reportes` por compatibilidad, pero la tabla es `solicitudes`.
@@ -190,13 +191,6 @@ export function AdminSidebar({
 
       <GenerarComunicadoModal
         isOpen={modalAbierto === "comunicado"}
-        onClose={() => setModalAbierto(null)}
-        conjuntoId={conjuntoId}
-        conjuntoNombre={conjuntoNombre}
-      />
-
-      <GenerarCobroModal
-        isOpen={modalAbierto === "cobro"}
         onClose={() => setModalAbierto(null)}
         conjuntoId={conjuntoId}
         conjuntoNombre={conjuntoNombre}

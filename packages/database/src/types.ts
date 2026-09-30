@@ -924,6 +924,9 @@ export type Database = {
         Row: {
           apartamento_id: string
           concepto_id: string
+          condonado_en: string | null
+          condonado_motivo: string | null
+          condonado_por: string | null
           conjunto_id: string
           descuento_aplicado: number
           fecha_generado: string | null
@@ -935,12 +938,16 @@ export type Database = {
           residente_id: string | null
           solicitud_id: string | null
           valor_base: number
+          valor_condonado: number
           valor_descuento: number | null
           valor_final: number
         }
         Insert: {
           apartamento_id: string
           concepto_id: string
+          condonado_en?: string | null
+          condonado_motivo?: string | null
+          condonado_por?: string | null
           conjunto_id: string
           descuento_aplicado?: number
           fecha_generado?: string | null
@@ -952,12 +959,16 @@ export type Database = {
           residente_id?: string | null
           solicitud_id?: string | null
           valor_base: number
+          valor_condonado?: number
           valor_descuento?: number | null
           valor_final: number
         }
         Update: {
           apartamento_id?: string
           concepto_id?: string
+          condonado_en?: string | null
+          condonado_motivo?: string | null
+          condonado_por?: string | null
           conjunto_id?: string
           descuento_aplicado?: number
           fecha_generado?: string | null
@@ -969,6 +980,7 @@ export type Database = {
           residente_id?: string | null
           solicitud_id?: string | null
           valor_base?: number
+          valor_condonado?: number
           valor_descuento?: number | null
           valor_final?: number
         }
@@ -1042,6 +1054,83 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "vista_visitas_recepcion"
             referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_admin"
+            referencedColumns: ["admin_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_miembros_admin"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_perfil_administracion"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_residentes_por_apartamento"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_condonado_por_fkey"
+            columns: ["condonado_por"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_usuarios"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
@@ -1266,6 +1355,13 @@ export type Database = {
             columns: ["cargo_id"]
             isOneToOne: false
             referencedRelation: "cargos_mensuales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_recaudos_cargo_id_fkey"
+            columns: ["cargo_id"]
+            isOneToOne: false
+            referencedRelation: "vista_cargos_admin"
             referencedColumns: ["id"]
           },
           {
@@ -6097,6 +6193,215 @@ export type Database = {
         }
         Relationships: []
       }
+      vista_cargos_admin: {
+        Row: {
+          apartamento_id: string | null
+          concepto_codigo: string | null
+          concepto_id: string | null
+          concepto_nombre: string | null
+          condonado_en: string | null
+          condonado_motivo: string | null
+          condonado_por_nombre: string | null
+          conjunto_id: string | null
+          descuento_aplicado: number | null
+          estado: string | null
+          fecha_generado: string | null
+          fecha_vencimiento: string | null
+          id: string | null
+          nombre_torre: string | null
+          numero_apt: string | null
+          origen: string | null
+          pagado: number | null
+          periodo: string | null
+          saldo: number | null
+          valor_condonado: number | null
+          valor_final: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cargos_concepto_fk"
+            columns: ["concepto_id"]
+            isOneToOne: false
+            referencedRelation: "conceptos_cobro"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_concepto_fk"
+            columns: ["concepto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_saldos_por_concepto_residente"
+            referencedColumns: ["concepto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "apartamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_apartamentos_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_detalle_apt"
+            referencedColumns: ["id_apt"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_envios_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_balances_indicadores"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_residentes"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_apartamento_id_fkey"
+            columns: ["apartamento_id"]
+            isOneToOne: false
+            referencedRelation: "vista_visitas_recepcion"
+            referencedColumns: ["apartamento_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "conjuntos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_asignacion_suscripciones"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_configuracion_actual"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_conjuntos_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashbard_admin"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_dashboard_residente"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_editar_conjunto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_gestion_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_administracion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_con_suscripcion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_mis_conjuntos_seleccion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_pagos_detalle"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_admin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_asignacion"
+            referencedColumns: ["conjunto_id"]
+          },
+          {
+            foreignKeyName: "cargos_mensuales_conjunto_id_fkey"
+            columns: ["conjunto_id"]
+            isOneToOne: false
+            referencedRelation: "vista_superadmin_conjuntos"
+            referencedColumns: ["conjunto_id"]
+          },
+        ]
+      }
       vista_chats_usuario: {
         Row: {
           admin_apellido: string | null
@@ -10715,6 +11020,15 @@ export type Database = {
       }
       aplicar_recaudo: { Args: { p_recaudo_id: string }; Returns: undefined }
       bytea_to_text: { Args: { data: string }; Returns: string }
+      condonar_cargo: {
+        Args: {
+          p_cargo_id: string
+          p_conjunto_id: string
+          p_motivo: string
+          p_usuario: string
+        }
+        Returns: number
+      }
       crear_cobro_manual: {
         Args: {
           p_apartamento_id: string
@@ -10999,6 +11313,10 @@ export type Database = {
       }
       nombre_mes: { Args: { p_periodo: string }; Returns: string }
       notificar_cobros_diario: { Args: { p_hoy?: string }; Returns: number }
+      reactivar_cargo: {
+        Args: { p_cargo_id: string; p_conjunto_id: string }
+        Returns: number
+      }
       revertir_cobro_manual: {
         Args: {
           p_concepto_codigo: string
@@ -11080,12 +11398,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -11109,11 +11427,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -11134,11 +11452,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -11159,11 +11477,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -11176,11 +11494,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
