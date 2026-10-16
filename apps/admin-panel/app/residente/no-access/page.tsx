@@ -17,27 +17,10 @@ export default function ResidenteNoAccessPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-white dark:bg-slate-950 text-zinc-900 dark:text-white md:p-8">
       <div className="bg-white dark:bg-zinc-900 w-full max-w-xl rounded-[32px] overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-850 p-8 sm:p-12 text-center space-y-8 animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Brand Header */}
+        {/* Logo */}
         <div className="flex justify-center">
-          <div className="bg-brand/10 border border-brand/20 rounded-full py-2 px-4 inline-flex items-center gap-2">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 100 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-brand"
-            >
-              <circle cx="50" cy="50" r="40" stroke="currentColor" strokeWidth="12" />
-              <circle cx="50" cy="50" r="20" stroke="currentColor" strokeWidth="8" />
-              <rect x="44" y="2" width="12" height="15" rx="2" fill="currentColor" />
-              <rect x="44" y="83" width="12" height="15" rx="2" fill="currentColor" />
-              <rect x="2" y="44" width="15" height="12" rx="2" fill="currentColor" />
-            </svg>
-            <span className="text-sm font-black tracking-widest text-zinc-900 dark:text-white">
-              COPPER APP
-            </span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-copper.webp" alt="Copper" className="h-10 object-contain" />
         </div>
 
         {/* Smartphone Icon Illustration */}
