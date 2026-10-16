@@ -20,10 +20,10 @@ export interface DatosCorreoInvitacion {
 }
 
 /**
- * La imagen del celular del diseño. Mientras no haya un PNG exportado del diseño del cliente,
- * va en `null` y el correo se arma en una sola columna, sin ella.
+ * Una captura real de la app en un marco de celular, con los datos del residente reemplazados
+ * por textos de ejemplo. Si se quita (`null`), el correo se arma en una sola columna.
  */
-const IMAGEN_CELULAR: string | null = null;
+const IMAGEN_CELULAR: string | null = `${URL_PANEL}/email/celular.png`;
 
 const MARCA = "#8A1C14";
 const OSCURO = "#111827";
@@ -101,10 +101,10 @@ export function htmlInvitacion(datos: DatosCorreoInvitacion): string {
 
   const cuerpo = IMAGEN_CELULAR
     ? `<tr>
-         <td width="44%" valign="middle" align="center" style="padding:0 12px 0 0;">
+         <td class="columna" width="44%" valign="middle" align="center" style="padding:0 12px 0 0;">
            <img src="${IMAGEN_CELULAR}" width="220" alt="La app de Copper en un celular" style="display:block;width:220px;max-width:100%;height:auto;border:0;" />
          </td>
-         <td width="56%" valign="middle">${columnaTexto}</td>
+         <td class="columna" width="56%" valign="middle">${columnaTexto}</td>
        </tr>`
     : `<tr><td>${columnaTexto}</td></tr>`;
 
@@ -117,7 +117,13 @@ export function htmlInvitacion(datos: DatosCorreoInvitacion): string {
 
   return `<!doctype html>
 <html lang="es">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapar(asuntoInvitacion(datos))}</title></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${escapar(asuntoInvitacion(datos))}</title>
+<style>
+  /* En celular las dos columnas no caben: la imagen va arriba y el texto debajo. */
+  @media only screen and (max-width: 520px) {
+    .columna { display: block !important; width: 100% !important; padding: 0 0 20px 0 !important; }
+  }
+</style></head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f3f4f6;">
     <tr><td align="center" style="padding:24px 12px;">
