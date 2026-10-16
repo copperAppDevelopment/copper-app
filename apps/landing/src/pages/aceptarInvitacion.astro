@@ -1,0 +1,30 @@
+---
+/**
+ * Las invitaciones enviadas hasta octubre de 2026 traen `copperapp.co/aceptarInvitacion`, pero
+ * la página vive en el panel. Esto las reenvía allá conservando el `?token=…`.
+ *
+ * Es una página y no una redirección de Vercel para no depender de cómo esté configurado el
+ * proyecto: un sitio estático no ve la query en el servidor, así que se lee en el navegador.
+ */
+const PANEL = "https://admin.copperapp.co/aceptarInvitacion";
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Aceptar invitación · Copper</title>
+    <script is:inline define:vars={{ PANEL }}>
+      location.replace(PANEL + location.search);
+    </script>
+  </head>
+  <body style="font-family: system-ui, sans-serif; text-align: center; padding: 48px 16px;">
+    <p>Te estamos llevando a tu invitación…</p>
+    <p><a href={PANEL} id="enlace">Si no pasa nada, toca aquí.</a></p>
+    <script is:inline define:vars={{ PANEL }}>
+      document.getElementById("enlace").href = PANEL + location.search;
+    </script>
+  </body>
+</html>
