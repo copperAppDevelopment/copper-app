@@ -1,17 +1,14 @@
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { withAdminConjunto, ok, okCon, fail } from '@/lib/apiHandler';
+import { crearInvitacion, enviarInvitaciones } from '@/lib/invitacionesServidor';
 import { esRolEquipo } from '@/lib/equipo';
-
-const SUPABASE_URL = process.env.PUBLIC_SUPABASE_URL || 'https://javsddqiuzzigbhygrtp.supabase.co';
-const SUPABASE_ANON_KEY = process.env.PUBLIC_SUPABASE_ANON_KEY || '';
 
 /**
  * POST: Invitar a alguien al equipo del conjunto.
  *
- * Mismo patrón de dos caminos que `residentes/invitar`, que existe porque la edge function
- * `invite-user` no consulta `users` y trata igual un correo nuevo que uno ya registrado:
+ * Mismo patrón de dos caminos que `residentes/invitar`:
  *
- *  - Correo desconocido  → invitación normal (edge function + correo con token).
+ *  - Correo desconocido  → invitación normal (fila con token + correo, `lib/invitacionesServidor`).
  *  - Correo ya registrado → no se invita; se devuelve el usuario para que la UI ofrezca
  *    vincularlo directamente al conjunto con `/equipo/vincular`.
  */
@@ -27,7 +24,7 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
     return fail('El rol no es válido', 400);
   }
 
-  // `invite-user` exige estos datos para todo lo que no sea Residente.
+  // El equipo no completa estos datos al aceptar: tienen que venir en la invitación.
   if (!nombres || !apellidos || !tipo_documento || !numero_documento) {
     return fail('Nombres, apellidos, tipo y número de documento son obligatorios', 400);
   }
@@ -60,41 +57,24 @@ export const POST = withAdminConjunto(async ({ conjuntoId, body }) => {
     return ok({ yaRegistrado: true, usuario: existente, miembroExistente: miembro ?? null });
   }
 
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/invite-user`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-    },
-    body: JSON.stringify({
-      conjunto_id: conjuntoId,
-      rol,
-      email: correo,
-      nombres,
-      apellidos,
-      tipo_documento,
-      numero_documento,
-      telefono: telefono || null,
-    }),
+  const invitacionId = await crearInvitacion({
+    conjuntoId,
+    rol,
+    email: correo,
+    telefono: telefono || null,
+    nombres,
+    apellidos,
+    tipoDocumento: tipo_documento,
+    numeroDocumento: numero_documento,
   });
 
-  // La función devuelve texto plano en los errores, sin Content-Type json.
-  const texto = await res.text();
-  let payload: any = {};
-  try {
-    payload = texto ? JSON.parse(texto) : {};
-  } catch {
-    payload = { error: texto };
+  const { fallidas } = await enviarInvitaciones([invitacionId]);
+  if (fallidas.length > 0) {
+    return fail(
+      'La invitación quedó creada, pero el correo no salió. Inténtalo de nuevo en unos minutos.',
+      502
+    );
   }
 
-  if (!res.ok) {
-    console.error('Error de invite-user:', res.status, texto);
-    return fail(payload.error || 'No se pudo enviar la invitación', res.status);
-  }
-
-  return okCon(
-    { data: { yaRegistrado: false }, message: payload.message || 'Invitación enviada correctamente' },
-    201
-  );
+  return okCon({ data: { yaRegistrado: false }, message: 'Invitación enviada correctamente' }, 201);
 });

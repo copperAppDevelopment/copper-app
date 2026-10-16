@@ -21,9 +21,8 @@ export interface InvitarResidenteModalProps {
 }
 
 /**
- * La edge function `invite-user` no distingue entre un correo nuevo y uno ya registrado.
- * Esa distinción la hace la route, y este modal presenta las dos salidas: invitar, o
- * vincular directamente al conjunto si la cuenta ya existe.
+ * La ruta distingue entre un correo nuevo y uno ya registrado, y este modal presenta las dos
+ * salidas: invitar, o vincular directamente al conjunto si la cuenta ya existe.
  */
 export function InvitarResidenteModal({
   isOpen, onClose, conjuntoNombre, opcionesApartamento, onInvitar, onVincular,
