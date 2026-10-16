@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import { UserPlus, Info } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { UserPlus, Info, Mail } from "lucide-react";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { AdminPageShell } from "@/components/layout/admin-page-shell";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { AsignarApartamentoModal } from "@/features/residentes/components/Asigna
 import type { Residente } from "@/features/residentes/types";
 
 export default function ResidentesPage() {
+  const router = useRouter();
   const sesion = useAdminSession();
   const r = useResidentes(sesion.conjuntoId, sesion.loading);
 
@@ -46,9 +48,18 @@ export default function ResidentesPage() {
       titulo="Residentes"
       subtitulo={sesion.conjuntoNombre}
       acciones={
-        <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setInvitarAbierto(true)}>
-          Invitar residente
-        </Button>
+        <>
+          <Button
+            variant="outline"
+            icon={<Mail className="w-4 h-4" />}
+            onClick={() => router.push("/admin/residentes/invitaciones")}
+          >
+            Invitaciones
+          </Button>
+          <Button icon={<UserPlus className="w-4 h-4" />} onClick={() => setInvitarAbierto(true)}>
+            Invitar residente
+          </Button>
+        </>
       }
     >
       {r.error && <Alert variant="danger">{r.error}</Alert>}

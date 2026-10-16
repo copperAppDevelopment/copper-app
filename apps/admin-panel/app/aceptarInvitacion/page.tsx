@@ -13,6 +13,7 @@ import { ETIQUETA_ROL } from "@/lib/equipo";
 import type { RolEquipo } from "@/lib/equipo";
 import { TIPOS_DOCUMENTO } from "@/features/perfil/types";
 import { useAceptarInvitacion } from "@/features/invitaciones/useAceptarInvitacion";
+import { BotonesTiendas } from "@/components/tiendas/BotonesTiendas";
 
 function Marco({ children }: { children: React.ReactNode }) {
   return (
@@ -33,18 +34,26 @@ function AceptarContenido() {
   if (a.loading) return <SpinnerPagina />;
 
   if (a.listo) {
+    // Un residente no usa el panel: el login web lo mandaría a «no-access». Se le ofrece la app.
+    const esResidente = a.invitacion?.rol === "Residente";
     return (
       <Marco>
         <Card className="shadow-sm">
           <div className="flex flex-col items-center gap-4 py-6 text-center">
             <CheckCircle2 className="w-10 h-10 text-emerald-500" />
             <div>
-              <p className="font-bold text-zinc-900 dark:text-white">¡Cuenta creada!</p>
+              <p className="font-bold text-zinc-900 dark:text-white">
+                {esResidente ? "¡Tu cuenta está lista!" : "¡Cuenta creada!"}
+              </p>
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Ya puedes iniciar sesión con tu correo y tu contraseña.
+                {esResidente
+                  ? "Descarga la app e inicia sesión con tu correo y tu contraseña."
+                  : "Ya puedes iniciar sesión con tu correo y tu contraseña."}
               </p>
             </div>
-            <Button onClick={() => router.push("/login")}>Iniciar sesión</Button>
+            {esResidente
+              ? <BotonesTiendas />
+              : <Button onClick={() => router.push("/login")}>Iniciar sesión</Button>}
           </div>
         </Card>
       </Marco>

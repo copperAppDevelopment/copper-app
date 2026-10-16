@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "12.2.3"
   }
   public: {
     Tables: {
@@ -3023,6 +3023,8 @@ export type Database = {
           conjunto_id: string
           creado_en: string | null
           email: string
+          envios: number
+          error_envio: string | null
           expira_en: string
           id: string
           nombres: string | null
@@ -3031,6 +3033,7 @@ export type Database = {
           telefono: string | null
           tipo_documento: string | null
           token: string
+          ultimo_envio_en: string | null
           usado: boolean | null
           usado_en: string | null
         }
@@ -3040,6 +3043,8 @@ export type Database = {
           conjunto_id: string
           creado_en?: string | null
           email: string
+          envios?: number
+          error_envio?: string | null
           expira_en?: string
           id?: string
           nombres?: string | null
@@ -3048,6 +3053,7 @@ export type Database = {
           telefono?: string | null
           tipo_documento?: string | null
           token: string
+          ultimo_envio_en?: string | null
           usado?: boolean | null
           usado_en?: string | null
         }
@@ -3057,6 +3063,8 @@ export type Database = {
           conjunto_id?: string
           creado_en?: string | null
           email?: string
+          envios?: number
+          error_envio?: string | null
           expira_en?: string
           id?: string
           nombres?: string | null
@@ -3065,6 +3073,7 @@ export type Database = {
           telefono?: string | null
           tipo_documento?: string | null
           token?: string
+          ultimo_envio_en?: string | null
           usado?: boolean | null
           usado_en?: string | null
         }
@@ -11564,6 +11573,10 @@ export type Database = {
       reactivar_cargo: {
         Args: { p_cargo_id: string; p_conjunto_id: string }
         Returns: number
+      }
+      reprogramar_invitaciones: {
+        Args: { p_conjunto_id: string; p_ids: string[] }
+        Returns: string[]
       }
       revertir_cobro_manual: {
         Args: {
